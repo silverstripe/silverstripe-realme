@@ -1,0 +1,28 @@
+{
+    "name": "madmatt/silverstripe-realme-auth",
+    "description": "Adds support to SilverStripe for authentication via RealMe (https://www.realme.govt.nz/)",
+    "type": "silverstripe-module",
+    "keywords": ["silverstripe", "authentication", "saml", "RealMe", "Real Me", "iGovt"],
+    "license": "MIT",
+    "minimum-stability": "dev",
+    "authors": [
+        {
+            "name": "Matt Peel",
+            "email": "mattpeel@silverstripe.com"
+        }
+    ],
+    "require": {
+        "composer/installers": "*",
+        "silverstripe/framework": "~3.1",
+        "simplesamlphp/simplesamlphp": "dev-master"
+    },
+    "require-dev": {
+        "hafriedlander/silverstripe-phockito": "*"
+    },
+    "support": {
+        "issues": "https://github.com/madmatt/silverstripe-realme-auth/issues"
+    },
+    "extra": {
+        "installer-name": "realme-auth"
+    }
+}
