@@ -1,0 +1,8 @@
+en:
+  RealMeAuthenticator:
+    TITLE: "RealMe Account"
+    LOGINFAILURE: "Unfortunately we're not able to authenticate you via RealMe right now."
+  RealMeController:
+    LOGINFAILURE: "Unfortunately we're not able to authenticate you via RealMe right now."
+  RealMeLoginForm:
+    LOGINBUTTON: "Login with RealMe"
