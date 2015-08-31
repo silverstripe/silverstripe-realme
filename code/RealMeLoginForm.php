@@ -1,5 +1,6 @@
 <?php
 class RealMeLoginForm extends LoginForm {
+
 	private static $allowed_actions = array(
 		'redirectToRealMe'
 	);
@@ -12,7 +13,7 @@ class RealMeLoginForm extends LoginForm {
 		));
 
 		$actions = new FieldList(array(
-			new FormAction('redirectToRealMe', _t('RealMeLoginForm.LOGINBUTTON', 'Login with RealMe'))
+			new FormAction('redirectToRealMe', _t('RealMeLoginForm.LOGINBUTTON', 'Login or Register with RealMe'))
 		));
 
 		parent::__construct($controller, $name, $fields, $actions);

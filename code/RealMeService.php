@@ -19,11 +19,11 @@ class RealMeService extends Object {
 	 */
 	public function enforceLogin() {
 		// @todo Change this to pull auth_source from Config
-		$auth = new SimpleSAML_Auth_Simple('default-sp');
+		$auth = new SimpleSAML_Auth_Simple('realme');
 
 		$auth->requireAuth(array(
-			'ReturnTo' => '/RealMeController/login',
-			'ErrorURL' => '/RealMeController/login'
+			'ReturnTo' => '/Security/realmevalidate',
+			'ErrorURL' => '/Security/realmevalidate'
 		));
 
 		$nameId = $userFlt = null;
@@ -37,10 +37,22 @@ class RealMeService extends Object {
 			Session::set('RealMeSessionDataSerialized', serialize($authData));
 			$loggedIn = true;
 		}
-
 		return $loggedIn;
 	}
 
+	/**
+	 * Clear the realme credentials from our session.
+	 */
+	public function clearLogin(){
+		Session::clear('RealMeSessionDataSerialized');
+		$this->config()->__set('user_data', null);
+	}
+
+	/**
+	 * Return the user data which was saved to session from the first realme auth.
+	 *
+	 * @return array
+	 */
 	public function getUserData() {
 		if(is_null($this->config()->user_data)) {
 			$sessionData = Session::get('RealMeSessionDataSerialized');
