@@ -34,7 +34,7 @@ This lists what the dev/task should do when run (inexhaustive list, should be re
 ```php
 $config = array(
 	'baseurlpath' => '', // ?
-	'certdir' => '', // defined in Config, enforce this as being outside webroot, no default value
+	'certdir' => '', // defined in _ss_env, enforce this as being outside webroot, no default value
 	'loggingdir' => '', // defined in Config, enforce this as being outside webroot, /var/log/simplesaml by default?
 	'tempdir' => '', // defined in Config, enforce this as being outside webroot, /tmp/simplesaml by default?
 	'debug' => false, // defined in Config
@@ -50,6 +50,7 @@ $config = array(
 	'session.duration' => 8 * (60 * 60), // ?, this is 8 hrs
 	'language.available' => array('en'),
 	'language.default' => 'en',
+	'session.phpsession.savepath' => null, // check w/ Ops if it's different for Active DR customers (and synced between servers)
 );
 ```
 
@@ -121,4 +122,28 @@ Check cert connection..
 ```
 openssl s_client -tls1 -cert vendor/simplesamlphp/simplesamlphp/cert/mts_mutual_ssl_sp.pem -connect as.mts.realme.govt.nz:443/sso/ArtifactResolver/metaAlias/logon/logonidp
 
+```
+
+```bash
+# Generate private keys first
+openssl genrsa -out ite.sa.saml.sig.website-domain-name.key 2048
+openssl genrsa -out ite.sa.mutual.ssl.website-domain-name.key 2048
+
+# Then create certificate requests
+
+# Use the following params when openssl asks for data
+# - Country Name: NZ
+# - State or Province Name: <Region of Agency, typically Wellington>
+# - Locality Name: <City name, typically Wellington>
+# - Organisation Name: <Legal name of Agency>
+# - Organisational Unit Name: Leave blank
+# - Common Name: This depends on which certificate you're generating. It's either:
+#   - ite.sa.saml.sig.website-domain-name, OR
+#   - ite.sa.mutual.ssl.website-domain-name
+# - Email Address: Leave blank
+# - A challenge password: Leave blank
+# - An optional company name: Leave blank
+
+openssl req -new -key ite.sa.saml.sig.website-domain-name.key -out ite.sa.saml.sig.website.domain.name.csr
+openssl req -new -key ite.sa.mutual.ssl.website-domain-name.key -out ite.sa.mutual.ssl.website.domain.name.csr
 ```
