@@ -2,7 +2,7 @@ en:
   RealMeAuthenticator:
     TITLE: "RealMe Account"
     LOGINFAILURE: "Unfortunately we're not able to authenticate you via RealMe right now."
-  RealMeController:
+  RealMeSecurityExtension:
     LOGINFAILURE: "Unfortunately we're not able to authenticate you via RealMe right now."
   RealMeLoginForm:
-    LOGINBUTTON: "Login with RealMe"
+    LOGINBUTTON: "Login or Register with RealMe"

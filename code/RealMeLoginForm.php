@@ -16,6 +16,17 @@ class RealMeLoginForm extends LoginForm {
 			new FormAction('redirectToRealMe', _t('RealMeLoginForm.LOGINBUTTON', 'Login or Register with RealMe'))
 		));
 
+		// Taken from MemberLoginForm
+		if(isset($_REQUEST['BackURL'])) {
+			$backURL = $_REQUEST['BackURL'];
+		} elseif(Session::get('BackURL')) {
+			$backURL = Session::get('BackURL');
+		}
+
+		if(isset($backURL)) {
+			$fields->push(new HiddenField('BackURL', 'BackURL', $backURL));
+		}
+
 		parent::__construct($controller, $name, $fields, $actions);
 	}
 
@@ -30,7 +41,7 @@ class RealMeLoginForm extends LoginForm {
 		$loggedIn = $service->enforceLogin();
 
 		if($loggedIn) {
-			return $this->controller->redirect(Director::baseURL());
+			return $this->controller->redirect($service->getBackURL());
 		} else {
 			return Security::permissionFailure(
 				$this->controller,

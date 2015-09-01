@@ -22,16 +22,15 @@ class RealMeService extends Object {
 		$auth = new SimpleSAML_Auth_Simple('realme');
 
 		$auth->requireAuth(array(
-			'ReturnTo' => '/Security/realmevalidate',
-			'ErrorURL' => '/Security/realmevalidate'
+			'ReturnTo' => '/Security/realme/acs',
+			'ErrorURL' => '/Security/realme/error'
 		));
 
-		$nameId = $userFlt = null;
 		$loggedIn = false;
 		$authData = $this->getAuthData($auth);
 
 		if(is_null($authData)) {
-			// @todo This means error of some kind
+			// no-op, $loggedIn stays false and no data is written
 		} else {
 			$this->config()->user_data = $authData;
 			Session::set('RealMeSessionDataSerialized', serialize($authData));
@@ -93,5 +92,22 @@ class RealMeService extends Object {
 		}
 
 		return $returnedData;
+	}
+
+	public function getBackURL() {
+		if(!empty($_REQUEST['BackURL'])) {
+			$url = $_REQUEST['BackURL'];
+		} elseif(Session::get('BackURL')) {
+			$url = Session::get('BackURL');
+		}
+
+		if(isset($url) && Director::is_site_url($url) ) {
+			$url = Director::absoluteURL($url);
+		} else {
+			// Spoofing attack or no back URL set, redirect to homepage instead of spoofing url
+			$url = Director::absoluteBaseURL();
+		}
+
+		return $url;
 	}
 }
