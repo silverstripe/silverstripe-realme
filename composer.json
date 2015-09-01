@@ -1,5 +1,5 @@
 {
-    "name": "madmatt/silverstripe-realme",
+    "name": "silverstripe/silverstripe-realme",
     "description": "Adds support to SilverStripe for authentication via RealMe (https://www.realme.govt.nz/)",
     "type": "silverstripe-module",
     "keywords": ["silverstripe", "authentication", "saml", "RealMe", "Real Me", "iGovt"],
@@ -8,7 +8,11 @@
     "authors": [
         {
             "name": "Matt Peel",
-            "email": "mattpeel@silverstripe.com"
+            "email": "matt@silverstripe.com"
+        },
+        {
+            "name": "Simon Gow",
+            "email": "simon@silverstripe.com"
         }
     ],
     "require": {
@@ -20,7 +24,7 @@
         "hafriedlander/silverstripe-phockito": "*"
     },
     "support": {
-        "issues": "https://github.com/madmatt/silverstripe-realme/issues"
+        "issues": "https://gitlab.cwp.govt.nz/silverstripe/realme/issues"
     },
     "extra": {
         "installer-name": "realme"
