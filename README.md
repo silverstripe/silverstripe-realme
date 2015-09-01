@@ -25,6 +25,89 @@ Download, place the folder in your project root called 'realme' and run a dev/bu
  // code
 ```
 
+## Task requirements
+
+This lists what the dev/task should do when run (inexhaustive list, should be removed from README in favour of building the actual script
+
+* Create config.php for SimpleSAMLphp, with the following array keys changed from default:
+
+```php
+$config = array(
+	'baseurlpath' => '', // ?
+	'certdir' => '', // defined in Config, enforce this as being outside webroot, no default value
+	'loggingdir' => '', // defined in Config, enforce this as being outside webroot, /var/log/simplesaml by default?
+	'tempdir' => '', // defined in Config, enforce this as being outside webroot, /tmp/simplesaml by default?
+	'debug' => false, // defined in Config
+	'showerrors' => false, // same value as `debug`
+	'errorreporting' => false, // same value as `showerrors`
+	'auth.adminpassword' => '', //  A randomly-generated long string
+	'admin.protectindexpage' => true,
+	'admin.protectmetadata' => true,
+	'secretsalt' => '', // A randomly generated long string
+	'technicalcontact_name' => '', // Defined in Config, required (just in case)
+	'technicalcontact_email' => '', // Defined in Config, required (just in case)
+	'enable.authmemcookie' => false,
+	'session.duration' => 8 * (60 * 60), // ?, this is 8 hrs
+	'language.available' => array('en'),
+	'language.default' => 'en',
+);
+```
+
+* Create authsources.php for SimpleSAMLphp, with the following array:
+
+```php
+$config = array(
+	'realme-mts' => array(
+		'saml:SP',
+
+		// URL defined in Config, should be in format https://[site-path.govt.nz]/[privacy realm]/[service-name]
+		// NB: Must match values provided in ITE/prod checklists, so discussion required with dev team to resolve this
+		// Example value below:
+		'entityID' => 'http://dev.realme-integration.govt.nz/onlineservices/service1',
+
+		'idp' => 'https://mts.realme.govt.nz/saml2',
+		'discoURL' => NULL,
+		'NameIDPolicy' => 'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent',
+		'AssertionConsumerServiceURL' => null,
+		'AuthnContextClassRef' => 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength',
+		'ProtocolBinding' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact',
+		'redirect.sign'	  => true,
+		'privatekey'	  =>	'mts_saml_sp.pem',
+		'privatekey_pass' =>	'password',
+		'ForceAuthn' => FALSE,
+		'saml.SOAPClient.certificate' => 'mts_mutual_ssl_sp.pem',
+		'saml.SOAPClient.privatekey_pass' => 'password',
+	),
+
+	// Same details as above, but with ITE IdP URLs and entity IDs
+	'realme-ite' => array(),
+
+	// Same details as above, but with prod IdP URLs and entity IDs
+	'realme-prod' => array()
+);
+```
+
+* Create file in metadatadir for the idp values in the authsources array:
+
+```php
+$metadata['https://mts.realme.govt.nz/saml2'] = array(
+	'name' => 'MTS',
+	'description' => 'Here you can single sign on to an MTS IdP using your RealMe logon',
+	'SingleSignOnService'  => 'https://mts.realme.govt.nz/logon-mts/mtsEntryPoint',
+	'SingleSignOnService.artifact'  => 'https://mts.realme.govt.nz/logon-mts/mtsEntryPoint',
+	'SingleLogoutService'  => 'https://mts.realme.govt.nz/logon-mts/mtsEntryPoint',
+	'certificate' => 'mts_saml_idp.cer', // File in certdir
+	'ArtifactResolutionService' => array(
+		array(
+			'index' => 0,
+			'Location' => 'https://as.mts.realme.govt.nz/sso/ArtifactResolver/metaAlias/logon/logonidp',
+			'Binding' => 'urn:oasis:names:tc:SAML:2.0:bindings:SOAP'
+		)
+	),
+	'saml.SOAPClient.certificate' => 'mts_mutual_ssl_sp.cer', // File in certdir
+	'saml.SOAPClient.privatekey_pass' => 'password'
+);
+```
 
 ##Known issues
 url < 80 bytes
