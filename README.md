@@ -1,15 +1,15 @@
-#RealMe for SilverStripe
+# RealMe module for SilverStripe
 
-![RealMe](images/logo.png) [URL Variable Tools](https://www.realme.govt.nz/)
+[Real Me](https://www.realme.govt.nz/)
 
 This module provides the foundation to support a quick integration for a SilverStripe application running on the 
 common web platform to RealMe as an identity provider. 
 
-##Requirements
+## Requirements
 
 SilverStripe 3.1
 
-##Installation
+## Installation
 
 ** Composer / Packagist ([best practice](http://doc.silverstripe.org/framework/en/trunk/installation/composer))**  
 Add "silverstripe/realme" to your requirements.
@@ -17,7 +17,7 @@ Add "silverstripe/realme" to your requirements.
 ** Manually **  
 Download, place the folder in your project root called 'realme' and run a dev/build?flush=1.
 
-##Implementing RealMe
+## Implementing RealMe
 
 @todo
 
@@ -109,12 +109,12 @@ $metadata['https://mts.realme.govt.nz/saml2'] = array(
 );
 ```
 
-##Known issues
+## Known issues
 url < 80 bytes
 
 certificates MUST be 3years
 
-##Customisation
+## Customisation
 
 
 Check cert connection..
