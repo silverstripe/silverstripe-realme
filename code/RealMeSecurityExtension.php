@@ -115,12 +115,20 @@ class RealMeSecurityExtension extends Extension {
 				if(isset($authState['SimpleSAML_Auth_State.exceptionData'])) {
 					$exception = $authState['SimpleSAML_Auth_State.exceptionData'];
 					if($exception instanceof sspmod_saml_Error) {
+						$message = $exception->getStatusMessage();
+					} elseif($exception instanceof SimpleSAML_Error_Exception) {
+						$message = $exception->getMessage();
+					}
+
+					if(isset($message)) {
+						SS_Log::log(
+							sprintf('Error while validating RealMe authentication details: %s', $message),
+							SS_Log::ERR
+						);
+
 						return Security::permissionFailure(
 							$this->owner,
-							sprintf(
-								"Sorry, we couldn't verify your RealMe account because of an internal error: '%s'",
-								$exception->getStatusMessage()
-							)
+							"Sorry, we couldn't verify your RealMe account. Please try again."
 						);
 					}
 				}
@@ -130,7 +138,7 @@ class RealMeSecurityExtension extends Extension {
 		SS_Log::log('Unknown error while attempting to parse RealMe authentication errors', SS_Log::ERR);
 		return Security::permissionFailure(
 			$this->owner,
-			"Sorry, we weren't able to verify your identity with RealMe. Please try again."
+			"Sorry, we couldn't verify your RealMe account. Please try again."
 		);
 	}
 }
