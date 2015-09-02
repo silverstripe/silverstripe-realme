@@ -61,69 +61,6 @@ directly from any descendant of SiteTree $RealMeSessionData
 
 ### ITE Integration Test Environment
  @todo 
-# RealMe module for SilverStripe
-
-[Real Me](https://www.realme.govt.nz/)
-
-This module provides the foundation to support a quick integration for a SilverStripe application running on the 
-common web platform to RealMe as an identity provider. 
-
-## Requirements
-
-[CWP basic recipe 1.1.1](https://www.cwp.govt.nz/guides/core-technical-documentation/common-web-platform-core/en/releases/)
-
-This module is designed to be run on a CWP instance. 
-
-## Installation
-via Composer / Packagist ([best practice](http://doc.silverstripe.org/framework/en/trunk/installation/composer)) is
-
-Ensure repository 'https://packages.cwp.govt.nz/' is added to composer (CWP provides this by default)
- 
-```json 
-'"repositories": [
-    {
-        "type": "composer",
-        "url": "https://packages.cwp.govt.nz/"
-    }
-```
-
-Add "silverstripe/realme" to your composer requirements.
-
-```
-composer require silverstripe/realme 
-composer update
-```
-
-#### Manual Installation
-[Download](https://gitlab.cwp.govt.nz/silverstripe/realme), place the folder in your project root called 'realme' and 
-run a dev/build?flush=1.
-
-## Implementing RealMe in your application (Subject to change)
-
-Setup
-- Symlink simplesaml in the project root to vendor/simplesamlphp/simplesamlphp/www/
-```ln -s vendor/simplesamlphp/simplesamlphp/www/ simplesaml ```
-
-
-### MTS Messaging Test Environment
-- Add this module to your composer requirements
-- Fill out complete the MTS checklist to start development
-- Obtain access to realme and sharepoint for MTS public/private development keys. 
-- Download the ["Integration Bundle Assert MTS"](https://see.govt.nz/realme/realme/Library/Forms/Library.aspx) from
-  https://see.govt.nz/realme/realme/Library/Forms/Library.aspx
-- Run the realme build task to create the directores and the metadata files for MTS (coming soon) 
-- unpack the certificates into vendor/simplesamlphp/simplesamlphp/cert (create if not present)
-    - mts_mutual_ssl_idp.cer
-    - mts_mutual_ssl_sp.cer
-    - mts_mutual_ssl_sp.pem
-    - mts_saml_idp.cer
-    - mts_saml_sp.pem
-- include the session data realme/templates/Layout/RealMeSessionData.ss in your template, or reference session data 
-directly from any descendant of SiteTree $RealMeSessionData
-
-### ITE Integration Test Environment
- @todo 
- - Create a Service Desk request specifing th 
 
 ## Known issues
 url < 80 bytes
