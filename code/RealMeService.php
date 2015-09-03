@@ -64,6 +64,7 @@ class RealMeService extends Object {
 
 	/**
 	 * Return the user data which was saved to session from the first realme auth.
+	 * @note Does not check authenticity or expiry of this data
 	 *
 	 * @return array
 	 */
@@ -84,6 +85,7 @@ class RealMeService extends Object {
 	 * @return ArrayData
 	 */
 	private function getAuthData(SimpleSAML_Auth_Simple $auth) {
+		// returns null if the current auth is invalid or timed out.
 		$data = $auth->getAuthDataArray();
 		$returnedData = null;
 
@@ -105,7 +107,6 @@ class RealMeService extends Object {
 				'SessionIndex' => $data['saml:sp:SessionIndex']
 			));
 		}
-
 		return $returnedData;
 	}
 

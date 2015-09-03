@@ -72,7 +72,7 @@ Certificates
 - Must have an expiry of three years from creation.
 - Bit length is 2048.
 - serial number must be non-negative.
-- Follow naming convention (concatenation)
+- Follow naming convention (concatenation)  
  - unique, lowercase a-z 0-9 .  
  - The RealMe assertion service environment 
  - the keyword 'sa'
