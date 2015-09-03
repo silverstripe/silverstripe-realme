@@ -212,21 +212,22 @@ $metadata['https://mts.realme.govt.nz/saml2'] = array(
 
 * Create metadata XML file for upload to Real Me Shared Workspace. The below sample is for ITE, with the following
 substitutions required:
-** *{{entityID}}*: The URL for your entity, as specified in authsources.php
+    * **{{entityID}}**: The URL for your entity, as specified in authsources.php
 (e.g. https://realme-demo.cwp.govt.nz/realme-demo/service1)
-** *{{saml.sig}}*: The certificate file (*.cer) as provided by the certificate provider (e.g. RapidSSL). Note that this
-should *not* contain the ---- BEGIN CERTIFICATE ---- or ---- END CERTIFICATE ---- lines.
-** *{{assertion.service.url}}*: The URL to SimpleSAMLphp, and your assertion consumer service. In this example, the URL
-would be `https://realme-demo.cwp.govt.nz/simplesaml/module.php/saml/sp/saml2-acs.php/realme-ite` if we were integrating
-into the ITE environment.
-** *{{organisation.name}}*: The Organisation name that this authentication is for (e.g. Department of Internal Affairs)
-** *{{organisation.display.name}}*: The display name for the organisation that this authentication is for (often the
-same as above)
-** *{{organisation.url}}*: The URL to the organisation's homepage
-** *{{contact.1.type}}*: Contact type (e.g. 'support') for contact #1
-** *{{contact.1.company}}*: The company name for contact #1
-** *{{contact.1.givenname}}*: First / Given name for contact #1
-** *{{contact.1.surname}}*: Surname for contact #1
+    * **{{saml.sig}}**: The certificate file (*.cer) as provided by the certificate provider (e.g. RapidSSL). Note that
+    this should **not** contain the ---- BEGIN CERTIFICATE ---- or ---- END CERTIFICATE ---- lines.
+    * **{{assertion.service.url}}**: The URL to SimpleSAMLphp, and your assertion consumer service. In this example, the
+    URL would be `https://realme-demo.cwp.govt.nz/simplesaml/module.php/saml/sp/saml2-acs.php/realme-ite` if we were
+    integrating into the ITE environment.
+    * **{{organisation.name}}**: The Organisation name that this authentication is for (e.g. Department of Internal
+    Affairs)
+    * **{{organisation.display.name}}**: The display name for the organisation that this authentication is for (often
+    the same as above)
+    * **{{organisation.url}}**: The URL to the organisation's homepage
+    * **{{contact.1.type}}**: Contact type (e.g. 'support') for contact #1
+    * **{{contact.1.company}}**: The company name for contact #1
+    * **{{contact.1.givenname}}**: First / Given name for contact #1
+    * **{{contact.1.surname}}**: Surname for contact #1
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
