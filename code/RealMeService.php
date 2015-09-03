@@ -13,13 +13,22 @@ class RealMeService extends Object {
 	private static $user_data = null;
 
 	/**
+	 * @config
+	 * @var string The authentication source to use, which ultimately determines which Real Me environment is
+	 * authenticated against. This should be set by Config, and generally be different per environment (e.g. developer
+	 * environments would generally use 'realme-mts', UAT/staging sites might use 'realme-ite', and production sites
+	 * would use 'realme-prod'.
+	 */
+	private static $auth_source_name = 'realme-mts';
+
+	/**
 	 * @return bool true if the user is correctly authenticated, false if there was an error with login
 	 * NB: If the user is not authenticated, they will be redirected to Real Me to login, so a boolean false return here
 	 * indicates that there was a failure during the authentication process (perhaps a communication issue
 	 */
 	public function enforceLogin() {
 		// @todo Change this to pull auth_source from Config
-		$auth = new SimpleSAML_Auth_Simple('realme');
+		$auth = new SimpleSAML_Auth_Simple($this->config()->auth_source_name);
 
 		$auth->requireAuth(array(
 			'ReturnTo' => '/Security/realme/acs',
@@ -40,11 +49,17 @@ class RealMeService extends Object {
 	}
 
 	/**
-	 * Clear the realme credentials from our session.
+	 * Clear the Real Me credentials from our session.
 	 */
-	public function clearLogin(){
+	public function clearLogin() {
 		Session::clear('RealMeSessionDataSerialized');
 		$this->config()->__set('user_data', null);
+
+		$session = SimpleSAML_Session::getSessionFromRequest();
+
+		if($session instanceof SimpleSAML_Session) {
+			$session->doLogout($this->config()->auth_source_name);
+		}
 	}
 
 	/**

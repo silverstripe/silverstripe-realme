@@ -30,25 +30,6 @@ class RealMeSecurityExtension extends Extension {
 	}
 
 	/**
-	 * @return SS_HTTPResponse|void
-	 */
-	public function realmevalidate() {
-		$loggedIn = $this->service->enforceLogin();
-
-		if($loggedIn) {
-			return $this->owner->redirect(Director::baseURL());
-		}
-
-		return Security::permissionFailure(
-			$this->owner,
-			_t(
-				'RealMeSecurityExtension.LOGINFAILURE',
-				'Unfortunately we\'re not able to log you in through RealMe right now.'
-			)
-		);
-	}
-
-	/**
 	 * Invalidate the current session, clearing the login state with RealMe as well as any state within SilverStripe
 	 *
 	 * @param bool $redirect If true, Security::logout() will redirect the user back
