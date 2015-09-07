@@ -10,13 +10,6 @@ class RealMeSiteTreeExtension extends DataExtension {
 	public $service;
 
 	/**
-	 *
-	 */
-	public function RealMeSessionData() {
-		return $this->service->getUserData();
-	}
-
-	/**
 	 * This function is an extension of the default SiteTree canView(), and allows viewing permissions for a SiteTree
 	 * object which has allowed a page to be presented to logged in users. With RealMe a logged in user is a user
 	 * which has authenticated with the identity provider, and we have stored a FLT in session.

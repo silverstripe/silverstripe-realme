@@ -1,6 +1,10 @@
 SiteTree:
   extensions:
+    - RealMeDataExtension
     - RealMeSiteTreeExtension
+SiteConfig:
+  extensions:
+    - RealMeDataExtension
 Security:
   extensions:
     - RealMeSecurityExtension

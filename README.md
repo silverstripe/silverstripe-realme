@@ -57,7 +57,7 @@ ln -s vendor/simplesamlphp/simplesamlphp/www/ simplesaml
     - mts_saml_idp.cer
     - mts_saml_sp.pem
 - include the session data realme/templates/Layout/RealMeSessionData.ss in your template, or reference session data 
-directly from any descendant of SiteTree $RealMeSessionData
+directly from any descendant of SiteTree $RealMeSessionData, or by using SiteConfig: SiteConfig::current_site_config()->RealMeSessionData();
 
 ### ITE Integration Test Environment
  @todo 
