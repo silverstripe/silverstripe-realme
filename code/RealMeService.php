@@ -115,6 +115,7 @@ class RealMeService extends Object {
 			$url = $_REQUEST['BackURL'];
 		} elseif(Session::get('BackURL')) {
 			$url = Session::get('BackURL');
+			Session::clear('BackURL'); // Ensure we don't redirect back to the same error twice
 		}
 
 		if(isset($url) && Director::is_site_url($url) ) {

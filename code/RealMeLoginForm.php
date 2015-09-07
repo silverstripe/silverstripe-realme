@@ -24,7 +24,10 @@ class RealMeLoginForm extends LoginForm {
 		}
 
 		if(isset($backURL)) {
-			$fields->push(new HiddenField('BackURL', 'BackURL', $backURL));
+			// Ensure that $backURL isn't redirecting us back to login form or a Real Me authentication page
+			if(strpos($backURL, 'Security/login') === false && strpos($backURL, 'Security/realme') === false) {
+				$fields->push(new HiddenField('BackURL', 'BackURL', $backURL));
+			}
 		}
 
 		parent::__construct($controller, $name, $fields, $actions);
