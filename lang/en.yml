@@ -1,8 +1,10 @@
 en:
   RealMeAuthenticator:
-    TITLE: "RealMe Account"
-    LOGINFAILURE: "Unfortunately we're not able to authenticate you via RealMe right now."
+    TITLE: "Real Me Account"
+    LOGINFAILURE: "Unfortunately we're not able to authenticate you via Real Me right now."
   RealMeSecurityExtension:
-    LOGINFAILURE: "Unfortunately we're not able to authenticate you via RealMe right now."
+    LOGINFAILURE: "Unfortunately we're not able to authenticate you via Real Me right now."
+    AUTHERROR: "Sorry, we couldn't verify your Real Me account. Please try again."
   RealMeLoginForm:
-    LOGINBUTTON: "Login or Register with RealMe"
+    LOGINBUTTON: "Login or Register with Real Me"
+    LOGINFAILURE:

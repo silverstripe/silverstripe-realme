@@ -15,7 +15,7 @@ class RealMeSecurityExtension extends Extension {
 	public $service;
 
 	/**
-	 * Support the default security logout procedure by ensuring that realme hooks are cleared when the standard logout
+	 * Support the default security logout procedure by ensuring that Real Me hooks are cleared when the standard logout
 	 * is called.
 	 *
 	 * @param $request
@@ -30,7 +30,7 @@ class RealMeSecurityExtension extends Extension {
 	}
 
 	/**
-	 * Invalidate the current session, clearing the login state with RealMe as well as any state within SilverStripe
+	 * Invalidate the current session, clearing the login state with Real Me as well as any state within SilverStripe
 	 *
 	 * @param bool $redirect If true, Security::logout() will redirect the user back
 	 *
@@ -48,9 +48,9 @@ class RealMeSecurityExtension extends Extension {
 
 	/**
 	 * All publicly-accessible URLs are routed through this method. Possible method include:
-	 * - acs: User is redirected here after authenticating with RealMe
+	 * - acs: User is redirected here after authenticating with Real Me
 	 * - error: Called when an error is logged by SimpleSAMLphp, we redirect to the login form with a messageset defined
-	 * - logout: Ensures the user is logged out from RealMe, as well as this website (via Security::logout())
+	 * - logout: Ensures the user is logged out from Real Me, as well as this website (via Security::logout())
 	 */
 	public function realme() {
 		$action = $this->owner->getRequest()->param('ID');
@@ -80,7 +80,7 @@ class RealMeSecurityExtension extends Extension {
 				$this->owner,
 				_t(
 					'RealMeSecurityExtension.LOGINFAILURE',
-					'Unfortunately we\'re not able to log you in through RealMe right now.'
+					'Unfortunately we\'re not able to log you in through Real Me right now.'
 				)
 			);
 		}
@@ -103,23 +103,30 @@ class RealMeSecurityExtension extends Extension {
 
 					if(isset($message)) {
 						SS_Log::log(
-							sprintf('Error while validating RealMe authentication details: %s', $message),
+							sprintf('Error while validating Real Me authentication details: %s', $message),
 							SS_Log::ERR
 						);
 
 						return Security::permissionFailure(
 							$this->owner,
-							"Sorry, we couldn't verify your RealMe account. Please try again."
+							_t(
+								'RealMeSecurityExtension.AUTHERROR',
+								'Sorry, we couldn\'t verify your Real Me account. Please try again.'
+							)
 						);
 					}
 				}
 			}
 		}
 
-		SS_Log::log('Unknown error while attempting to parse RealMe authentication errors', SS_Log::ERR);
+		SS_Log::log('Unknown error while attempting to parse Real Me authentication errors', SS_Log::ERR);
+
 		return Security::permissionFailure(
 			$this->owner,
-			"Sorry, we couldn't verify your RealMe account. Please try again."
+			_t(
+				'RealMeSecurityExtension.AUTHERROR',
+				'Sorry, we couldn\'t verify your Real Me account. Please try again.'
+			)
 		);
 	}
 }

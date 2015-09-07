@@ -63,7 +63,7 @@ class RealMeService extends Object {
 	}
 
 	/**
-	 * Return the user data which was saved to session from the first realme auth.
+	 * Return the user data which was saved to session from the first Real Me auth.
 	 * @note Does not check authenticity or expiry of this data
 	 *
 	 * @return array

@@ -13,7 +13,7 @@ class RealMeLoginForm extends LoginForm {
 		));
 
 		$actions = new FieldList(array(
-			new FormAction('redirectToRealMe', _t('RealMeLoginForm.LOGINBUTTON', 'Login or Register with RealMe'))
+			new FormAction('redirectToRealMe', _t('RealMeLoginForm.LOGINBUTTON', 'Login or Register with Real Me'))
 		));
 
 		// Taken from MemberLoginForm
@@ -37,7 +37,7 @@ class RealMeLoginForm extends LoginForm {
 		// If there's no service, ensure we throw a predictable error
 		if(!$service) return $this->controller->httpError(500);
 
-		// This will either redirect to RealMe (via SimpleSAMLphp) or return true/false to indicate logged in state
+		// This will either redirect to Real Me (via SimpleSAMLphp) or return true/false to indicate logged in state
 		$loggedIn = $service->enforceLogin();
 
 		if($loggedIn) {
@@ -46,8 +46,8 @@ class RealMeLoginForm extends LoginForm {
 			return Security::permissionFailure(
 				$this->controller,
 				_t(
-					'RealMeLoginForm.LOGINFAILURE',
-					'Unfortunately we\'re not able to log you in through RealMe right now.'
+					'RealMeSecurityExtension.LOGINFAILURE',
+					'Unfortunately we\'re not able to authenticate you via Real Me right now.'
 				)
 			);
 		}

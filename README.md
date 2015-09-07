@@ -1,9 +1,9 @@
-# RealMe module for SilverStripe
+# Real Me module for SilverStripe
 
 [Real Me](https://www.realme.govt.nz/)
 
 This module provides the foundation to support a quick integration for a SilverStripe application running on the 
-common web platform to RealMe as an identity provider. 
+common web platform to Real Me as an identity provider.
 
 ## Requirements
 
@@ -35,7 +35,7 @@ composer update
 [Download](https://gitlab.cwp.govt.nz/silverstripe/realme), place the folder in your project root called 'realme' and 
 run a dev/build?flush=1.
 
-## Implementing RealMe in your application (Subject to change)
+## Implementing Real Me in your application (Subject to change)
 
 Setup
 - Symlink simplesaml in the project root to vendor/simplesamlphp/simplesamlphp/www/
@@ -46,10 +46,10 @@ ln -s vendor/simplesamlphp/simplesamlphp/www/ simplesaml
 ### MTS Messaging Test Environment
 - Add this module to your composer requirements
 - Fill out complete the MTS checklist to start development
-- Obtain access to realme and sharepoint for MTS public/private development keys. 
+- Obtain access to Real Me and the Shared Workspace for MTS public/private development keys.
 - Download the ["Integration Bundle Assert MTS"](https://see.govt.nz/realme/realme/Library/Forms/Library.aspx) from
   https://see.govt.nz/realme/realme/Library/Forms/Library.aspx
-- Run the realme build task to create the directores and the metadata files for MTS (coming soon) 
+- Run the Real Me build task to create the directores and the metadata files for MTS (coming soon)
 - unpack the certificates into vendor/simplesamlphp/simplesamlphp/cert (create if not present)
     - mts_mutual_ssl_idp.cer
     - mts_mutual_ssl_sp.cer
@@ -74,7 +74,7 @@ Certificates
 - serial number must be non-negative.
 - Follow naming convention (concatenation)  
  - unique, lowercase a-z 0-9 .  
- - The RealMe assertion service environment 
+ - The Real Me assertion service environment
  - the keyword 'sa'
  - purpose (saml.sig or mutual.ssl).
  - An identifier that is unique across all certificates
@@ -193,7 +193,7 @@ $config = array(
 ```php
 $metadata['https://mts.realme.govt.nz/saml2'] = array(
 	'name' => 'MTS',
-	'description' => 'Here you can single sign on to an MTS IdP using your RealMe logon',
+	'description' => 'Here you can single sign on to an MTS IdP using your Real Me logon',
 	'SingleSignOnService'  => 'https://mts.realme.govt.nz/logon-mts/mtsEntryPoint',
 	'SingleSignOnService.artifact'  => 'https://mts.realme.govt.nz/logon-mts/mtsEntryPoint',
 	'SingleLogoutService'  => 'https://mts.realme.govt.nz/logon-mts/mtsEntryPoint',
@@ -277,7 +277,7 @@ Certificates
 - serial number must be non-negative.
 - Follow naming convention (concatenation)
  - unique, lowercase a-z 0-9 .  
- - The RealMe assertion service environment 
+ - The Real Me assertion service environment
  - the keyword 'sa'
  - purpose (saml.sig or mutual.ssl).
  - An identifier that is unique across all certificates
