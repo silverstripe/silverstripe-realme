@@ -123,7 +123,7 @@ This lists what the dev/task should do when run (inexhaustive list, should be re
 /sites/{instancename}/certs/realme
 via puppet.
 
-- REAL_LOG_DIR - /var/log/realme
+- REALME_LOGGING_DIR - /var/log/realme
 
 /tmp/realme
 
@@ -137,7 +137,7 @@ $config = array(
 	'certdir' => REALME_CERT_DIR, // defined in _ss_env, enforce this as being outside webroot, no default value
 	'loggingdir' => '', // defined in Config, enforce this as being outside webroot, /var/log/realme by default?
 	'tempdir' => '', // defined in Config, enforce this as being outside webroot, /tmp/simplesaml by default?
-	'debug' => false, // defined in Config
+	'debug' => false, // forced to false
 	'showerrors' => false, // same value as `debug`
 	'errorreporting' => false, // same value as `showerrors`
 	'auth.adminpassword' => '', //  A randomly-generated long string
@@ -188,7 +188,7 @@ $config = array(
 );
 ```
 
-* Create file in metadatadir for the idp values in the authsources array:
+* Create saml20-idp-remote.php file in metadatadir for the idp values in the authsources array:
 
 ```php
 $metadata['https://mts.realme.govt.nz/saml2'] = array(
@@ -208,6 +208,8 @@ $metadata['https://mts.realme.govt.nz/saml2'] = array(
 	'saml.SOAPClient.certificate' => 'mts_mutual_ssl_sp.cer', // File in certdir
 	'saml.SOAPClient.privatekey_pass' => 'password'
 );
+
+// Also need values for ITE and prod environments
 ```
 
 * Create metadata XML file for upload to Real Me Shared Workspace. The below sample is for ITE, with the following

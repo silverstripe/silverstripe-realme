@@ -7,4 +7,10 @@ en:
     AUTHERROR: "Sorry, we couldn't verify your Real Me account. Please try again."
   RealMeLoginForm:
     LOGINBUTTON: "Login or Register with Real Me"
-    LOGINFAILURE:
+  RealMeSetupTask:
+    ERRNOTCLI: "This task can only be run from the command-line, not in your browser."
+    ERRALREADYRUN: "This task has already been run once ({path} already exists). If you want to re-run it, please add force=1 as the third arg"
+    ERRVALIDATION: "There were {numissues} issue(s) found during validation that must be fixed prior to setup: {issues}"
+    ERRNOCERTDIR: "No certificate dir is specified. Define the REALME_CERT_DIR const in your _ss_environment.php file"
+    ERRNOLOGDIR: "No logging dir is specified. Define the REALME_LOG_DIR const in your _ss_environment.php file"
+    ERRNOTEMPDIR: "No temp dir is specified. Define the REALME_TEMP_DIR const in your _ss_environment.php file"

@@ -22,9 +22,19 @@ class RealMeService extends Object {
 	private static $auth_source_name = 'realme-mts';
 
 	/**
+	 * @config
+	 * @var string The base url path that is passed through to SimpleSAMLphp. This should be relative to the web root,
+	 * and is passed through to SimpleSAMLphp's config.php for it to base all its URLs from. The default is
+	 * 'simplesaml/', which implies that 'https://your-site-url.com/simplesaml/' is routed through to the SimpleSAMLphp
+	 * `www` directory.
+	 * @see RealMeSetupTask for more information on how this is configured
+	 */
+	private static $simplesaml_base_url_path = 'simplesaml/';
+
+	/**
 	 * @return bool true if the user is correctly authenticated, false if there was an error with login
 	 * NB: If the user is not authenticated, they will be redirected to Real Me to login, so a boolean false return here
-	 * indicates that there was a failure during the authentication process (perhaps a communication issue
+	 * indicates that there was a failure during the authentication process (perhaps a communication issue)
 	 */
 	public function enforceLogin() {
 		// @todo Change this to pull auth_source from Config
@@ -126,5 +136,30 @@ class RealMeService extends Object {
 		}
 
 		return $url;
+	}
+
+	/**
+	 * @return string|null Either the directory where certificates are stored, or null if undefined
+	 */
+	public function getCertDir() {
+		return (defined('REALME_CERT_DIR') ? REALME_CERT_DIR : null);
+	}
+
+	/**
+	 * @return string|null Either the directory where logging information is kept by SimpleSAMLphp, or null if undefined
+	 */
+	public function getLoggingDir() {
+		return (defined('REALME_LOGGING_DIR') ? REALME_LOGGING_DIR : null);
+	}
+
+	/**
+	 * @return string|null Either the directory where temp files can be written by SimpleSAMLphp, or null if undefined
+	 */
+	public function getTempDir() {
+		return (defined('REALME_TEMP_DIR') ? REALME_TEMP_DIR : null);
+	}
+
+	public function getSimpleSamlBaseUrlPath() {
+		return $this->config()->simplesaml_base_url_path;
 	}
 }
