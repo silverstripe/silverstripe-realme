@@ -33,6 +33,8 @@ class RealMeSetupTask extends BuildTask {
 		$forceRun = ($request->getVar('force') == 1);
 		if($this->validateInputs($request, $forceRun)) {
 			$this->halt();
+		} else {
+			$this->message("Validation succeeded, continuing with setup...");
 		}
 
 
@@ -70,14 +72,35 @@ class RealMeSetupTask extends BuildTask {
 
 		if(is_null($this->service->getCertDir())) {
 			$errors[] = _t('RealMeSetupTask.ERRNOCERTDIR');
+		} elseif(!$this->isReadable($this->service->getCertDir())) {
+			$errors[] = _t(
+				'RealMeSetupTask.ERRCERTDIRNOTREADABLE',
+				'',
+				'',
+				array('dir' => $this->service->getCertDir())
+			);
 		}
 
 		if(is_null($this->service->getLoggingDir())) {
 			$errors[] = _t('RealMeSetupTask.ERRNOLOGDIR');
+		} elseif(!$this->isWriteable($this->service->getLoggingDir())) {
+			$errors[] = _t(
+				'RealMeSetupTask.ERRLOGDIRNOTWRITEABLE',
+				'',
+				'',
+				array('dir' => $this->service->getLoggingDir())
+			);
 		}
 
 		if(is_null($this->service->getTempDir())) {
 			$errors[] = _t('RealMeSetupTask.ERRNOTEMPDIR');
+		} elseif(!$this->isWriteable($this->service->getTempDir())) {
+			$errors[] = _t(
+				'RealMeSetupTask.ERRTEMPDIRNOTWRITEABLE',
+				'',
+				'',
+				array('dir' => $this->service->getTempDir())
+			);
 		}
 
 		if(is_null($this->service->findOrMakeSimpleSAMLPassword())) {
@@ -98,7 +121,7 @@ class RealMeSetupTask extends BuildTask {
 			}
 
 			$signingCertFile = $this->service->getSigningCertPathForEnvironment($env);
-			if(is_null($signingCertFile) || !file_exists($signingCertFile)) {
+			if(is_null($signingCertFile) || !$this->isReadable($signingCertFile)) {
 				$errors[] = _t(
 					'RealMeSetupTask.ERRNOSIGNINGCERT',
 					'',
@@ -112,7 +135,7 @@ class RealMeSetupTask extends BuildTask {
 			}
 
 			$mutualCertFile = $this->service->getMutualCertPathForEnvironment($env);
-			if(is_null($mutualCertFile) || !file_exists($mutualCertFile)) {
+			if(is_null($mutualCertFile) || !$this->isReadable($mutualCertFile)) {
 				$errors[] = _t(
 					'RealMeSetupTask.ERRNOMUTUALCERT',
 					'',
@@ -139,8 +162,6 @@ class RealMeSetupTask extends BuildTask {
 					'issues' => $errorList
 				)
 			));
-		} else {
-			$this->message("Validation succeeded, continuing with setup...");
 		}
 
 		return sizeof($errors) > 0;
@@ -168,5 +189,25 @@ class RealMeSetupTask extends BuildTask {
 	 */
 	private function message($message) {
 		echo $message . PHP_EOL;
+	}
+
+	/**
+	 * Thin wrapper around is_readable(), used mainly so we can test this class completely
+	 *
+	 * @param string $filename The filename or directory to test
+	 * @return bool true if the file/dir is readable, false if not
+	 */
+	private function isReadable($filename) {
+		return is_readable($filename);
+	}
+
+	/**
+	 * Thin wrapper around is_writeable(), used mainly so we can test this class completely
+	 *
+	 * @param string $filename The filename or directory to test
+	 * @return bool true if the file/dir is writeable, false if not
+	 */
+	private function isWriteable($filename) {
+		return is_writeable($filename);
 	}
 }
