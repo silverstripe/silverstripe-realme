@@ -31,21 +31,11 @@ class RealMeSetupTask extends BuildTask {
 
 		// Validate all required values exist
 		$forceRun = ($request->getVar('force') == 1);
-		$errors = $this->validateInputs($request, $forceRun);
-
-		if(sizeof($errors) > 0) {
-			$errorList = PHP_EOL . ' - ' . join(PHP_EOL . ' - ', $errors);
-
-			$this->halt(_t(
-				'RealMeSetupTask.ERRVALIDATION',
-				'',
-				'',
-				array(
-					'numissues' => sizeof($errors),
-					'issues' => $errorList
-				)
-			));
+		if($this->validateInputs($request, $forceRun)) {
+			$this->halt();
 		}
+
+
 
 
 	}
@@ -56,7 +46,7 @@ class RealMeSetupTask extends BuildTask {
 	 *
 	 * @param SS_HTTPRequest $request The request object for this cli process
 	 * @param bool $forceRun Whether or not to force the setup (therefore skip checks around existing files)
-	 * @return array A list of errors, or an empty array if there were no errors
+	 * @return bool true if there were errors, false if there were none
 	 */
 	private function validateInputs($request, $forceRun) {
 		$errors = array();
@@ -136,7 +126,24 @@ class RealMeSetupTask extends BuildTask {
 			}
 		}
 
-		return $errors;
+		// Output validation errors, if any are found
+		if(sizeof($errors) > 0) {
+			$errorList = PHP_EOL . ' - ' . join(PHP_EOL . ' - ', $errors);
+
+			$this->message(_t(
+				'RealMeSetupTask.ERRVALIDATION',
+				'',
+				'',
+				array(
+					'numissues' => sizeof($errors),
+					'issues' => $errorList
+				)
+			));
+		} else {
+			$this->message("Validation succeeded, continuing with setup...");
+		}
+
+		return sizeof($errors) > 0;
 	}
 
 	private function getSimpleSAMLPhpVendorBasePath() {
@@ -149,7 +156,17 @@ class RealMeSetupTask extends BuildTask {
 	 * @param string $message
 	 * @return void This method never returns
 	 */
-	private function halt($message) {
-		die($message . PHP_EOL . PHP_EOL);
+	private function halt($message = "") {
+		$this->message($message . PHP_EOL);
+		die();
+	}
+
+	/**
+	 * Output a message to the console
+	 * @param string $message
+	 * @return void
+	 */
+	private function message($message) {
+		echo $message . PHP_EOL;
 	}
 }
