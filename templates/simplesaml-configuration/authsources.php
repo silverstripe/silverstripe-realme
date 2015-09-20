@@ -39,9 +39,9 @@ $config = array(
 		// @todo SHA1 (the default) is deprecated and old, does RealMe support anything else?
 		// 'signature.algorithm' => 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256',
 
-		'privatekey' => '{{mts-privatepemfile-signing}}', // mts_saml_sp.pem
+		'privatekey' => '{{mts-privatepemfile-signing}}',
 		'privatekey_pass' => 'password',
-		'saml.SOAPClient.certificate' => '{{mts-privatepemfile-mutual}}', // mts_mutual_ssl_sp.pem
+		'saml.SOAPClient.certificate' => '{{mts-privatepemfile-mutual}}',
 		'saml.SOAPClient.privatekey_pass' => 'password',
 	),
 
