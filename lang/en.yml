@@ -22,5 +22,5 @@ en:
     ERRNOSALT: "A salt for SimpleSAMLphp couldn't be found or generated. Generate one yourself and store it in your YML configuration. See RealMeService::generateSimpleSAMLSalt() for more details"
     ERRNOENTITYID: "No entityID specified for environment '{env}'. Specify this in your YML configuration, see the module documentation for more details"
     ERRNOAUTHNCONTEXT: "No AuthnContext specified for environment '{env}'. Specify this in your YML configuration, see the module documentation for more details"
-    ERRNOSIGNINGCERT: "No SAML signing PEM certificate defined for environment '{env}', or file '{file}' can't be read. Define the {const} const in your _ss_environment.php file"
-    ERRNOMUTUALCERT: "No mutual back-channel PEM certificate defined for environment '{env}', or file '{file}' can't be read. Define the {const} const in your _ss_environment.php file"
+    ERRNOSIGNINGCERT: "No SAML signing PEM certificate defined, or file '{file}' can't be read. Define the {const} const in your _ss_environment.php file"
+    ERRNOMUTUALCERT: "No mutual back-channel PEM certificate defined, or file '{file}' can't be read. Define the {const} const in your _ss_environment.php file"

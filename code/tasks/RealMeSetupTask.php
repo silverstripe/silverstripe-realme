@@ -111,6 +111,32 @@ class RealMeSetupTask extends BuildTask {
 			$errors[] = _t('RealMeSetupTask.ERRNOSALT');
 		}
 
+		$signingCertFile = $this->service->getSigningCertPath();
+		if(is_null($signingCertFile) || !$this->isReadable($signingCertFile)) {
+			$errors[] = _t(
+				'RealMeSetupTask.ERRNOSIGNINGCERT',
+				'',
+				'',
+				array(
+					'file' => $signingCertFile,
+					'const' => 'REALME_SIGNING_CERT_FILENAME'
+				)
+			);
+		}
+
+		$mutualCertFile = $this->service->getMutualCertPath();
+		if(is_null($mutualCertFile) || !$this->isReadable($mutualCertFile)) {
+			$errors[] = _t(
+				'RealMeSetupTask.ERRNOMUTUALCERT',
+				'',
+				'',
+				array(
+					'file' => $mutualCertFile,
+					'const' => 'REALME_MUTUAL_CERT_FILENAME'
+				)
+			);
+		}
+
 		foreach(array('mts', 'ite', 'prod') as $env) {
 			if(is_null($this->service->getEntityIDForEnvironment($env))) {
 				$errors[] = _t('RealMeSetupTask.ERRNOENTITYID', '', '', array('env' => $env));
@@ -118,34 +144,6 @@ class RealMeSetupTask extends BuildTask {
 
 			if(is_null($this->service->getAuthnContextForEnvironment($env))) {
 				$errors[] = _t('RealMeSetupTask.ERRNOAUTHNCONTEXT', '', '', array('env' => $env));
-			}
-
-			$signingCertFile = $this->service->getSigningCertPathForEnvironment($env);
-			if(is_null($signingCertFile) || !$this->isReadable($signingCertFile)) {
-				$errors[] = _t(
-					'RealMeSetupTask.ERRNOSIGNINGCERT',
-					'',
-					'',
-					array(
-						'env' => $env,
-						'file' => $signingCertFile,
-						'const' => sprintf('REALME_%s_SIGNING_CERT_FILENAME', strtoupper($env))
-					)
-				);
-			}
-
-			$mutualCertFile = $this->service->getMutualCertPathForEnvironment($env);
-			if(is_null($mutualCertFile) || !$this->isReadable($mutualCertFile)) {
-				$errors[] = _t(
-					'RealMeSetupTask.ERRNOMUTUALCERT',
-					'',
-					'',
-					array(
-						'env' => $env,
-						'file' => $mutualCertFile,
-						'const' => sprintf('REALME_%s_MUTUAL_CERT_FILENAME', strtoupper($env))
-					)
-				);
 			}
 		}
 

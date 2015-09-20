@@ -35,7 +35,9 @@ composer update
 [Download](https://gitlab.cwp.govt.nz/silverstripe/realme), place the folder in your project root called 'realme' and 
 run a dev/build?flush=1.
 
-## Implementing Real Me in your application (Subject to change)
+## Configuration of RealMe in your application
+
+See [configuration.md](docs/en/configuration.md) for environment and YML configuration required before the module can be setup.
 
 Setup
 - Symlink simplesaml in the project root to vendor/simplesamlphp/simplesamlphp/www/

@@ -330,36 +330,33 @@ class RealMeService extends Object {
 	 * Returns the full path to the SAML signing certificate file, used by SimpleSAMLphp to sign all messages sent to
 	 * RealMe.
 	 *
-	 * @param string $env The environment to return the certificate for. Must be one of the RealMe environment names
 	 * @return string|null Either the full path to the SAML signing certificate file, or null if it doesn't exist
 	 */
-	public function getSigningCertPathForEnvironment($env) {
-		return $this->getCertPathForEnvironment($env, 'SIGNING');
+	public function getSigningCertPath() {
+		return $this->getCertPath('SIGNING');
 	}
 
 	/**
 	 * Returns the full path to the mutual back-channel certificate file, used by SimpleSAMLphp to communicate securely
 	 * with RealMe when connecting to the RealMe Assertion Resolution Service (Artifact Resolver).
 	 *
-	 * @param string $env The environment to return the certificate for. Must be one of the RealMe environment names
 	 * @return string|null Either the full path to the SAML mutual certificate file, or null if it doesn't exist
 	 */
-	public function getMutualCertPathForEnvironment($env) {
-		return $this->getCertPathForEnvironment($env, 'MUTUAL');
+	public function getMutualCertPath() {
+		return $this->getCertPath('MUTUAL');
 	}
 
 	/**
-	 * @param string $env The environment to return the certificate for. Must be one of the RealMe environment names
 	 * @param string $certName The certificate name, either 'SIGNING' or 'MUTUAL'
 	 * @return string|null Either the full path to the certificate file, or null if it doesn't exist
 	 * @see self::getSigningCertPathForEnvironment(), self::getMutualCertPathForEnvironment()
 	 */
-	private function getCertPathForEnvironment($env, $certName) {
+	private function getCertPath($certName) {
 		$certPath = null;
 		$certDir = $this->getCertDir();
 
-		if(in_array($certName, array('SIGNING', 'MUTUAL')) && in_array($env, $this->getAllowedRealMeEnvironments())) {
-			$constName = sprintf('REALME_%s_%s_CERT_FILENAME', strtoupper($env), strtoupper($certName));
+		if(in_array($certName, array('SIGNING', 'MUTUAL'))) {
+			$constName = sprintf('REALME_%s_CERT_FILENAME', strtoupper($certName));
 			if(defined($constName)) {
 				$filename = constant($constName);
 				$certPath = Controller::join_links($certDir, $filename);
