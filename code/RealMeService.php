@@ -32,6 +32,66 @@ class RealMeService extends Object {
 	private static $simplesaml_base_url_path = 'simplesaml/';
 
 	/**
+	 * @config
+	 * @var string The complete password that will be passed to SimpleSAMLphp for admin logins to the SimpleSAMLphp web
+	 * interface. If set to the default `null`, the @link self::findOrMakeSimpleSAMLPassword() will make a random
+	 * password which won't be accessible again later. If this value is set via the Config API, then it should be in
+	 * the format required by SimpleSAMLphp. To generate a password in this format, see the bin/pwgen.php file in the
+	 * SimpleSAMLphp base directory.
+	 * @see self::findOrMakeSimpleSAMLPassword()
+	 */
+	private static $simplesaml_hashed_admin_password = null;
+
+	/**
+	 * @config
+	 * @var string A 32-byte salt that is used by SimpleSAMLphp when signing content. Stored in SimpleSAMLphp's config
+	 * if required.
+	 * @see self::generateSimpleSAMLSalt()
+	 */
+	private static $simplesaml_secret_salt = null;
+
+	/**
+	 * @config
+	 * @var array The RealMe environments that can be used. If this is changed, then the RealMeSetupTask would need to
+	 * be run again, and updated environment names would need to be put into the authsources.php and
+	 * saml20-idp-remote.php files.
+	 */
+	private static $allowed_realme_environments = array('mts', 'ite', 'prod');
+
+	/**
+	 * @config
+	 * @var array Stores the entity ID value for each supported RealMe environment. This needs to be setup prior to
+	 * running the `RealMeSetupTask` build task. For more information, see the module documentation. An entity ID takes
+	 * the form of a URL, e.g. https://www.agency.govt.nz/privacy-realm-name/application-name
+	 */
+	private static $entity_ids = array(
+		'mts' => null,
+		'ite' => null,
+		'prod' => null
+	);
+
+	/**
+	 * @config
+	 * @var array Stores the AuthN context values for each supported RealMe environment. This needs to be setup prior to
+	 * running the `RealMeSetupTask` build task. For more information, see the module documentation. An AuthN context
+	 * can be one of the following:
+	 *
+	 * Username and password only:
+	 * - urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:LowStrength
+	 *
+	 * Username, password, and either Google Authenticator or SMS token:
+	 * - urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength
+	 *
+	 * - urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength::OTP:Mobile:SMS
+	 * - urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength::OTP:Token:SID
+	 */
+	private static $authn_contexts = array(
+		'mts' => null,
+		'ite' => null,
+		'prod' => null
+	);
+
+	/**
 	 * @return bool true if the user is correctly authenticated, false if there was an error with login
 	 * NB: If the user is not authenticated, they will be redirected to Real Me to login, so a boolean false return here
 	 * indicates that there was a failure during the authentication process (perhaps a communication issue)
@@ -139,6 +199,13 @@ class RealMeService extends Object {
 	}
 
 	/**
+	 * @return string|null Either the value for baseurlpath in SimpleSAML's config, or null
+	 */
+	public function getSimpleSamlBaseUrlPath() {
+		return strlen($this->config()->simplesaml_base_url_path) > 0 ? $this->config()->simplesaml_base_url_path : null;
+	}
+
+	/**
 	 * @return string|null Either the directory where certificates are stored, or null if undefined
 	 */
 	public function getCertDir() {
@@ -159,7 +226,155 @@ class RealMeService extends Object {
 		return (defined('REALME_TEMP_DIR') ? REALME_TEMP_DIR : null);
 	}
 
-	public function getSimpleSamlBaseUrlPath() {
-		return $this->config()->simplesaml_base_url_path;
+	/**
+	 * This looks first to a Config variable that can be set in YML configuration, and falls back to generating a
+	 * salted SHA256-hashed password. To generate a password in this format, see the bin/pwgen.php file in the
+	 * SimpleSAMLphp vendor directory (normally vendor/simplesamlphp/simplesamlphp/bin/pwgen.php). If setting a password
+	 * via Config, ensure it contains {SSHA256} at the start of the line.
+	 *
+	 * @return string|null The administrator password set for SimpleSAMLphp. If null, it means a strong hash couldn't be
+	 * created due to the code being deployed on an older machine, and a generated password will need to be set.
+	 */
+	public function findOrMakeSimpleSAMLPassword() {
+		if(strlen($this->config()->simplesaml_hashed_admin_password) > 0) {
+			$password = $this->config()->simplesaml_hashed_admin_password;
+
+			if(strpos($password, '{SSHA256}') !== 0) {
+				$password = null; // Ensure password is salted SHA256
+			}
+		} else {
+			$salt = openssl_random_pseudo_bytes(8, $strongSalt); // SHA256 needs 8 bytes
+			$password = openssl_random_pseudo_bytes(32, $strongPassword); // Make a random 32-byte password
+
+			if(!$strongSalt || !$strongPassword || !$salt || !$password) {
+				$password = null; // Ensure the password is strong, return null if we can't guarantee a strong one
+			} else {
+				$hash = hash('sha256', $password.$salt, true);
+				$password = sprintf('{SSHA256}%s', base64_encode($hash.$salt));
+			}
+		}
+
+		return $password;
+	}
+
+	/**
+	 * @return string A 32-byte salt string for SimpleSAML to use when signing content
+	 */
+	public function generateSimpleSAMLSalt() {
+		if(strlen($this->config()->simplesaml_secret_salt) > 0) {
+			$salt = $this->config()->simplesaml_secret_salt;
+		} else {
+			$salt = base64_encode(openssl_random_pseudo_bytes(32, $strongSalt));
+
+			if(!$salt || !$strongSalt) {
+				$salt = null; // Ensure salt is strong, return null if we can't generate a strong one
+			}
+		}
+
+		return $salt;
+	}
+
+	/**
+	 * Returns the appropriate entity ID for RealMe, given the environment passed in. The entity ID may be different per
+	 * environment, and should be a full URL, including privacy realm and application name. For example, this may be:
+	 * https://www.agency.govt.nz/privacy-realm-name/application-name
+	 *
+	 * @param string $env The environment to return the entity ID for. Must be one of the RealMe environment names
+	 * @return string|null Returns the entity ID for the given $env, or null if no entity ID exists
+	 */
+	public function getEntityIDForEnvironment($env) {
+		$entityID = null;
+
+		if(in_array($env, $this->getAllowedRealMeEnvironments())) {
+			$entityIDs = $this->config()->entity_ids;
+
+			if(is_array($entityIDs) && isset($entityIDs[$env])) {
+				$entityID = $entityIDs[$env];
+			}
+		}
+
+		return $entityID;
+	}
+
+	/**
+	 * Returns the appropriate AuthN Context, given the environment passed in. The AuthNContext may be different per
+	 * environment, and should be one of the following strings:
+	 *
+	 * Username and password only:
+	 * - urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:LowStrength
+	 *
+	 * Username, password, and either Google Authenticator or SMS token:
+	 * - urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength
+	 *
+	 * - urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength::OTP:Mobile:SMS
+	 * - urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength::OTP:Token:SID
+	 *
+	 * @param string $env The environment to return the AuthNContext for. Must be one of the RealMe environment names
+	 * @return string|null Returns the AuthNContext for the given $env, or null if no context exists
+	 */
+	public function getAuthnContextForEnvironment($env) {
+		$context = null;
+
+		if(in_array($env, $this->getAllowedRealMeEnvironments())) {
+			$contexts = $this->config()->authn_contexts;
+
+			if(is_array($contexts) && isset($contexts[$env])) {
+				$context = $contexts[$env];
+			}
+		}
+
+		return $context;
+	}
+
+	/**
+	 * Returns the full path to the SAML signing certificate file, used by SimpleSAMLphp to sign all messages sent to
+	 * RealMe.
+	 *
+	 * @param string $env The environment to return the certificate for. Must be one of the RealMe environment names
+	 * @return string|null Either the full path to the SAML signing certificate file, or null if it doesn't exist
+	 */
+	public function getSigningCertPathForEnvironment($env) {
+		return $this->getCertPathForEnvironment($env, 'SIGNING');
+	}
+
+	/**
+	 * Returns the full path to the mutual back-channel certificate file, used by SimpleSAMLphp to communicate securely
+	 * with RealMe when connecting to the RealMe Assertion Resolution Service (Artifact Resolver).
+	 *
+	 * @param string $env The environment to return the certificate for. Must be one of the RealMe environment names
+	 * @return string|null Either the full path to the SAML mutual certificate file, or null if it doesn't exist
+	 */
+	public function getMutualCertPathForEnvironment($env) {
+		return $this->getCertPathForEnvironment($env, 'MUTUAL');
+	}
+
+	/**
+	 * @param string $env The environment to return the certificate for. Must be one of the RealMe environment names
+	 * @param string $certName The certificate name, either 'SIGNING' or 'MUTUAL'
+	 * @return string|null Either the full path to the certificate file, or null if it doesn't exist
+	 * @see self::getSigningCertPathForEnvironment(), self::getMutualCertPathForEnvironment()
+	 */
+	private function getCertPathForEnvironment($env, $certName) {
+		$certPath = null;
+		$certDir = $this->getCertDir();
+
+		if(in_array($certName, array('SIGNING', 'MUTUAL')) && in_array($env, $this->getAllowedRealMeEnvironments())) {
+			$constName = sprintf('REALME_%s_%s_CERT_FILENAME', strtoupper($env), strtoupper($certName));
+			if(defined($constName)) {
+				$filename = constant($constName);
+				$certPath = Controller::join_links($certDir, $filename);
+			}
+		}
+
+		// Ensure the file exists, if it doesn't then set it to null
+		if(!is_null($certPath) && !file_exists($certPath)) {
+			$certPath = null;
+		}
+
+		return $certPath;
+	}
+
+	private function getAllowedRealMeEnvironments() {
+		return $this->config()->allowed_realme_environments;
 	}
 }

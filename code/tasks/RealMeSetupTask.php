@@ -63,15 +63,19 @@ class RealMeSetupTask extends BuildTask {
 
 		// Ensure we haven't already run before, or if we have, that force=1 is passed
 		$existingFiles = array(
-			sprintf('%s/config/config.php', $this->getSimpleSAMLPhpBasePath()),
-			sprintf('%s/config/authsources.php', $this->getSimpleSAMLPhpBasePath()),
-			sprintf('%s/metadata/saml20-idp-remote.php', $this->getSimpleSAMLPhpBasePath())
+			sprintf('%s/config/config.php', $this->getSimpleSAMLPhpVendorBasePath()),
+			sprintf('%s/config/authsources.php', $this->getSimpleSAMLPhpVendorBasePath()),
+			sprintf('%s/metadata/saml20-idp-remote.php', $this->getSimpleSAMLPhpVendorBasePath())
 		);
 
 		foreach($existingFiles as $filePath) {
 			if(file_exists($filePath) && !$forceRun) {
 				$errors[] = _t('RealMeSetupTask.ERRALREADYRUN', '', '', array('path' => $filePath));
 			}
+		}
+
+		if(is_null($this->service->getSimpleSamlBaseUrlPath())) {
+			$errors[] = _t('RealMeSetupTask.ERRNOBASEDIR');
 		}
 
 		if(is_null($this->service->getCertDir())) {
@@ -86,10 +90,56 @@ class RealMeSetupTask extends BuildTask {
 			$errors[] = _t('RealMeSetupTask.ERRNOTEMPDIR');
 		}
 
+		if(is_null($this->service->findOrMakeSimpleSAMLPassword())) {
+			$errors[] = _t('RealMeSetupTask.ERRNOADMPASS');
+		}
+
+		if(is_null($this->service->generateSimpleSAMLSalt())) {
+			$errors[] = _t('RealMeSetupTask.ERRNOSALT');
+		}
+
+		foreach(array('mts', 'ite', 'prod') as $env) {
+			if(is_null($this->service->getEntityIDForEnvironment($env))) {
+				$errors[] = _t('RealMeSetupTask.ERRNOENTITYID', '', '', array('env' => $env));
+			}
+
+			if(is_null($this->service->getAuthnContextForEnvironment($env))) {
+				$errors[] = _t('RealMeSetupTask.ERRNOAUTHNCONTEXT', '', '', array('env' => $env));
+			}
+
+			$signingCertFile = $this->service->getSigningCertPathForEnvironment($env);
+			if(is_null($signingCertFile) || !file_exists($signingCertFile)) {
+				$errors[] = _t(
+					'RealMeSetupTask.ERRNOSIGNINGCERT',
+					'',
+					'',
+					array(
+						'env' => $env,
+						'file' => $signingCertFile,
+						'const' => sprintf('REALME_%s_SIGNING_CERT_FILENAME', strtoupper($env))
+					)
+				);
+			}
+
+			$mutualCertFile = $this->service->getMutualCertPathForEnvironment($env);
+			if(is_null($mutualCertFile) || !file_exists($mutualCertFile)) {
+				$errors[] = _t(
+					'RealMeSetupTask.ERRNOMUTUALCERT',
+					'',
+					'',
+					array(
+						'env' => $env,
+						'file' => $mutualCertFile,
+						'const' => sprintf('REALME_%s_MUTUAL_CERT_FILENAME', strtoupper($env))
+					)
+				);
+			}
+		}
+
 		return $errors;
 	}
 
-	private function getSimpleSAMLPhpBasePath() {
+	private function getSimpleSAMLPhpVendorBasePath() {
 		return sprintf('%s/vendor/simplesamlphp/simplesamlphp', BASE_PATH);
 	}
 
