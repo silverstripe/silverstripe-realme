@@ -20,78 +20,112 @@
 /**
  * @todo Determine what to do with multiple certificates.
  *
- * This currently uses the same signing and mutual certificates paths for all 3 environments. This means that
- * you can't test e.g. connectivity with ITE on the production server environment. However, the alternative is
- * that all certificates must be present on all servers, which is sub-optimal.
+ * This currently uses the same signing and mutual certificate paths and password for all 3 environments. This
+ * means that you can't test e.g. connectivity with ITE on the production server environment. However, the
+ * alternative is that all certificates and passwords must be present on all servers, which is sub-optimal.
  *
  * See RealMeSetupTask::createAuthSourcesFromTemplate()
  */
 
-$config = array(
-	// Authentication source which handles admin authentication for accessing /simplesaml/index.php. See config.php
-	'admin' => array(
-		'core:AdminPassword',
-	),
+$config = array();
 
-	// MTS - RealMe Messaging Test Site Environment
-	'realme-mts' => array(
-		'saml:SP',
-		'entityID' => '{{mts-entityID}}', // http://dev.realme-integration.govt.nz/onlineservices/service1
-		'idp' => 'https://mts.realme.govt.nz/saml2',
-		'discoURL' => null,
-
-		'NameIDPolicy' => 'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent',
-		'AssertionConsumerServiceURL' => null,
-		'AuthnContextClassRef' => '{{mts-authncontext}}', // e.g. urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:LowStrength and ModStrength
-		'ProtocolBinding' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact',
-		'redirect.sign' => true,
-		'ForceAuthn' => false,
-		// @todo SHA1 (the default) is deprecated and old, does RealMe support anything else?
-		// 'signature.algorithm' => 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256',
-
-		'privatekey' => '{{mts-privatepemfile-signing}}',
-		'privatekey_pass' => 'password',
-		'saml.SOAPClient.certificate' => '{{mts-privatepemfile-mutual}}',
-		'saml.SOAPClient.privatekey_pass' => 'password',
-	),
-
-	// ITE - RealMe Integrated Test Environment
-	'realme-ite' => array(
-		'saml:SP',
-		'entityID' => '{{ite-entityID}}', // https://realme-demo.cwp.govt.nz/realme-demo/service1
-		'idp' => 'https://www.ite.logon.realme.govt.nz/saml2',
-		'discoURL' => null,
-
-		'NameIDPolicy' => 'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent',
-		'AssertionConsumerServiceURL' => null,
-		'AuthnContextClassRef' => '{{ite-authncontext}}', // As above
-		'ProtocolBinding' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact',
-		'redirect.sign' => true,
-		'ForceAuthn' => false,
-		// @todo SHA1 (the default) is deprecated and old, does RealMe support anything else?
-		// 'signature.algorithm' => 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256',
-
-		'privatekey' => '{{ite-privatepemfile-signing}}',
-		'saml.SOAPClient.certificate' => '{{ite-privatepemfile-mutual}}',
-	),
-
-	// Production - RealMe Production Environment
-	'realme-prod' => array(
-		'saml:SP',
-		'entityID' => '{{prod-entityID}}',
-		'idp' => 'https://www.logon.realme.govt.nz/saml2',
-		'discoURL' => NULL,
-
-		'NameIDPolicy' => 'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent',
-		'AssertionConsumerServiceURL' => null,
-		'AuthnContextClassRef' => '{{prod-authncontext}}',
-		'ProtocolBinding' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact',
-		'redirect.sign' => TRUE,
-		'ForceAuthn' => FALSE,
-		// @todo SHA1 (the default) is deprecated and old, does RealMe support anything else?
-		// 'signature.algorithm' => 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256',
-
-		'privatekey' => '{{prod-privatepemfile-signing}}',
-		'saml.SOAPClient.certificate' => '{{prod-privatepemfile-mutual}}',
-	)
+// Authentication source which handles admin authentication for accessing /simplesaml/index.php. See config.php
+$config['admin'] = array(
+	'core:AdminPassword',
 );
+
+// MTS - RealMe Messaging Test Site Environment
+$config['realme-mts'] = array(
+	'saml:SP',
+	'entityID' => '{{mts-entityID}}',
+	'idp' => 'https://mts.realme.govt.nz/saml2',
+	'discoURL' => null,
+
+	'NameIDPolicy' => 'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent',
+	'AssertionConsumerServiceURL' => null,
+	'AuthnContextClassRef' => '{{mts-authncontext}}',
+	'ProtocolBinding' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact',
+	'redirect.sign' => true,
+	'ForceAuthn' => false,
+	// @todo SHA1 (the default) is deprecated and old, does RealMe support anything else?
+	// 'signature.algorithm' => 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256',
+
+	'privatekey' => '{{mts-privatepemfile-signing}}',
+	'saml.SOAPClient.certificate' => '{{mts-privatepemfile-mutual}}',
+);
+
+// The password used to decrypt the signing key for MTS is only added if necessary
+$signingKeyPass = '{{mts-privatepemfile-signing-password}}';
+if(strlen($signingKeyPass) > 0) {
+	$config['realme-mts']['privatekey_pass'] = $signingKeyPass;
+}
+
+// The password used to decrypt the mutual key for MTS is only added if necessary
+$mutualKeyPass = '{{mts-privatepemfile-mutual-password}}';
+if(strlen($mutualKeyPass) > 0) {
+	$config['realme-mts']['saml.SOAPClient.privatekey_pass'] = $mutualKeyPass;
+}
+
+// ITE - RealMe Integrated Test Environment
+$config['realme-ite'] = array(
+	'saml:SP',
+	'entityID' => '{{ite-entityID}}', // https://realme-demo.cwp.govt.nz/realme-demo/service1
+	'idp' => 'https://www.ite.logon.realme.govt.nz/saml2',
+	'discoURL' => null,
+
+	'NameIDPolicy' => 'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent',
+	'AssertionConsumerServiceURL' => null,
+	'AuthnContextClassRef' => '{{ite-authncontext}}', // As above
+	'ProtocolBinding' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact',
+	'redirect.sign' => true,
+	'ForceAuthn' => false,
+	// @todo SHA1 (the default) is deprecated and old, does RealMe support anything else?
+	// 'signature.algorithm' => 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256',
+
+	'privatekey' => '{{ite-privatepemfile-signing}}',
+	'saml.SOAPClient.certificate' => '{{ite-privatepemfile-mutual}}',
+);
+
+// The password used to decrypt the signing key for ITE is only added if necessary
+$signingKeyPass = '{{ite-privatepemfile-signing-password}}';
+if(strlen($signingKeyPass) > 0) {
+	$config['realme-ite']['privatekey_pass'] = $signingKeyPass;
+}
+
+// The password used to decrypt the mutual key for ITE is only added if necessary
+$mutualKeyPass = '{{ite-privatepemfile-mutual-password}}';
+if(strlen($mutualKeyPass) > 0) {
+	$config['realme-ite']['saml.SOAPClient.privatekey_pass'] = $mutualKeyPass;
+}
+
+// Production - RealMe Production Environment
+$config['realme-prod'] = array(
+	'saml:SP',
+	'entityID' => '{{prod-entityID}}',
+	'idp' => 'https://www.logon.realme.govt.nz/saml2',
+	'discoURL' => NULL,
+
+	'NameIDPolicy' => 'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent',
+	'AssertionConsumerServiceURL' => null,
+	'AuthnContextClassRef' => '{{prod-authncontext}}',
+	'ProtocolBinding' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact',
+	'redirect.sign' => TRUE,
+	'ForceAuthn' => FALSE,
+	// @todo SHA1 (the default) is deprecated and old, does RealMe support anything else?
+	// 'signature.algorithm' => 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256',
+
+	'privatekey' => '{{prod-privatepemfile-signing}}',
+	'saml.SOAPClient.certificate' => '{{prod-privatepemfile-mutual}}',
+);
+
+// The password used to decrypt the signing key for prod is only added if necessary
+$signingKeyPass = '{{prod-privatepemfile-signing-password}}';
+if(strlen($signingKeyPass) > 0) {
+	$config['realme-prod']['privatekey_pass'] = $signingKeyPass;
+}
+
+// The password used to decrypt the mutual key for prod is only added if necessary
+$mutualKeyPass = '{{prod-privatepemfile-mutual-password}}';
+if(strlen($mutualKeyPass) > 0) {
+	$config['realme-prod']['saml.SOAPClient.privatekey_pass'] = $mutualKeyPass;
+}

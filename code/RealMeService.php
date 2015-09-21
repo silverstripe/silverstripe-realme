@@ -382,6 +382,28 @@ class RealMeService extends Object {
 		return $certPath;
 	}
 
+	/**
+	 * Returns the password (if any) necessary to decrypt the signing cert specified by self::getSigningCertPath(). If
+	 * no password is set, then this method returns null. MTS certificates require a password, however generally the
+	 * certificates used for ITE and production don't need one.
+	 *
+	 * @return string|null Either the password, or null if there is no password.
+	 */
+	public function getSigningCertPassword() {
+		return (defined('REALME_SIGNING_CERT_PASSWORD') ? REALME_SIGNING_CERT_PASSWORD : null);
+	}
+
+	/**
+	 * Returns the password (if any) necessary to decrypt the mutual back-channel cert specified by
+	 * self::getSigningCertPath(). If no password is set, then this method returns null. MTS certificates require a
+	 * password, however generally the certificates used for ITE and production don't need one.
+	 *
+	 * @return string|null Either the password, or null if there is no password.
+	 */
+	public function getMutualCertPassword() {
+		return (defined('REALME_MUTUAL_CERT_PASSWORD') ? REALME_MUTUAL_CERT_PASSWORD : null);
+	}
+
 	private function getAllowedRealMeEnvironments() {
 		return $this->config()->allowed_realme_environments;
 	}

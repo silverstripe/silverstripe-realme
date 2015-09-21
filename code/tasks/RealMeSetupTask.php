@@ -232,9 +232,9 @@ class RealMeSetupTask extends BuildTask {
 		/**
 		 * @todo Determine what to do with multiple certificates.
 		 *
-		 * This currently uses the same signing and mutual certificates paths for all 3 environments. This means that
-		 * you can't test e.g. connectivity with ITE on the production server environment. However, the alternative is
-		 * that all certificates must be present on all servers, which is sub-optimal.
+		 * This currently uses the same signing and mutual certificate paths and password for all 3 environments. This
+		 * means that you can't test e.g. connectivity with ITE on the production server environment. However, the
+		 * alternative is that all certificates and passwords must be present on all servers, which is sub-optimal.
 		 *
 		 * See realme/templates/simplesaml-configuration/authsources.php
 		 */
@@ -246,14 +246,20 @@ class RealMeSetupTask extends BuildTask {
 				'{{mts-authncontext}}' => $this->service->getAuthnContextForEnvironment('mts'),
 				'{{mts-privatepemfile-signing}}' => $this->service->getSigningCertPath(),
 				'{{mts-privatepemfile-mutual}}' => $this->service->getMutualCertPath(),
+				'{{mts-privatepemfile-signing-password}}' => $this->service->getSigningCertPassword(),
+				'{{mts-privatepemfile-mutual-password}}' => $this->service->getMutualCertPassword(),
 				'{{ite-entityID}}' => $this->service->getEntityIDForEnvironment('ite'),
 				'{{ite-authncontext}}' => $this->service->getAuthnContextForEnvironment('ite'),
 				'{{ite-privatepemfile-signing}}' => $this->service->getSigningCertPath(),
 				'{{ite-privatepemfile-mutual}}' => $this->service->getMutualCertPath(),
+				'{{ite-privatepemfile-signing-password}}' => $this->service->getSigningCertPassword(),
+				'{{ite-privatepemfile-mutual-password}}' => $this->service->getMutualCertPassword(),
 				'{{prod-entityID}}' => $this->service->getEntityIDForEnvironment('prod'),
 				'{{prod-authncontext}}' => $this->service->getAuthnContextForEnvironment('prod'),
 				'{{prod-privatepemfile-signing}}' => $this->service->getSigningCertPath(),
 				'{{prod-privatepemfile-mutual}}' => $this->service->getMutualCertPath(),
+				'{{prod-privatepemfile-signing-password}}' => $this->service->getSigningCertPassword(),
+				'{{prod-privatepemfile-mutual-password}}' => $this->service->getMutualCertPassword(),
 			)
 		);
 	}
