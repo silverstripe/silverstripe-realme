@@ -199,10 +199,14 @@ class RealMeService extends Object {
 	}
 
 	/**
-	 * @return string|null Either the value for baseurlpath in SimpleSAML's config, or null
+	 * @return string Either the value for baseurlpath in SimpleSAML's config, or a default value if it's been unset
 	 */
 	public function getSimpleSamlBaseUrlPath() {
-		return strlen($this->config()->simplesaml_base_url_path) > 0 ? $this->config()->simplesaml_base_url_path : null;
+		if(strlen($this->config()->simplesaml_base_url_path) > 0) {
+			return $this->config()->simplesaml_base_url_path;
+		} else {
+			return 'simplesaml/';
+		}
 	}
 
 	/**
@@ -224,6 +228,13 @@ class RealMeService extends Object {
 	 */
 	public function getTempDir() {
 		return (defined('REALME_TEMP_DIR') ? REALME_TEMP_DIR : null);
+	}
+
+	/**
+	 * @return string The path on the web server to create or find the symlink to SimpleSAMLphp's `www` dir at
+	 */
+	public function getSimpleSAMLSymlinkPath() {
+		return sprintf('%s/%s', BASE_PATH, $this->getSimpleSamlBaseUrlPath());
 	}
 
 	/**

@@ -57,7 +57,8 @@ class RealMeSetupTask extends BuildTask {
 		$existingFiles = array(
 			sprintf('%s/config/config.php', $this->getSimpleSAMLPhpVendorBasePath()),
 			sprintf('%s/config/authsources.php', $this->getSimpleSAMLPhpVendorBasePath()),
-			sprintf('%s/metadata/saml20-idp-remote.php', $this->getSimpleSAMLPhpVendorBasePath())
+			sprintf('%s/metadata/saml20-idp-remote.php', $this->getSimpleSAMLPhpVendorBasePath()),
+			$this->service->getSimpleSAMLSymlinkPath()
 		);
 
 		foreach($existingFiles as $filePath) {
