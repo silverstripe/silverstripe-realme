@@ -21,6 +21,14 @@ class RealMeSetupTask extends BuildTask {
 	 */
 	private $service;
 
+	/**
+	 * @config
+	 * @var string Path (from the webroot, or an absolute path) to the directory that holds templates for config.php,
+	 * authsources.php and saml20-idp-remote.php that will be used to create the configuration for SimpleSAMLphp.
+	 * The default is to use the path to <module path>/templates/simplesaml-configuration
+	 */
+	private $config_template_dir = null;
+
 	public function run($request) {
 		$this->service = Injector::inst()->get('RealMeService');
 
@@ -37,8 +45,33 @@ class RealMeSetupTask extends BuildTask {
 			$this->message("Validation succeeded, continuing with setup...");
 		}
 
+		$this->message(sprintf(
+			'Creating config file in %s/config/ from config in template dir  %s',
+			$this->getSimpleSAMLVendorPath(),
+			$this->getConfigurationTemplateDir()
+		));
+		$this->createConfigFromTemplate();
 
+		$this->message(sprintf(
+			'Creating authsources file in %s/config/ from config in template dir %s',
+			$this->getSimpleSAMLVendorPath(),
+			$this->getConfigurationTemplateDir()
+		));
+		$this->createAuthSourcesFromTemplate();
 
+		$this->message(sprintf(
+			'Creating saml20-idp-remote file in %s/metadata/ from config in template dir %s',
+			$this->getSimpleSAMLVendorPath(),
+			$this->getConfigurationTemplateDir()));
+		$this->createMetadataFromTemplate();
+
+		$this->message(sprintf(
+			'Symlinking SimpleSAMLphp\'s www folder from %s into %s',
+			$this->getSimpleSAMLVendorPath(),
+			$this->service->getSimpleSAMLSymlinkPath()
+		));
+
+		$this->symlinkSimpleSAMLIntoWebroot();
 
 	}
 
@@ -55,9 +88,9 @@ class RealMeSetupTask extends BuildTask {
 
 		// Ensure we haven't already run before, or if we have, that force=1 is passed
 		$existingFiles = array(
-			sprintf('%s/config/config.php', $this->getSimpleSAMLPhpVendorBasePath()),
-			sprintf('%s/config/authsources.php', $this->getSimpleSAMLPhpVendorBasePath()),
-			sprintf('%s/metadata/saml20-idp-remote.php', $this->getSimpleSAMLPhpVendorBasePath()),
+			$this->getSimpleSAMLConfigFilePath(),
+			$this->getSimpleSAMLAuthSourcesFilePath(),
+			$this->getSimpleSAMLMetadataFilePath(),
 			$this->service->getSimpleSAMLSymlinkPath()
 		);
 
@@ -166,8 +199,121 @@ class RealMeSetupTask extends BuildTask {
 		return sizeof($errors) > 0;
 	}
 
-	private function getSimpleSAMLPhpVendorBasePath() {
+	private function createConfigFromTemplate() {
+		$configDir = $this->getConfigurationTemplateDir();
+		$templateFile = Controller::join_links($configDir, 'config.php');
+
+		if(!$this->isReadable($templateFile)) {
+			$this->halt(sprintf("Can't read config.php file at %s", $templateFile));
+		}
+
+		$this->createConfigFile(
+			$templateFile,
+			$this->getSimpleSAMLConfigFilePath(),
+			array(
+				'{{baseurlpath}}' => $this->service->getSimpleSamlBaseUrlPath(),
+				'{{certdir}}' => $this->service->getCertDir(),
+				'{{loggingdir}}' => $this->service->getLoggingDir(),
+				'{{tempdir}}' => $this->service->getTempDir(),
+				'{{adminpassword}}' => $this->service->findOrMakeSimpleSAMLPassword(),
+				'{{secretsalt}}' => $this->service->generateSimpleSAMLSalt(),
+			)
+		);
+	}
+
+	private function createAuthSourcesFromTemplate() {
+		$configDir = $this->getConfigurationTemplateDir();
+		$templateFile = Controller::join_links($configDir, 'authsources.php');
+
+		if(!$this->isReadable($templateFile)) {
+			$this->halt(sprintf("Can't read authsources.php file at %s", $templateFile));
+		}
+
+		/**
+		 * @todo Determine what to do with multiple certificates.
+		 *
+		 * This currently uses the same signing and mutual certificates paths for all 3 environments. This means that
+		 * you can't test e.g. connectivity with ITE on the production server environment. However, the alternative is
+		 * that all certificates must be present on all servers, which is sub-optimal.
+		 *
+		 * See realme/templates/simplesaml-configuration/authsources.php
+		 */
+		$this->createConfigFile(
+			$templateFile,
+			$this->getSimpleSAMLAuthSourcesFilePath(),
+			array(
+				'{{mts-entityID}}' => $this->service->getEntityIDForEnvironment('mts'),
+				'{{mts-authncontext}}' => $this->service->getAuthnContextForEnvironment('mts'),
+				'{{mts-privatepemfile-signing}}' => $this->service->getSigningCertPath(),
+				'{{mts-privatepemfile-mutual}}' => $this->service->getMutualCertPath(),
+				'{{ite-entityID}}' => $this->service->getEntityIDForEnvironment('ite'),
+				'{{ite-authncontext}}' => $this->service->getAuthnContextForEnvironment('ite'),
+				'{{ite-privatepemfile-signing}}' => $this->service->getSigningCertPath(),
+				'{{ite-privatepemfile-mutual}}' => $this->service->getMutualCertPath(),
+				'{{prod-entityID}}' => $this->service->getEntityIDForEnvironment('prod'),
+				'{{prod-authncontext}}' => $this->service->getAuthnContextForEnvironment('prod'),
+				'{{prod-privatepemfile-signing}}' => $this->service->getSigningCertPath(),
+				'{{prod-privatepemfile-mutual}}' => $this->service->getMutualCertPath(),
+			)
+		);
+	}
+
+	private function createMetadataFromTemplate() {
+		$configDir = $this->getConfigurationTemplateDir();
+		$templateFile = Controller::join_links($configDir, 'saml20-idp-remote.php');
+
+		if(!$this->isReadable($templateFile)) {
+			$this->halt(sprintf("Can't read saml20-idp-remote.php file at %s", $templateFile));
+		}
+
+		// We don't currently need to replace any {{variables}} in this file.
+		$this->createConfigFile(
+			$templateFile,
+			$this->getSimpleSAMLMetadataFilePath()
+		);
+	}
+
+	private function symlinkSimpleSAMLIntoWebroot() {
+		$this->message('TODO: Unimplemented');
+	}
+
+	private function createConfigFile($templatePath, $newFilePath, $replacements = null) {
+		$configText = file_get_contents($templatePath);
+
+		if(is_array($replacements)) {
+			$configText = str_replace(array_keys($replacements), array_values($replacements), $configText);
+		}
+
+		file_put_contents($newFilePath, $configText);
+	}
+
+	private function getSimpleSAMLConfigFilePath() {
+		return sprintf('%s/config/config.php', $this->getSimpleSAMLVendorPath());
+	}
+
+	private function getSimpleSAMLAuthSourcesFilePath() {
+		return sprintf('%s/config/authsources.php', $this->getSimpleSAMLVendorPath());
+	}
+
+	private function getSimpleSAMLMetadataFilePath() {
+		return sprintf('%s/metadata/saml20-idp-remote.php', $this->getSimpleSAMLVendorPath());
+	}
+
+	private function getSimpleSAMLVendorPath() {
 		return sprintf('%s/vendor/simplesamlphp/simplesamlphp', BASE_PATH);
+	}
+
+	/**
+	 * @return string The full path to RealMe configuration
+	 */
+	private function getConfigurationTemplateDir() {
+		$dir = $this->config()->template_config_dir;
+
+		if(!$dir || !$this->isReadable($dir)) {
+			$dir = REALME_MODULE_PATH . '/templates/simplesaml-configuration';
+		}
+
+		return Controller::join_links(BASE_PATH, $dir);
 	}
 
 	/**

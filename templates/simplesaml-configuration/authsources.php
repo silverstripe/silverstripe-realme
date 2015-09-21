@@ -13,8 +13,18 @@
  * authsources.php config template here:
  * https://github.com/simplesamlphp/simplesamlphp/blob/master/config-templates/authsources.php
  *
- * @see RealMeSetupTask::run()
+ * @see RealMeSetupTask::createAuthSourcesFromTemplate()
  * @see https://simplesamlphp.org/docs/stable/simplesamlphp-reference-idp-remote
+ */
+
+/**
+ * @todo Determine what to do with multiple certificates.
+ *
+ * This currently uses the same signing and mutual certificates paths for all 3 environments. This means that
+ * you can't test e.g. connectivity with ITE on the production server environment. However, the alternative is
+ * that all certificates must be present on all servers, which is sub-optimal.
+ *
+ * See RealMeSetupTask::createAuthSourcesFromTemplate()
  */
 
 $config = array(
