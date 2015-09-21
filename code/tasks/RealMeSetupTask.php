@@ -94,7 +94,7 @@ class RealMeSetupTask extends BuildTask {
 
 		if(is_null($this->service->getTempDir())) {
 			$errors[] = _t('RealMeSetupTask.ERRNOTEMPDIR');
-		} elseif(!$this->isWriteable($this->service->getTempDir())) {
+		} elseif(!$this->isWriteable($this->service->getTempDir()) && !$this->isWriteable(dirname($this->service->getTempDir()))) {
 			$errors[] = _t(
 				'RealMeSetupTask.ERRTEMPDIRNOTWRITEABLE',
 				'',
