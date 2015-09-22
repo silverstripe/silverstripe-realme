@@ -279,8 +279,22 @@ class RealMeSetupTask extends BuildTask {
 		);
 	}
 
+	/**
+	 * Ensures a symlink between the webroot (e.g. /path/to/webroot/simplesaml/) exists, and points to the correct
+	 * vendor folder for SimpleSAMLphp's webroot (vendor/simplesamlphp/simplesamlphp/www/)
+	 *
+	 * @return void
+	 */
 	private function symlinkSimpleSAMLIntoWebroot() {
-		$this->message('TODO: Unimplemented');
+		$simpleSamlWebroot = Controller::join_links($this->getSimpleSAMLVendorPath(), 'www');
+		$symlinkLocation = $this->service->getSimpleSAMLSymlinkPath();
+		if(substr($symlinkLocation, -1, 1) === '/') {
+			$symlinkLocation = substr($symlinkLocation, 0, strlen($symlinkLocation) - 1);
+		}
+
+		if(!symlink($simpleSamlWebroot, $symlinkLocation)) {
+			$this->halt('Was not able to create symlink, symlink() call failed.');
+		}
 	}
 
 	private function createConfigFile($templatePath, $newFilePath, $replacements = null) {
