@@ -79,10 +79,15 @@ class RealMeService extends Object {
 	 * Username and password only:
 	 * - urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:LowStrength
 	 *
-	 * Username, password, and either Google Authenticator or SMS token:
+	 * Username, password, and any moderate strength second level of authenticator (RSA token, Google Auth, SMS)
 	 * - urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength
 	 *
+	 * The following two are less often used, and shouldn't be used unless there's a specific need.
+	 *
+	 * Username, password, and only SMS 2FA token
 	 * - urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength::OTP:Mobile:SMS
+	 *
+	 * Username, password, and only RSA 2FA token
 	 * - urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength::OTP:Token:SID
 	 */
 	private static $authn_contexts = array(
@@ -309,16 +314,8 @@ class RealMeService extends Object {
 
 	/**
 	 * Returns the appropriate AuthN Context, given the environment passed in. The AuthNContext may be different per
-	 * environment, and should be one of the following strings:
-	 *
-	 * Username and password only:
-	 * - urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:LowStrength
-	 *
-	 * Username, password, and either Google Authenticator or SMS token:
-	 * - urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength
-	 *
-	 * - urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength::OTP:Mobile:SMS
-	 * - urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength::OTP:Token:SID
+	 * environment, and should be one of the strings as defined in the static {@link self::$authn_contexts} at the top
+	 * of this class.
 	 *
 	 * @param string $env The environment to return the AuthNContext for. Must be one of the RealMe environment names
 	 * @return string|null Returns the AuthNContext for the given $env, or null if no context exists

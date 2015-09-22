@@ -26,6 +26,15 @@ RealMeService:
     ite: "urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:LowStrength"
     prod: "urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:LowStrength"
 ```
+
+The following `authn_context` values can be used:
+
+| **`authn_context`**                                                                        | **Description**                                                                                                             |
+| ------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
+| urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:LowStrength                 | Requires a username and password, no second factor of authentication.                                                       |
+| urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength                 | Requires a username, password, and a moderate-security second factor of authentication (Google Auth, SMS token, RSA token). |
+| urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength::OTP:Mobile:SMS | Not recommended. Requires a username, password, and specifically requires the use of an SMS token.                          |
+| urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength::OTP:Token:SID  | Not recommended. Requires a username, password, and specifically requires the use of an RSA token.                          |
 	
 ### UAT and production environments
 
