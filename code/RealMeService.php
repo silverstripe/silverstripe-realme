@@ -220,7 +220,7 @@ class RealMeService extends Object {
 	 * @return string|null Either the directory where logging information is kept by SimpleSAMLphp, or null if undefined
 	 */
 	public function getLoggingDir() {
-		return (defined('REALME_LOGGING_DIR') ? REALME_LOGGING_DIR : null);
+		return (defined('REALME_LOG_DIR') ? REALME_LOG_DIR : null);
 	}
 
 	/**

@@ -14,7 +14,7 @@ en:
     ERRNOBASEDIR: "No base dir is specified. Ensure you haven't set this to a blank line in your YML configuration"
     ERRNOCERTDIR: "No certificate dir is specified. Define the REALME_CERT_DIR const in your _ss_environment.php file"
     ERRCERTDIRNOTREADABLE: "Certificate dir specified ('{dir}') must be created and be readable. Ensure permissions are set correctly"
-    ERRNOLOGDIR: "No logging dir is specified. Define the REALME_LOGGING_DIR const in your _ss_environment.php file"
+    ERRNOLOGDIR: "No logging dir is specified. Define the REALME_LOG_DIR const in your _ss_environment.php file"
     ERRLOGDIRNOTWRITEABLE: "Logging dir specified ('{dir}') must be created and able to be written to. Ensure permissions are set correctly"
     ERRNOTEMPDIR: "No temp dir is specified. Define the REALME_TEMP_DIR const in your _ss_environment.php file"
     ERRTEMPDIRNOTWRITEABLE: "Temp dir specified ('{dir}') not writeable, or the parent dir is not writeable. Ensure permissions are set correctly"

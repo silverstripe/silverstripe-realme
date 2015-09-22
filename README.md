@@ -125,7 +125,7 @@ This lists what the dev/task should do when run (inexhaustive list, should be re
 /sites/{instancename}/certs/realme
 via puppet.
 
-- REALME_LOGGING_DIR - /var/log/realme
+- REALME_LOG_DIR - /var/log/realme
 
 /tmp/realme
 
