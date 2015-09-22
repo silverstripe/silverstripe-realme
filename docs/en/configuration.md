@@ -29,7 +29,7 @@ RealMeService:
 
 The following `authn_context` values can be used:
 
-| **`authn_context`**                                                                        | **Description**                                                                                                             |
+| **AuthN Context value**                                                                    | **Description**                                                                                                             |
 | ------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
 | urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:LowStrength                 | Requires a username and password, no second factor of authentication.                                                       |
 | urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength                 | Requires a username, password, and a moderate-security second factor of authentication (Google Auth, SMS token, RSA token). |
