@@ -1,6 +1,6 @@
 {
     "name": "silverstripe/silverstripe-realme",
-    "description": "Adds support to SilverStripe for authentication via Real Me (https://www.realme.govt.nz/)",
+    "description": "Adds support to SilverStripe for authentication via RealMe (https://www.realme.govt.nz/)",
     "type": "silverstripe-module",
     "keywords": ["silverstripe", "authentication", "saml", "RealMe", "Real Me", "iGovt"],
     "license": "MIT",
