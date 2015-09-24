@@ -52,11 +52,11 @@ class RealMeLoginForm extends LoginForm {
 		}
 
 		if($this->stat('realme_include_javascript')) {
-			Requirements::javascript(REALME_DIR."/javascript/realme.js");
+			Requirements::javascript(REALME_MODULE_PATH."/javascript/realme.js");
 		}
 
 		if($this->stat('realme_include_css')) {
-			Requirements::css(REALME_DIR."/css/realme.css");
+			Requirements::css(REALME_MODULE_PATH."/css/realme.css");
 		}
 
 		parent::__construct($controller, $name, $fields, $actions);
