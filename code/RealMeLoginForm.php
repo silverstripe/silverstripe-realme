@@ -1,19 +1,35 @@
 <?php
 class RealMeLoginForm extends LoginForm {
 
+	/**
+	 * @var array
+	 */
 	private static $allowed_actions = array(
 		'redirectToRealMe'
 	);
 
+	/**
+	 * @var string
+	 */
 	protected $authenticator_class = 'RealMeAuthenticator';
 
+	/**
+	  * Returns an instance of this class
+	  *
+	  * @param Controller
+	  * @param String
+	  * @return RealMeLoginForm
+	  */
 	public function __construct($controller, $name) {
 		$fields = new FieldList(array(
 			new HiddenField('AuthenticationMethod', null, $this->authenticator_class)
 		));
 
 		$actions = new FieldList(array(
-			new FormAction('redirectToRealMe', _t('RealMeLoginForm.LOGINBUTTON', 'Login or Register with Real Me'))
+			FormAction::create('redirectToRealMe', _t('RealMeLoginForm.LOGINBUTTON', 'LoginAction'))
+				->setUseButtonTag(true)
+				->setButtonContent('<span class="realme_button_padding">Login or register with RealMe<span class="realme_icon_new_window"></span> <span class="realme_icon_padlock"></span>')
+				->setAttribute('class', 'realme_button')
 		));
 
 		// Taken from MemberLoginForm
@@ -24,10 +40,23 @@ class RealMeLoginForm extends LoginForm {
 		}
 
 		if(isset($backURL)) {
-			// Ensure that $backURL isn't redirecting us back to login form or a Real Me authentication page
+			// Ensure that $backURL isn't redirecting us back to login form or a RealMe authentication page
 			if(strpos($backURL, 'Security/login') === false && strpos($backURL, 'Security/realme') === false) {
 				$fields->push(new HiddenField('BackURL', 'BackURL', $backURL));
 			}
+		}
+
+		// optionally include requirements {@see /realme/config.yml}
+		if($this->stat('realme_include_jquery')) {
+			Requirements::javascript(THIRDPARTY_DIR."/jquery/jquery.js");
+		}
+
+		if($this->stat('realme_include_javascript')) {
+			Requirements::javascript(REALME_DIR."/javascript/realme.js");
+		}
+
+		if($this->stat('realme_include_css')) {
+			Requirements::css(REALME_DIR."/css/realme.css");
 		}
 
 		parent::__construct($controller, $name, $fields, $actions);
@@ -54,5 +83,23 @@ class RealMeLoginForm extends LoginForm {
 				)
 			);
 		}
+	}
+
+	/**
+	 * Returns the realme widget theme name from config.yml.
+	 *
+	 * Theme options are: default, dark & light. These are appended to a css class
+	 * on the template which is applied to the element .realme_widget.
+	 *
+	 * @see realme/_config/config.yml
+	 * @see realme/templates/Includes/RealMeLoginForm.ss
+	 *
+	 * @return string
+	 */
+	public function getRealMeWidgetTheme() {
+		if($theme = $this->stat('realme_widget_theme')) {
+			return $theme;
+		}
+		return 'default';
 	}
 }
