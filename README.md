@@ -1,22 +1,22 @@
-# Real Me module for SilverStripe
+silverstripe-realme
+============================
 
-[Real Me](https://www.realme.govt.nz/)
+Adds support to SilverStripe for authentication via [RealMe](https://www.realme.govt.nz/).
 
-This module provides the foundation to support a quick integration for a SilverStripe application running on the 
-common web platform to Real Me as an identity provider.
+This module provides the foundation to support a quick integration for a SilverStripe application running on the
+common web platform to RealMe as an identity provider.
 
 ## Requirements
-
 [CWP basic recipe 1.1.1](https://www.cwp.govt.nz/guides/core-technical-documentation/common-web-platform-core/en/releases/)
 
-This module is designed to be run on a CWP instance. 
+This module is designed to be run on a [CWP](https://www.cwp.govt.nz/) instance.
 
 ## Installation
-via Composer / Packagist ([best practice](http://doc.silverstripe.org/framework/en/trunk/installation/composer)) is
+via Composer / Packagist ([best practice](http://doc.silverstripe.org/framework/en/trunk/installation/composer))
 
 Ensure repository 'https://packages.cwp.govt.nz/' is added to composer (CWP provides this by default)
- 
-```json 
+
+```json
 '"repositories": [
     {
         "type": "composer",
@@ -27,12 +27,12 @@ Ensure repository 'https://packages.cwp.govt.nz/' is added to composer (CWP prov
 Add "silverstripe/realme" to your composer requirements.
 
 ```
-composer require silverstripe/realme 
+composer require silverstripe/realme
 composer update
 ```
 
 #### Manual Installation
-[Download](https://gitlab.cwp.govt.nz/silverstripe/realme), place the folder in your project root called 'realme' and 
+[Download](https://gitlab.cwp.govt.nz/silverstripe/realme), place the folder in your project root called 'realme' and
 run a dev/build?flush=1.
 
 ## Configuration of RealMe in your application
@@ -58,31 +58,31 @@ ln -s vendor/simplesamlphp/simplesamlphp/www/ simplesaml
     - mts_mutual_ssl_sp.pem
     - mts_saml_idp.cer
     - mts_saml_sp.pem
-- include the session data realme/templates/Layout/RealMeSessionData.ss in your template, or reference session data 
+- include the session data realme/templates/Layout/RealMeSessionData.ss in your template, or reference session data
 directly from any descendant of SiteTree $RealMeSessionData, or by using SiteConfig: SiteConfig::current_site_config()->RealMeSessionData();
 
 ### ITE Integration Test Environment
- @todo 
+ @todo
 
 ## Known issues
 url < 80 bytes
 
 Certificates
-- Procured from 
-  - Verisign: http://www.verisign.com/ 
+- Procured from
+  - Verisign: http://www.verisign.com/
   - RapidSSL: http://www.rapidssl.com/
 - Must have an expiry of three years from creation.
 - Bit length is 2048.
 - serial number must be non-negative.
-- Follow naming convention (concatenation)  
- - unique, lowercase a-z 0-9 .  
+- Follow naming convention (concatenation)
+ - unique, lowercase a-z 0-9 .
  - The Real Me assertion service environment
  - the keyword 'sa'
  - purpose (saml.sig or mutual.ssl).
  - An identifier that is unique across all certificates
- 
+
  e.g. {environment}.sa.{purpose}.{client domain} | ite.sa.mutual-ssl.mydomain.cwp.govt.nz
- 
+
 
 ## Manual Certificate Creation.
 
@@ -273,21 +273,21 @@ substitutions required:
 url < 80 bytes
 
 Certificates
-- Procured from 
-  - Verisign: http://www.verisign.com/ 
+- Procured from
+  - Verisign: http://www.verisign.com/
   - RapidSSL: http://www.rapidssl.com/
 - Must have an expiry of three years from creation.
 - Bit length is 2048.
 - serial number must be non-negative.
 - Follow naming convention (concatenation)
- - unique, lowercase a-z 0-9 .  
+ - unique, lowercase a-z 0-9 .
  - The Real Me assertion service environment
  - the keyword 'sa'
  - purpose (saml.sig or mutual.ssl).
  - An identifier that is unique across all certificates
- 
+
  e.g. {environment}.sa.{purpose}.{client domain} | ite.sa.mutual-ssl.mydomain.cwp.govt.nz
- 
+
 
 ## Customisation
 
