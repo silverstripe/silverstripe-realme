@@ -48,10 +48,10 @@ ln -s vendor/simplesamlphp/simplesamlphp/www/ simplesaml
 ### MTS Messaging Test Environment
 - Add this module to your composer requirements
 - Fill out complete the MTS checklist to start development
-- Obtain access to Real Me and the Shared Workspace for MTS public/private development keys.
+- Obtain access to RealMe and the Shared Workspace for MTS public/private development keys.
 - Download the ["Integration Bundle Assert MTS"](https://see.govt.nz/realme/realme/Library/Forms/Library.aspx) from
   https://see.govt.nz/realme/realme/Library/Forms/Library.aspx
-- Run the Real Me build task to create the directores and the metadata files for MTS (coming soon)
+- Run the RealMe build task to create the directores and the metadata files for MTS (coming soon)
 - unpack the certificates into vendor/simplesamlphp/simplesamlphp/cert (create if not present)
     - mts_mutual_ssl_idp.cer
     - mts_mutual_ssl_sp.cer
@@ -76,7 +76,7 @@ Certificates
 - serial number must be non-negative.
 - Follow naming convention (concatenation)
  - unique, lowercase a-z 0-9 .
- - The Real Me assertion service environment
+ - The RealMe assertion service environment
  - the keyword 'sa'
  - purpose (saml.sig or mutual.ssl).
  - An identifier that is unique across all certificates
@@ -195,7 +195,7 @@ $config = array(
 ```php
 $metadata['https://mts.realme.govt.nz/saml2'] = array(
 	'name' => 'MTS',
-	'description' => 'Here you can single sign on to an MTS IdP using your Real Me logon',
+	'description' => 'Here you can single sign on to an MTS IdP using your RealMe logon',
 	'SingleSignOnService'  => 'https://mts.realme.govt.nz/logon-mts/mtsEntryPoint',
 	'SingleSignOnService.artifact'  => 'https://mts.realme.govt.nz/logon-mts/mtsEntryPoint',
 	'SingleLogoutService'  => 'https://mts.realme.govt.nz/logon-mts/mtsEntryPoint',
@@ -214,7 +214,7 @@ $metadata['https://mts.realme.govt.nz/saml2'] = array(
 // Also need values for ITE and prod environments
 ```
 
-* Create metadata XML file for upload to Real Me Shared Workspace. The below sample is for ITE, with the following
+* Create metadata XML file for upload to RealMe Shared Workspace. The below sample is for ITE, with the following
 substitutions required:
     * **{{entityID}}**: The URL for your entity, as specified in authsources.php
 (e.g. https://realme-demo.cwp.govt.nz/realme-demo/service1)
