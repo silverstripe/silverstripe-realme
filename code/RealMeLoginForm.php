@@ -46,22 +46,28 @@ class RealMeLoginForm extends LoginForm {
 			}
 		}
 
-		// optionally include requirements {@see /realme/config.yml}
-		if($this->stat('realme_include_jquery')) {
+		// optionally include requirements {@see /realme/_config/config.yml}
+		if(Config::inst()->get('RealMeLoginForm', 'realme_include_jquery')) {
 			Requirements::javascript(THIRDPARTY_DIR."/jquery/jquery.js");
 		}
 
-		if($this->stat('realme_include_javascript')) {
+		if(Config::inst()->get('RealMeLoginForm', 'realme_include_javascript')) {
 			Requirements::javascript(REALME_MODULE_PATH."/javascript/realme.js");
 		}
 
-		if($this->stat('realme_include_css')) {
+		if(Config::inst()->get('RealMeLoginForm', 'realme_include_css')) {
 			Requirements::css(REALME_MODULE_PATH."/css/realme.css");
 		}
 
 		parent::__construct($controller, $name, $fields, $actions);
 	}
 
+	/**
+	 * Returns
+	 *
+	 * @param
+	 * @return
+	 */
 	public function redirectToRealMe($data, Form $form) {
 		/** @var RealMeService $service */
 		$service = Injector::inst()->get('RealMeService');
@@ -79,14 +85,14 @@ class RealMeLoginForm extends LoginForm {
 				$this->controller,
 				_t(
 					'RealMeSecurityExtension.LOGINFAILURE',
-					'Unfortunately we\'re not able to authenticate you via Real Me right now.'
+					'Unfortunately we\'re not able to authenticate you via RealMe right now.'
 				)
 			);
 		}
 	}
 
 	/**
-	 * Returns the realme widget theme name from config.yml.
+	 * Example function exposing a realme config option to the login form template
 	 *
 	 * Theme options are: default, dark & light. These are appended to a css class
 	 * on the template which is applied to the element .realme_widget.

@@ -1,14 +1,24 @@
 <%--"
-
-# RealMe Primary Login Module
+# RealMe Secondary login module
 
 {@link realme/_config/config.yml}
 {@link realme/code/RealMeLoginForm.php}
 
+This is intended for use in navigation bars, it does not login, only links to the primary
+login from on the page: /Security/login
+
+
+## CSS and JavaScript requirements
+
+You should either:
+- inuclde the realme css and javascripts into you site's theme
+- or load them via Requirements in your base page controller, e.g. as RealMeLoginForm.php does
+
 
 ## Color scheme options
 
-Color options are defined in config.yml, but these are the actual css classnames you can choose from:
+Color options not loaded from config.yml for this template, but these are the actual css classnames you can
+apply to the .realme_widget element:
 
 1. realme_theme_default
 2. realme_theme_dark
@@ -20,7 +30,7 @@ Color options are defined in config.yml, but these are the actual css classnames
 The popup module is flexible, and can be configured by your developer to fit the available width in your page.
 (popup not supported for IE6 or touch devices).
 
-Select one of the four popup styles below and apply it to the .realme_popup_wrapper element
+Select one of the four popup styles below and apply it to the .realme_popup_wrapper element:
 
 1. realme_arrow_top_left
 2. realme_arrow_top_right
@@ -31,26 +41,11 @@ You can specifiy the width of the popup by specifiying a width attribute for the
 or directly in your css, e.g. .realme_popup {width: 450px}
 
 "--%>
-<div class="realme_widget realme_primary_login realme_theme_{$RealMeWidgetTheme}">
-    <h2 class="realme_title">Login with RealMe®</h2>
-    <p class="realme_info">To access the [online service], you need a RealMe account. If you’ve created a RealMe account somewhere else, you can use it here too.</p>
-    <div class="realme_login_lockup">
-        <form $FormAttributes>
-            <% if $Actions %>
-                <img src="{$BaseHref}realme/images/RealMe-logo@2x.png" alt="RealMe" width="42" height="42">
-                <div class="realme_btn_margin">
-                <% loop $Actions %>
-                    $Field
-                <% end_loop %>
-                </div>
-            <% end_if %>
-            <% loop $Fields %>
-                $FieldHolder
-            <% end_loop %>
-        </form>
-    </div>
+<div class="realme_widget realme_secondary_login realme_theme_dark no_touch" style="z-index: 1;">
+    <a href="{$BaseHref}Security/login" class="realme_login realme_pipe">Login <span class="realme_icon_link"></span></a>
+    <a href="https://www.account.realme.govt.nz/account/" class="realme_create_account realme_pipe">Create <span class="realme_icon_link"></span></a>
     <div class="realme_popup_position">
-        <a class="js_toggle_popup whats_realme" href="http://www.realme.govt.nz">What’s RealMe?</a>
+        <a id="popup_trigger" href="http://www.realme.govt.nz" target="_blank" class="link whats_realme">?</a>
         <div class="realme_popup_wrapper realme_arrow_top_left">
             <!-- realme_popup -->
             <div class="realme_popup">
@@ -66,5 +61,4 @@ or directly in your css, e.g. .realme_popup {width: 450px}
         </div>
         <!-- /realme_popup_wrapper -->
     </div>
-    <a class="realme_create_account" href="https://www.account.realme.govt.nz/account/" target="_blank">Create an account <span class="realme_icon_link"></span></a>
 </div>

@@ -4,4 +4,4 @@ RealMeLoginForm:
   realme_include_jquery: false
   realme_include_javascript: true
   realme_include_css: true
-  realme_widget_theme: default
+  realme_widget_theme: dark

@@ -336,7 +336,7 @@
   transition: opacity 0.3s;
   opacity: 0;
   visibility: hidden;
-  z-index: 2;
+  z-index: -1;
   _display: none;
   /*ie6*/
 }
@@ -484,6 +484,7 @@
 .no_touch .realme_popup_wrapper:hover {
   opacity: 1 !important;
   visibility: visible !important;
+  z-index: 2;
 }
 
 .realme_find_out_more {
