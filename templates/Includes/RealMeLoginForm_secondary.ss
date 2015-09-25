@@ -42,7 +42,7 @@ or directly in your css, e.g. .realme_popup {width: 450px}
 
 "--%>
 <div class="realme_widget realme_secondary_login realme_theme_dark no_touch" style="z-index: 1;">
-    <a href="{$BaseHref}Security/login" class="realme_login realme_pipe">Login <span class="realme_icon_link"></span></a>
+    <a href="{$BaseHref}Security/login#RealMeLoginForm_LoginForm" class="realme_login realme_pipe">Login <span class="realme_icon_link"></span></a>
     <a href="https://www.account.realme.govt.nz/account/" class="realme_create_account realme_pipe">Create <span class="realme_icon_link"></span></a>
     <div class="realme_popup_position">
         <a id="popup_trigger" href="http://www.realme.govt.nz" target="_blank" class="link whats_realme">?</a>
