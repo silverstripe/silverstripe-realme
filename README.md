@@ -3,18 +3,25 @@ silverstripe-realme
 
 Adds support to SilverStripe for authentication via [RealMe](https://www.realme.govt.nz/).
 
-This module provides the foundation to support a quick integration for a SilverStripe application running on the
-common web platform to RealMe as an identity provider.
+This module provides the foundation to support a quick integration for a SilverStripe application with RealMe as an 
+identity provider. This module requires extensive setup prior to being utilised effectively.
+
+If integration with RealMe is wanted, it is best to get in touch with the RealMe team as early as possible. There are a 
+number of documents mentioned in this documentation that can only be found by accessing the RealMe Shared Workspace. 
+This can be accomplished by [getting in touch with the RealMe team](https://www.realme.govt.nz/realme-business/).
 
 ## Requirements
-[CWP basic recipe 1.1.1](https://www.cwp.govt.nz/guides/core-technical-documentation/common-web-platform-core/en/releases/)
+This module doesn't have any specific requirements beyond those required by [SimpleSAMLphp](https://simplesamlphp.org): 
+the tool used to control authentication with the RealMe systems.
 
-This module is designed to be run on a [CWP](https://www.cwp.govt.nz/) instance.
+These requirements are PHP 5.3+, with the following required PHP extensions enabled: date, dom, hash, libxml, openssl, 
+pcre, SPL, zlib, and mcrypt.
+
+This module is designed to be run on a [CWP](https://www.cwp.govt.nz/) instance, and there are two sets of installation 
+instructions - one for use on CWP, and one for generic use.
 
 ## Installation
-via Composer / Packagist ([best practice](http://doc.silverstripe.org/framework/en/trunk/installation/composer))
-
-Ensure repository 'https://packages.cwp.govt.nz/' is added to composer (CWP provides this by default)
+The module is best installed via Composer. Firstly, ensure the CWP Composer repository is added to your composer.json:
 
 ```json
 '"repositories": [
@@ -24,33 +31,36 @@ Ensure repository 'https://packages.cwp.govt.nz/' is added to composer (CWP prov
     }
 ```
 
-Add "silverstripe/realme" to your composer requirements.
+Then include the package:
 
-```
+```bash
 composer require silverstripe/realme
-composer update
 ```
 
 #### Manual Installation
-[Download](https://gitlab.cwp.govt.nz/silverstripe/realme), place the folder in your project root called 'realme' and
-run a dev/build?flush=1.
+[Download the module](https://gitlab.cwp.govt.nz/silverstripe/realme) from the source repository, place the folder in 
+your project root named 'realme' and visit your homepage with `?flush=1`.
 
 ## Configuration of RealMe in your application
 
-See [configuration.md](docs/en/configuration.md) for environment and YML configuration required before the module can be setup.
+RealMe provide two testing environments and a production environment for you to integrate with. Access to these 
+environments is strictly controlled, and you must [contact the RealMe team](https://www.realme.govt.nz/realme-business/) 
+to gain access to the documentation required for these environments.
 
-Setup
-- Symlink simplesaml in the project root to vendor/simplesamlphp/simplesamlphp/www/
-```
-ln -s vendor/simplesamlphp/simplesamlphp/www/ simplesaml
-```
+See [configuration.md](docs/en/configuration.md) for environment and YML configuration required before the module can be
+setup.
 
-### MTS Messaging Test Environment
-- Add this module to your composer requirements
-- Fill out complete the MTS checklist to start development
-- Obtain access to RealMe and the Shared Workspace for MTS public/private development keys.
-- Download the ["Integration Bundle Assert MTS"](https://see.govt.nz/realme/realme/Library/Forms/Library.aspx) from
-  https://see.govt.nz/realme/realme/Library/Forms/Library.aspx
+### MTS: Messaging Test Environment
+
+The first environment is MTS. This environment is setup to allow testing of your code on your development environment. 
+In this environment, RealMe provide all SSL certificates required to communicate.
+
+- Obtain access to RealMe and the Shared Workspace for MTS public/private development keys
+- Download 'Integration Bundle Login MTS' from the [RealMe Shared Workspace](https://see.govt.nz/realme/realme/Library/Forms/Library.aspx)
+- Unpack the four certificates (mts_saml_idp.cer, mts_saml_sp.pem, mts_mutual_ssl_sp.cer, mts_mutual_ssl_sp.pem) into the directory you've specified in `REALME_CERT_DIR` (ideally outside of your webroot)
+
+
+
 - Run the RealMe build task to create the directores and the metadata files for MTS (coming soon)
 - unpack the certificates into vendor/simplesamlphp/simplesamlphp/cert (create if not present)
     - mts_mutual_ssl_idp.cer
@@ -61,8 +71,22 @@ ln -s vendor/simplesamlphp/simplesamlphp/www/ simplesaml
 - include the session data realme/templates/Layout/RealMeSessionData.ss in your template, or reference session data
 directly from any descendant of SiteTree $RealMeSessionData, or by using SiteConfig: SiteConfig::current_site_config()->RealMeSessionData();
 
-### ITE Integration Test Environment
- @todo
+### ITE: Integration Test Environment
+
+@todo
+ 
+### PROD: Production Environment
+
+@todo
+
+
+
+
+
+
+
+@todo Refactor all of the below
+
 
 ## Known issues
 url < 80 bytes
