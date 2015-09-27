@@ -1,5 +1,28 @@
 <?php
 class RealMeLoginForm extends LoginForm {
+	/**
+	 * @config
+	 * @var bool true if you want the RealMe login form to include jQuery, false if you're including it yourself
+	 */
+	private static $include_jquery;
+
+	/**
+	 * @config
+	 * @var bool true if you want the RealMe login form JS to be included, false if you're including it yourself
+	 */
+	private static $include_javascript;
+
+	/**
+	 * @config
+	 * @var bool true if you want the RealMe login form CSS to be included, false if you're including it yourself
+	 */
+	private static $include_css;
+
+	/**
+	 * @config
+	 * @var string Widget theme can be one of 'default', 'light', or 'dark'. Default is 'default'.
+	 */
+	private static $widget_theme;
 
 	/**
 	 * @var array
@@ -47,16 +70,16 @@ class RealMeLoginForm extends LoginForm {
 		}
 
 		// optionally include requirements {@see /realme/_config/config.yml}
-		if(Config::inst()->get('RealMeLoginForm', 'realme_include_jquery')) {
-			Requirements::javascript(THIRDPARTY_DIR."/jquery/jquery.js");
+		if($this->config()->include_jquery) {
+			Requirements::javascript(THIRDPARTY_DIR . "/jquery/jquery.js");
 		}
 
-		if(Config::inst()->get('RealMeLoginForm', 'realme_include_javascript')) {
-			Requirements::javascript(REALME_MODULE_PATH."/javascript/realme.js");
+		if($this->config()->include_javascript) {
+			Requirements::javascript(REALME_MODULE_PATH . "/javascript/realme.js");
 		}
 
-		if(Config::inst()->get('RealMeLoginForm', 'realme_include_css')) {
-			Requirements::css(REALME_MODULE_PATH."/css/realme.css");
+		if($this->config()->include_css) {
+			Requirements::css(REALME_MODULE_PATH . "/css/realme.css");
 		}
 
 		parent::__construct($controller, $name, $fields, $actions);
@@ -92,9 +115,9 @@ class RealMeLoginForm extends LoginForm {
 	}
 
 	/**
-	 * Example function exposing a realme config option to the login form template
+	 * Example function exposing a RealMe config option to the login form template
 	 *
-	 * Theme options are: default, dark & light. These are appended to a css class
+	 * Theme options are: default, light & dark. These are appended to a css class
 	 * on the template which is applied to the element .realme_widget.
 	 *
 	 * @see realme/_config/config.yml
@@ -103,9 +126,10 @@ class RealMeLoginForm extends LoginForm {
 	 * @return string
 	 */
 	public function getRealMeWidgetTheme() {
-		if($theme = $this->stat('realme_widget_theme')) {
+		if($theme = $this->config()->widget_theme) {
 			return $theme;
 		}
+
 		return 'default';
 	}
 }

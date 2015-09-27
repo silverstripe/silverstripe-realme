@@ -27,7 +27,7 @@ Select one of the four popup styles below and apply it to the .realme_popup_wrap
 3. realme_arrow_side_left
 4. realme_arrow_side_right
 
-You can specifiy the width of the popup by specifiying a width attribute for the .realme_popup element
+You can specify the width of the popup by specifying a width attribute for the .realme_popup element
 or directly in your css, e.g. .realme_popup {width: 450px}
 
 "--%>

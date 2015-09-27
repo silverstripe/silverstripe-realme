@@ -1,7 +1,7 @@
 name: RealMe
 ---
 RealMeLoginForm:
-  realme_include_jquery: false
-  realme_include_javascript: true
-  realme_include_css: true
-  realme_widget_theme: dark
+  include_jquery: false
+  include_javascript: true
+  include_css: true
+  widget_theme: light
