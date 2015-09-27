@@ -97,6 +97,52 @@ class RealMeService extends Object {
 	);
 
 	/**
+	 * @config
+	 * @var array Domain names for metadata files. Used in @link RealMeSetupTask when outputting metadata XML
+	 */
+	private static $metadata_assertion_service_domains = array(
+		'mts' => null,
+		'ite' => null,
+		'prod' => null
+	);
+
+	/**
+	 * @config
+	 * @var string|null The organisation name to be used in metadata XML that is submitted to RealMe
+	 */
+	private static $metadata_organisation_name = null;
+
+	/**
+	 * @config
+	 * @var string|null The organisation display name to be used in metadata XML that is submitted to RealMe
+	 */
+	private static $metadata_organisation_display_name = null;
+
+	/**
+	 * @config
+	 * @var string|null The organisation URL to be used in metadata XML that is submitted to RealMe
+	 */
+	private static $metadata_organisation_url = null;
+
+	/**
+	 * @config
+	 * @var string|null The support contact's company name to be used in metadata XML that is submitted to RealMe
+	 */
+	private static $metadata_contact_support_company = null;
+
+	/**
+	 * @config
+	 * @var string|null The support contact's first name(s) to be used in metadata XML that is submitted to RealMe
+	 */
+	private static $metadata_contact_support_firstnames = null;
+
+	/**
+	 * @config
+	 * @var string|null The support contact's surname to be used in metadata XML that is submitted to RealMe
+	 */
+	private static $metadata_contact_support_surname = null;
+
+	/**
 	 * @return bool true if the user is correctly authenticated, false if there was an error with login
 	 * NB: If the user is not authenticated, they will be redirected to Real Me to login, so a boolean false return here
 	 * indicates that there was a failure during the authentication process (perhaps a communication issue)
@@ -124,7 +170,8 @@ class RealMeService extends Object {
 	}
 
 	/**
-	 * Clear the Real Me credentials from our session.
+	 * Clear the RealMe credentials from Session, and also remove SimpleSAMLphp session information.
+	 * @return void
 	 */
 	public function clearLogin() {
 		Session::clear('RealMeSessionDataSerialized');
@@ -138,8 +185,8 @@ class RealMeService extends Object {
 	}
 
 	/**
-	 * Return the user data which was saved to session from the first Real Me auth.
-	 * @note Does not check authenticity or expiry of this data
+	 * Return the user data which was saved to session from the first RealMe auth.
+	 * Note: Does not check authenticity or expiry of this data
 	 *
 	 * @return array
 	 */
@@ -185,6 +232,9 @@ class RealMeService extends Object {
 		return $returnedData;
 	}
 
+	/**
+	 * @return string A BackURL as specified originally when accessing /Security/login, for use after authentication
+	 */
 	public function getBackURL() {
 		if(!empty($_REQUEST['BackURL'])) {
 			$url = $_REQUEST['BackURL'];
@@ -401,7 +451,115 @@ class RealMeService extends Object {
 		return (defined('REALME_MUTUAL_CERT_PASSWORD') ? REALME_MUTUAL_CERT_PASSWORD : null);
 	}
 
-	private function getAllowedRealMeEnvironments() {
+	/**
+	 * Returns the content of the SAML signing certificate. This is used by @link RealMeSetupTask to output metadata.
+	 * The metadata file requires just the certificate to be included, without the BEGIN/END CERTIFICATE lines
+	 * @return string|null The content of the signing certificate
+	 */
+	public function getSigningCertContent() {
+		$certPath = $this->getSigningCertPath();
+		$certificate = null;
+
+		if(!is_null($certPath)) {
+			$certificateContents = file_get_contents($certPath);
+
+			// This is a PEM key, and we need to extract just the certificate, stripping out the private key etc.
+			// So we search for everything between '-----BEGIN CERTIFICATE-----' and '-----END CERTIFICATE-----'
+			preg_match(
+				'/-----BEGIN CERTIFICATE-----\n([^-]*)\n-----END CERTIFICATE-----/',
+				$certificateContents,
+				$matches
+			);
+
+			if(isset($matches) && is_array($matches) && isset($matches[1])) {
+				$certificate = $matches[1];
+			}
+		}
+
+		return $certificate;
+	}
+
+	/**
+	 * @param string $env The environment to return the entity ID for. Must be one of the RealMe environment names
+	 * @return string|null Either the assertion consumer service location, or null if information doesn't exist
+	 */
+	public function getAssertionConsumerServiceUrlForEnvironment($env) {
+		$url = null;
+
+		if(in_array($env, $this->getAllowedRealMeEnvironments())) {
+			// Returns http://dev.realme-integration.govt.nz/simplesaml/module.php/saml/sp/saml2-acs.php/realme-mts
+			$domain = $this->getMetadataAssertionServiceDomainForEnvironment($env);
+			$basePath = $this->getSimpleSamlBaseUrlPath();
+			$modulePath = 'module.php/saml/sp/saml2-acs.php/';
+			$authSource = sprintf('realme-%s', $env);
+
+			$url = Controller::join_links($domain, $basePath, $modulePath, $authSource);
+		}
+
+		return $url;
+	}
+
+	/**
+	 * @param string $env The environment to return the domain name for. Must be one of the RealMe environment names
+	 * @return string|null Either the FQDN (e.g. https://www.realme-demo.govt.nz/) or null if none is specified
+	 */
+	private function getMetadataAssertionServiceDomainForEnvironment($env) {
+		$domain = null;
+
+		if(in_array($env, $this->getAllowedRealMeEnvironments())) {
+			$domains = $this->config()->metadata_assertion_service_domains;
+
+			if(is_array($domains) && isset($domains[$env])) {
+				$domain = $domains[$env];
+			}
+		}
+
+		return $domain;
+	}
+
+	/**
+	 * @return string|null The organisation name to be used in metadata XML output, or null if none exists
+	 */
+	public function getMetadataOrganisationName() {
+		$orgName = $this->config()->metadata_organisation_name;
+		return (strlen($orgName) > 0) ? $orgName : null;
+	}
+
+	/**
+	 * @return string|null The organisation display name to be used in metadata XML output, or null if none exists
+	 */
+	public function getMetadataOrganisationDisplayName() {
+		$displayName = $this->config()->metadata_organisation_display_name;
+		return (strlen($displayName) > 0) ? $displayName : null;
+	}
+
+	/**
+	 * @return string|null The organisation website URL to be used in metadata XML output, or null if none exists
+	 */
+	public function getMetadataOrganisationUrl() {
+		$url = $this->config()->metadata_organisation_url;
+		return (strlen($url) > 0) ? $url: null;
+	}
+
+	/**
+	 * @return array The support contact details to be used in metadata XML output, with null values if they don't exist
+	 */
+	public function getMetadataContactSupport() {
+		$company = $this->config()->metadata_contact_support_company;
+		$firstNames = $this->config()->metadata_contact_support_firstnames;
+		$surname = $this->config()->metadata_contact_support_surname;
+
+		return array(
+			'company' => (strlen($company) > 0) ? $company : null,
+			'firstNames' => (strlen($firstNames) > 0) ? $firstNames : null,
+			'surname' => (strlen($surname) > 0) ? $surname : null
+		);
+	}
+
+	/**
+	 * @return array The list of Real Me environments that can be used. By default, we allow mts, ite and production.
+	 */
+	public function getAllowedRealMeEnvironments() {
 		return $this->config()->allowed_realme_environments;
 	}
 }

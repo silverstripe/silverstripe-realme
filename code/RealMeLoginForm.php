@@ -32,16 +32,15 @@ class RealMeLoginForm extends LoginForm {
 	);
 
 	/**
-	 * @var string
+	 * @var string The authentication class tied to this login form
 	 */
 	protected $authenticator_class = 'RealMeAuthenticator';
 
 	/**
 	  * Returns an instance of this class
 	  *
-	  * @param Controller
-	  * @param String
-	  * @return RealMeLoginForm
+	  * @param Controller $controller
+	  * @param string $name
 	  */
 	public function __construct($controller, $name) {
 		$fields = new FieldList(array(
@@ -86,10 +85,12 @@ class RealMeLoginForm extends LoginForm {
 	}
 
 	/**
-	 * Returns
+	 * Process login form submission
 	 *
-	 * @param
-	 * @return
+	 * @param array $data
+	 * @param Form $form
+	 * @return SS_HTTPResponse|void If successfully processed, returns void (SimpleSAMLphp redirects to RealMe)
+	 * @throws SS_HTTPResponse_Exception
 	 */
 	public function redirectToRealMe($data, Form $form) {
 		/** @var RealMeService $service */
