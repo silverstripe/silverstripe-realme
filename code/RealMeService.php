@@ -1,12 +1,12 @@
 <?php
 class RealMeService extends Object {
 	/**
-	 * @var ArrayData|null User data returned by Real Me. Provided by {@link self::ensureLogin()}.
+	 * @var ArrayData|null User data returned by RealMe. Provided by {@link self::ensureLogin()}.
 	 *
 	 * Data within this ArrayData is as follows:
 	 * - NameID:       ArrayData   Includes the UserFlt and associated formatting information
-	 * - UserFlt:      string      Real Me pseudonymous username / identity
-	 * - Attributes:   ArrayData   User attributes returned by Real Me
+	 * - UserFlt:      string      RealMe pseudonymous username / identity
+	 * - Attributes:   ArrayData   User attributes returned by RealMe
 	 * - Expire:       SS_Datetime The expiry date & time of this authentication session
 	 * - SessionIndex: string      Unique identifier used to identify a user with both IdP and SP for given user.
 	 */
@@ -14,7 +14,7 @@ class RealMeService extends Object {
 
 	/**
 	 * @config
-	 * @var string The authentication source to use, which ultimately determines which Real Me environment is
+	 * @var string The authentication source to use, which ultimately determines which RealMe environment is
 	 * authenticated against. This should be set by Config, and generally be different per environment (e.g. developer
 	 * environments would generally use 'realme-mts', UAT/staging sites might use 'realme-ite', and production sites
 	 * would use 'realme-prod'.
@@ -144,7 +144,7 @@ class RealMeService extends Object {
 
 	/**
 	 * @return bool true if the user is correctly authenticated, false if there was an error with login
-	 * NB: If the user is not authenticated, they will be redirected to Real Me to login, so a boolean false return here
+	 * NB: If the user is not authenticated, they will be redirected to RealMe to login, so a boolean false return here
 	 * indicates that there was a failure during the authentication process (perhaps a communication issue)
 	 */
 	public function enforceLogin() {
@@ -203,7 +203,7 @@ class RealMeService extends Object {
 	}
 
 	/**
-	 * @param SimpleSAML_Auth_Simple $auth The authentication context as returned from Real Me
+	 * @param SimpleSAML_Auth_Simple $auth The authentication context as returned from RealMe
 	 * @return ArrayData
 	 */
 	private function getAuthData(SimpleSAML_Auth_Simple $auth) {
@@ -557,7 +557,7 @@ class RealMeService extends Object {
 	}
 
 	/**
-	 * @return array The list of Real Me environments that can be used. By default, we allow mts, ite and production.
+	 * @return array The list of RealMe environments that can be used. By default, we allow mts, ite and production.
 	 */
 	public function getAllowedRealMeEnvironments() {
 		return $this->config()->allowed_realme_environments;

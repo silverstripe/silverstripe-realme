@@ -99,7 +99,7 @@ class RealMeLoginForm extends LoginForm {
 		// If there's no service, ensure we throw a predictable error
 		if(!$service) return $this->controller->httpError(500);
 
-		// This will either redirect to Real Me (via SimpleSAMLphp) or return true/false to indicate logged in state
+		// This will either redirect to RealMe (via SimpleSAMLphp) or return true/false to indicate logged in state
 		$loggedIn = $service->enforceLogin();
 
 		if($loggedIn) {

@@ -20,7 +20,7 @@
 // MTS - RealMe Messaging Test Site Environment
 $metadata['https://mts.realme.govt.nz/saml2'] = array(
 	'name' => 'MTS',
-	'description' => 'Real Me MTS authentication system',
+	'description' => 'RealMe MTS authentication system',
 
 	'SingleSignOnService' => 'https://mts.realme.govt.nz/logon-mts/mtsEntryPoint',
 	'SingleSignOnService.artifact' => 'https://mts.realme.govt.nz/logon-mts/mtsEntryPoint',
@@ -41,7 +41,7 @@ $metadata['https://mts.realme.govt.nz/saml2'] = array(
 // ITE - RealMe Integrated Test Environment
 $metadata['https://www.ite.logon.realme.govt.nz/saml2'] = array(
 	'name' => 'ITE',
-	'description' => 'Real Me ITE authentication system',
+	'description' => 'RealMe ITE authentication system',
 
 	'SingleSignOnService' => 'https://www.ite.logon.realme.govt.nz/sso/logon/metaAlias/logon/logonidp',
 	'SingleSignOnService.artifact' => 'https://www.ite.logon.realme.govt.nz/sso/logon/metaAlias/logon/logonidp',
@@ -61,7 +61,7 @@ $metadata['https://www.ite.logon.realme.govt.nz/saml2'] = array(
 // Production - RealMe Production Environment
 $metadata['https://www.logon.realme.govt.nz/saml2'] = array(
 	'name' => 'Production',
-	'description' => 'Real Me Production authentication system',
+	'description' => 'RealMe Production authentication system',
 
 	'SingleSignOnService' => 'https://www.logon.realme.govt.nz/sso/logon/metaAlias/logon/logonidp',
 	'SingleSignOnService.artifact' => 'https://www.logon.realme.govt.nz/sso/logon/metaAlias/logon/logonidp',

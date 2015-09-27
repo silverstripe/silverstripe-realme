@@ -281,7 +281,7 @@ Certificates
 - serial number must be non-negative.
 - Follow naming convention (concatenation)
  - unique, lowercase a-z 0-9 .
- - The Real Me assertion service environment
+ - The RealMe assertion service environment
  - the keyword 'sa'
  - purpose (saml.sig or mutual.ssl).
  - An identifier that is unique across all certificates

@@ -13,7 +13,7 @@
  * - Create authsources.php file for simpleSAMLphp to consume, and write it to the appropriate place
  * - Create saml20-idp-remote.php file for simpleSAMLphp to consume, and write it to the appropriate place
  * - Symlink the RealMeService::$simplesaml_base_url_path from the webroot to vendor/simplesamlphp/simplesamlphp/www
- * - Output metadata XML that must be submitted to Real Me in order to integrate with ITE and Production environments
+ * - Output metadata XML that must be submitted to RealMe in order to integrate with ITE and Production environments
  */
 class RealMeSetupTask extends BuildTask {
 	/**

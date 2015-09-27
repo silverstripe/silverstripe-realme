@@ -1,12 +1,12 @@
 en:
   RealMeAuthenticator:
-    TITLE: "Real Me Account"
-    LOGINFAILURE: "Unfortunately we're not able to authenticate you via Real Me right now."
+    TITLE: "RealMe Account"
+    LOGINFAILURE: "Unfortunately we're not able to authenticate you via RealMe right now."
   RealMeSecurityExtension:
-    LOGINFAILURE: "Unfortunately we're not able to authenticate you via Real Me right now."
-    AUTHERROR: "Sorry, we couldn't verify your Real Me account. Please try again."
+    LOGINFAILURE: "Unfortunately we're not able to authenticate you via RealMe right now."
+    AUTHERROR: "Sorry, we couldn't verify your RealMe account. Please try again."
   RealMeLoginForm:
-    LOGINBUTTON: "Login or Register with Real Me"
+    LOGINBUTTON: "Login or Register with RealMe"
   RealMeSetupTask:
     ERRNOTCLI: "This task can only be run from the command-line, not in your browser."
     ERRALREADYRUN: "This task has already been run once ({path} already exists). If you want to re-run it, please add force=1 as the third arg"
