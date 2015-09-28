@@ -98,6 +98,38 @@ class RealMeService extends Object {
 
 	/**
 	 * @config
+	 * @var array Stores the proxy_host values used when creating the back-channel SoapClient connection to the RealMe
+	 * artifact resolution service. This can either be:
+	 * - null (indicating no proxy is required),
+	 * - a plain string (e.g. gateway.your-network.govt.nz),
+	 * - the name of an environment variable that can be called (via getenv()) to retrieve the proxy URL from
+	 *       (e.g. env:http_proxy). In this case, it is assumed that a full URL would exist in this environment variable
+	 *       (e.g. tcp://gateway.your-network.govt.nz:8080) as it is intended to be used to mimic how curl handles HTTP
+	 *       proxy (if you specify the http_proxy env-var, curl will automatically parse it as a full URL and use that
+	 *       for resolving all requests by default.
+	 */
+	private static $backchannel_proxy_hosts = array(
+		'mts' => null,
+		'ite' => null,
+		'prod' => null
+	);
+
+	/**
+	 * @config
+	 * @var array Stores the proxy_port values used when creating the back-channel SoapClient connection to the RealMe
+	 * artifact resolution service.
+	 *
+	 * See the definition for self::$backchannel_proxy_hosts for more information on the
+	 * valid values.
+	 */
+	private static $backchannel_proxy_ports = array(
+		'mts' => null,
+		'ite' => null,
+		'prod' => null
+	);
+
+	/**
+	 * @config
 	 * @var array Domain names for metadata files. Used in @link RealMeSetupTask when outputting metadata XML
 	 */
 	private static $metadata_assertion_service_domains = array(
@@ -349,17 +381,7 @@ class RealMeService extends Object {
 	 * @return string|null Returns the entity ID for the given $env, or null if no entity ID exists
 	 */
 	public function getEntityIDForEnvironment($env) {
-		$entityID = null;
-
-		if(in_array($env, $this->getAllowedRealMeEnvironments())) {
-			$entityIDs = $this->config()->entity_ids;
-
-			if(is_array($entityIDs) && isset($entityIDs[$env])) {
-				$entityID = $entityIDs[$env];
-			}
-		}
-
-		return $entityID;
+		return $this->getConfigurationVarByEnv('entity_ids', $env);
 	}
 
 	/**
@@ -371,17 +393,78 @@ class RealMeService extends Object {
 	 * @return string|null Returns the AuthNContext for the given $env, or null if no context exists
 	 */
 	public function getAuthnContextForEnvironment($env) {
-		$context = null;
+		return $this->getConfigurationVarByEnv('authn_contexts', $env);
+	}
 
-		if(in_array($env, $this->getAllowedRealMeEnvironments())) {
-			$contexts = $this->config()->authn_contexts;
+	/**
+	 * Gets the proxy host (if required) for back-channel SOAP requests. The proxy host can begin with the string 'env:'
+	 * in which case the script will call getenv() on the returned value and attempt to parse it as a full URL. This is
+	 * designed primarily to be compatible with the 'http_proxy' that curl uses by default. In other words, passing in
+	 * `env:http_proxy` is the equivalent of saying 'use the same HTTP proxy that curl will use in this environment'.
+	 *
+	 * @param string $env The environment to return the proxy_host for. Must be one of the RealMe environment names
+	 * @return string|null Returns the SOAPClient `proxy_host` param, or null if there isn't one
+	 */
+	public function getProxyHostForEnvironment($env) {
+		$host = $this->getConfigurationVarByEnv('backchannel_proxy_hosts', $env);
 
-			if(is_array($contexts) && isset($contexts[$env])) {
-				$context = $contexts[$env];
+		// Allow usage of an environment variable to define this
+		if(substr($host, 0, 4) === 'env:') {
+			$host = getenv(substr($host, 4));
+
+			if($host === false) {
+				// getenv() didn't return a valid environment var, it's either mis-spelled or doesn't exist
+				$host = null;
+			} else {
+				$host = parse_url($host, PHP_URL_HOST);
+
+				// This may happen on seriously malformed URLs, in which case we should return null
+				if($host === false) {
+					$host = null;
+				}
 			}
 		}
 
-		return $context;
+		return $host;
+	}
+
+	/**
+	 * Gets the proxy port (if required) for back-channel SOAP requests. The proxy port can begin with the string 'env:'
+	 * in which case the script will call getenv() on the returned value and attempt to parse it as a full URL. This is
+	 * designed primarily to be compatible with the 'http_proxy' that curl uses by default. In other words, passing in
+	 * `env:http_proxy` is the equivalent of saying 'use the same HTTP proxy that curl will use in this environment'.
+	 *
+	 * @param string $env The environment to return the proxy_port for. Must be one of the RealMe environment names
+	 * @return string|null Returns the SOAPClient `proxy_port` param, or null if there isn't one
+	 */
+	public function getProxyPortForEnvironment($env) {
+		$port = $this->getConfigurationVarByEnv('backchannel_proxy_ports', $env);
+
+		// Allow usage of an environment variable to define this
+		if(substr($port, 0, 4) === 'env:' && defined(substr($port, 4))) {
+			$port = parse_url(constant(substr($port, 4)), PHP_URL_PORT);
+		}
+
+		return $port;
+	}
+
+	/**
+	 * @param string $cfgName The static configuration value to get. This should be an array
+	 * @param string $env The environment to return the value for. Must be one of the RealMe environment names
+	 * @return string|null Returns the value as defined in $cfgName for the given environment, or null if none exist
+	 */
+	private function getConfigurationVarByEnv($cfgName, $env) {
+		$value = null;
+
+		if(in_array($env, $this->getAllowedRealMeEnvironments())) {
+			$values = $this->config()->$cfgName;
+
+			if(is_array($values) && isset($values[$env])) {
+				$value = $values[$env];
+			}
+		}
+
+		return $value;
 	}
 
 	/**
@@ -504,17 +587,7 @@ class RealMeService extends Object {
 	 * @return string|null Either the FQDN (e.g. https://www.realme-demo.govt.nz/) or null if none is specified
 	 */
 	private function getMetadataAssertionServiceDomainForEnvironment($env) {
-		$domain = null;
-
-		if(in_array($env, $this->getAllowedRealMeEnvironments())) {
-			$domains = $this->config()->metadata_assertion_service_domains;
-
-			if(is_array($domains) && isset($domains[$env])) {
-				$domain = $domains[$env];
-			}
-		}
-
-		return $domain;
+		return $this->getConfigurationVarByEnv('metadata_assertion_service_domains', $env);
 	}
 
 	/**

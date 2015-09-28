@@ -66,6 +66,14 @@ if(strlen($mutualKeyPass) > 0) {
 	$config['realme-mts']['saml.SOAPClient.privatekey_pass'] = $mutualKeyPass;
 }
 
+// The proxyhost and proxyport values for the back-channel SOAPClient connection are only added if necessary
+$proxyHost = '{{mts-backchannel-proxyhost}}';
+$proxyPort = '{{mts-backchannel-proxyport}}';
+if(strlen($proxyHost) > 0 && strlen($proxyPort) > 0) {
+	$config['realme-mts']['saml.SOAPClient.proxyhost'] = $proxyHost;
+	$config['realme-mts']['saml.SOAPClient.proxyport'] = $proxyPort;
+}
+
 // ITE - RealMe Integrated Test Environment
 $config['realme-ite'] = array(
 	'saml:SP',
@@ -98,6 +106,14 @@ if(strlen($mutualKeyPass) > 0) {
 	$config['realme-ite']['saml.SOAPClient.privatekey_pass'] = $mutualKeyPass;
 }
 
+// The proxyhost and proxyport values for the back-channel SOAPClient connection are only added if necessary
+$proxyHost = '{{ite-backchannel-proxyhost}}';
+$proxyPort = '{{ite-backchannel-proxyport}}';
+if(strlen($proxyHost) > 0 && strlen($proxyPort) > 0) {
+	$config['realme-ite']['saml.SOAPClient.proxyhost'] = $proxyHost;
+	$config['realme-ite']['saml.SOAPClient.proxyport'] = $proxyPort;
+}
+
 // Production - RealMe Production Environment
 $config['realme-prod'] = array(
 	'saml:SP',
@@ -128,4 +144,12 @@ if(strlen($signingKeyPass) > 0) {
 $mutualKeyPass = '{{prod-privatepemfile-mutual-password}}';
 if(strlen($mutualKeyPass) > 0) {
 	$config['realme-prod']['saml.SOAPClient.privatekey_pass'] = $mutualKeyPass;
+}
+
+// The proxyhost and proxyport values for the back-channel SOAPClient connection are only added if necessary
+$proxyHost = '{{prod-backchannel-proxyhost}}';
+$proxyPort = '{{prod-backchannel-proxyport}}';
+if(strlen($proxyHost) > 0 && strlen($proxyPort) > 0) {
+	$config['realme-prod']['saml.SOAPClient.proxyhost'] = $proxyHost;
+	$config['realme-prod']['saml.SOAPClient.proxyport'] = $proxyPort;
 }

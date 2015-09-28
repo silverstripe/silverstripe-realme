@@ -25,6 +25,24 @@ RealMeService:
     mts: "urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:LowStrength"
     ite: "urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:LowStrength"
     prod: "urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:LowStrength"
+  metadata_assertion_service_domains:
+    mts: "http://dev.realme-demo.govt.nz/"
+    ite: "https://staging.realme-demo.govt.nz/"
+    prod: "https://realme-demo.govt.nz/"
+  backchannel_proxy_hosts:
+    mts: null
+    ite: "env:http_proxy"
+    prod: "env:http_proxy"
+  backchannel_proxy_ports:
+    mts: null
+    ite: "env:http_proxy"
+    prod: "env:http_proxy"
+  metadata_organisation_name: "RealMe Demo Organisation"
+  metadata_organisation_display_name: "RealMe Demo Organisation"
+  metadata_organisation_url: "https://realme-demo.govt.nz"
+  metadata_contact_support_company: "SilverStripe"
+  metadata_contact_support_firstnames: "Jane"
+  metadata_contact_support_surname: "Smith"
 ```
 
 The following `authn_context` values can be used:
