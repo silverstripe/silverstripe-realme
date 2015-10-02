@@ -197,7 +197,6 @@ class RealMeSetupTask extends BuildTask {
 				'',
 				'',
 				array(
-					'file' => $signingCertFile,
 					'const' => 'REALME_SIGNING_CERT_FILENAME'
 				)
 			);
@@ -218,7 +217,6 @@ class RealMeSetupTask extends BuildTask {
 				'',
 				'',
 				array(
-					'file' => $mutualCertFile,
 					'const' => 'REALME_MUTUAL_CERT_FILENAME'
 				)
 			);
