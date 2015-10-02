@@ -29,7 +29,7 @@ class RealMeService extends Object {
 	 * `www` directory.
 	 * @see RealMeSetupTask for more information on how this is configured
 	 */
-	private static $simplesaml_base_url_path = 'simplesaml/';
+	private static $simplesaml_base_url_path = 'vendor/simplesamlphp/simplesamlphp/www/';
 
 	/**
 	 * @config
@@ -220,7 +220,7 @@ class RealMeService extends Object {
 	 * Return the user data which was saved to session from the first RealMe auth.
 	 * Note: Does not check authenticity or expiry of this data
 	 *
-	 * @return array
+	 * @return ArrayData
 	 */
 	public function getUserData() {
 		if(is_null($this->config()->user_data)) {
@@ -286,6 +286,20 @@ class RealMeService extends Object {
 	}
 
 	/**
+	 * @return string|null Either the directory where SimpleSAMLphp configuration is stored, or null if undefined
+	 */
+	public function getSimpleSamlConfigDir() {
+		return (defined('REALME_CONFIG_DIR') ? rtrim(REALME_CONFIG_DIR, '/') : null);
+	}
+
+	/**
+	 * @return string The path to SimpleSAMLphp's metadata. This will either be defined in config, or just '/metadata'
+	 */
+	public function getSimpleSamlMetadataDir() {
+		return sprintf('%s/metadata', $this->getSimpleSamlConfigDir());
+	}
+
+	/**
 	 * @return string Either the value for baseurlpath in SimpleSAML's config, or a default value if it's been unset
 	 */
 	public function getSimpleSamlBaseUrlPath() {
@@ -315,13 +329,6 @@ class RealMeService extends Object {
 	 */
 	public function getTempDir() {
 		return (defined('REALME_TEMP_DIR') ? REALME_TEMP_DIR : null);
-	}
-
-	/**
-	 * @return string The path on the web server to create or find the symlink to SimpleSAMLphp's `www` dir at
-	 */
-	public function getSimpleSAMLSymlinkPath() {
-		return sprintf('%s/%s', BASE_PATH, $this->getSimpleSamlBaseUrlPath());
 	}
 
 	/**
@@ -570,7 +577,7 @@ class RealMeService extends Object {
 		$url = null;
 
 		if(in_array($env, $this->getAllowedRealMeEnvironments())) {
-			// Returns http://dev.realme-integration.govt.nz/simplesaml/module.php/saml/sp/saml2-acs.php/realme-mts
+			// Returns http://domain.govt.nz/vendor/simplesamlphp/simplesamlphp/www/module.php/saml/sp/saml2-acs.php/realme-mts
 			$domain = $this->getMetadataAssertionServiceDomainForEnvironment($env);
 			$basePath = $this->getSimpleSamlBaseUrlPath();
 			$modulePath = 'module.php/saml/sp/saml2-acs.php/';

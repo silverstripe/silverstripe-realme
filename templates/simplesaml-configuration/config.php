@@ -20,6 +20,7 @@ $config = array(
 	'loggingdir' => '{{loggingdir}}',
 	'datadir' => 'data/',
 	'tempdir' => '{{tempdir}}',
+	'metadatadir' => '{{metadatadir}}',
 
 	'debug' => false,
 	'showerrors' => false,

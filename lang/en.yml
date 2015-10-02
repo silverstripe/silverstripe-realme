@@ -10,9 +10,10 @@ en:
   RealMeSetupTask:
     ERRNOTCLI: "This task can only be run from the command-line, not in your browser."
     ERRALREADYRUN: "This task has already been run once ({path} already exists). If you want to re-run it, please add force=1 as the third arg"
-    ERRBADSYMLINKPATH: "The symlink path '{path}' is not valid. It must be a location within the web-root"
     ERRVALIDATION: "There were {numissues} issue(s) found during validation that must be fixed prior to setup: {issues}"
     ERRENVNOTALLOWED: "The RealMe environment specified on the cli ('{env}') is not allowed. It must be one of: {allowedEnvs}"
+    ERRNOCONFIGDIR: "No RealMe configuration dir (for SimpleSAMLphp) is specified. Define the REALME_CONFIG_DIR const in your _ss_environment.php file"
+    ERRCONFIGDIRNOTWRITEABLE: "RealMe configuration dir specified ('{dir}') must be created and able to be written to. Ensure permissions are set correctly"
     ERRNOBASEDIR: "No base dir is specified. Ensure you haven't set this to a blank line in your YML configuration"
     ERRNOCERTDIR: "No certificate dir is specified. Define the REALME_CERT_DIR const in your _ss_environment.php file"
     ERRCERTDIRNOTREADABLE: "Certificate dir specified ('{dir}') must be created and be readable. Ensure permissions are set correctly"

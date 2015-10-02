@@ -45,7 +45,9 @@ RealMeService:
   metadata_contact_support_surname: "Smith"
 ```
 
-The following `authn_context` values can be used:
+The values you set for `entity_ids` should conform to the RealMe standard for entity IDs. In summary, the domain should be relevant to the agency, the first part of the path should be the privacy realm name, and the second part of the path should be the service name.
+
+The values you set for `authn_contexts` can be one of the following, depending on the requirements of your application:
 
 | **AuthN Context value**                                                                    | **Description**                                                                                                             |
 | ------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
@@ -55,6 +57,22 @@ The following `authn_context` values can be used:
 | urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength::OTP:Token:SID  | Not recommended. Requires a username, password, and specifically requires the use of an RSA token.                          |
 
 If you are wanting to test SMS tokens on the ITE environment, further documentation is available on the RealMe Shared Workspace.
+
+## RealMe Environments
+
+The RealMe system consists of three separate environments - MTS, ITE and Production.
+
+In MTS, you confirm that your setup is correct, and you can correctly parse all the different types of messages that RealMe may pass back to your application.
+
+In ITE, which is equivalent to a pre-prod or staging environment, you confirm that your website will work correctly when deployed to production, using your own secure certificates, and any custom configuration (e.g. `authn_context` values) set.
+
+In production, you allow real users to use RealMe for authentication.
+
+### Configuring for MTS
+
+The required SSL certificates for MTS are provided by the RealMe Operations team, once you have access to the RealMe Shared Workspace. These certificates (at time of writing they are named `mts_saml_sp.pem`, `mts_mutual_ssl_sp.pem`) should be loaded into the directory specified by `REALME_CERT_DIR`.
+
+Once in place, and ensuring the `REALME_SIGNING_CERT_FILENAME` and `REALME_MUTUAL_CERT_FILENAME` consts are defined correctly, you should be able to proceed to testing the standard login form, or [using the RealMe templates](templates.md).
 
 ### UAT and production environments
 

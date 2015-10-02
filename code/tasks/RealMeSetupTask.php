@@ -12,7 +12,6 @@
  * - Create config.php file for simpleSAMLphp to consume, and write it in the appropriate place
  * - Create authsources.php file for simpleSAMLphp to consume, and write it to the appropriate place
  * - Create saml20-idp-remote.php file for simpleSAMLphp to consume, and write it to the appropriate place
- * - Symlink the RealMeService::$simplesaml_base_url_path from the webroot to vendor/simplesamlphp/simplesamlphp/www
  * - Output metadata XML that must be submitted to RealMe in order to integrate with ITE and Production environments
  */
 class RealMeSetupTask extends BuildTask {
@@ -53,8 +52,16 @@ class RealMeSetupTask extends BuildTask {
 
 		// Create configuration files
 		$this->message(sprintf(
-			'Creating config file in %s/config/ from config in template dir  %s',
-			$this->getSimpleSAMLVendorPath(),
+			'Creating README file in %s from template dir %s',
+			$this->service->getSimpleSamlConfigDir(),
+			$this->getConfigurationTemplateDir()
+		));
+
+		$this->createConfigReadmeFromTemplate();
+
+		$this->message(sprintf(
+			'Creating config file in %s/config/ from config in template dir %s',
+			$this->service->getSimpleSamlConfigDir(),
 			$this->getConfigurationTemplateDir()
 		));
 
@@ -62,7 +69,7 @@ class RealMeSetupTask extends BuildTask {
 
 		$this->message(sprintf(
 			'Creating authsources file in %s/config/ from config in template dir %s',
-			$this->getSimpleSAMLVendorPath(),
+			$this->service->getSimpleSamlConfigDir(),
 			$this->getConfigurationTemplateDir()
 		));
 
@@ -70,18 +77,10 @@ class RealMeSetupTask extends BuildTask {
 
 		$this->message(sprintf(
 			'Creating saml20-idp-remote file in %s/metadata/ from config in template dir %s',
-			$this->getSimpleSAMLVendorPath(),
+			$this->service->getSimpleSamlConfigDir(),
 			$this->getConfigurationTemplateDir()));
 
 		$this->createMetadataFromTemplate();
-
-		$this->message(sprintf(
-			'Symlinking SimpleSAMLphp\'s www folder from %s into %s',
-			$this->getSimpleSAMLVendorPath(),
-			$this->service->getSimpleSAMLSymlinkPath()
-		));
-
-		$this->symlinkSimpleSAMLIntoWebroot();
 
 		// Output metadata XML so that it can be sent to RealMe via the agency
 		$this->message(sprintf(
@@ -111,20 +110,13 @@ class RealMeSetupTask extends BuildTask {
 		$existingFiles = array(
 			$this->getSimpleSAMLConfigFilePath(),
 			$this->getSimpleSAMLAuthSourcesFilePath(),
-			$this->getSimpleSAMLMetadataFilePath(),
-			$this->service->getSimpleSAMLSymlinkPath()
+			$this->getSimpleSAMLMetadataFilePath()
 		);
 
 		foreach($existingFiles as $filePath) {
 			if(file_exists($filePath) && !$forceRun) {
 				$errors[] = _t('RealMeSetupTask.ERRALREADYRUN', '', '', array('path' => $filePath));
 			}
-		}
-
-		// Ensure that the symlink location is valid
-		$symlinkPath = $this->service->getSimpleSAMLSymlinkPath();
-		if(!$this->validateSymlinkLocation($symlinkPath)) {
-			$errors[] = _t('RealMeSetupTask.ERRBADSYMLINKPATH', '', '', array('path' => $symlinkPath));
 		}
 
 		// Ensure that 'forEnv=' is specified on the cli, and ensure that it matches a RealMe environment
@@ -138,6 +130,18 @@ class RealMeSetupTask extends BuildTask {
 					'env' => $forEnv,
 					'allowedEnvs' => join(', ', $allowedEnvs)
 				)
+			);
+		}
+
+		// Ensure we have a config directory and that it's writeable by the web server
+		if(is_null($this->service->getSimpleSamlConfigDir())) {
+			$errors[] = _t('RealMeSetupTask.ERRNOCONFIGDIR');
+		} elseif(!$this->isWriteable($this->service->getSimpleSamlConfigDir())) {
+			$errors[] = _t(
+				'RealMeSetupTask.ERRCONFIGDIRNOTWRITEABLE',
+				'',
+				'',
+				array('dir' => $this->service->getSimpleSamlConfigDir())
 			);
 		}
 
@@ -271,6 +275,17 @@ class RealMeSetupTask extends BuildTask {
 		return sizeof($errors) > 0;
 	}
 
+	private function createConfigReadmeFromTemplate() {
+		$configDir = $this->getConfigurationTemplateDir();
+		$templateFile = Controller::join_links($configDir, 'README.md');
+
+		if(!$this->isReadable($templateFile)) {
+			$this->halt(sprintf("Can't read README.md file at %s", $templateFile));
+		}
+
+		$this->writeConfigFile($templateFile, $this->getSimpleSAMLConfigReadmeFilePath());
+	}
+
 	/**
 	 * Create primary configuration file and place in SimpleSAMLphp configuration directory
 	 */
@@ -290,6 +305,7 @@ class RealMeSetupTask extends BuildTask {
 				'{{certdir}}' => $this->service->getCertDir(),
 				'{{loggingdir}}' => $this->service->getLoggingDir(),
 				'{{tempdir}}' => $this->service->getTempDir(),
+				'{{metadatadir}}' => $this->service->getSimpleSamlMetadataDir(),
 				'{{adminpassword}}' => $this->service->findOrMakeSimpleSAMLPassword(),
 				'{{secretsalt}}' => $this->service->generateSimpleSAMLSalt(),
 			)
@@ -366,31 +382,6 @@ class RealMeSetupTask extends BuildTask {
 	}
 
 	/**
-	 * Ensures a symlink between the webroot (e.g. /path/to/webroot/simplesaml/) exists, and points to the correct
-	 * vendor folder for SimpleSAMLphp's webroot (vendor/simplesamlphp/simplesamlphp/www/)
-	 */
-	private function symlinkSimpleSAMLIntoWebroot() {
-		$simpleSamlWebroot = Controller::join_links($this->getSimpleSAMLVendorPath(), 'www');
-		$symlinkLocation = $this->service->getSimpleSAMLSymlinkPath();
-		if(substr($symlinkLocation, -1, 1) === '/') {
-			$symlinkLocation = substr($symlinkLocation, 0, strlen($symlinkLocation) - 1);
-		}
-
-		// Double-ensure that we're not about to delete /, or the entire webroot, because $symlinkLocation is wrong
-		if(!$this->validateSymlinkLocation($symlinkLocation)) {
-			$this->halt(sprintf('Exiting because the symlink location (%s) is incorrect.', $symlinkLocation));
-		}
-
-		if(file_exists($symlinkLocation)) {
-			unlink($symlinkLocation);
-		}
-
-		if(!symlink($simpleSamlWebroot, $symlinkLocation)) {
-			$this->halt('Was not able to create symlink, symlink() call failed.');
-		}
-	}
-
-	/**
 	 * Outputs metadata template XML to console, so it can be sent to RealMe Operations team
 	 *
 	 * @param string $forEnv The RealMe environment to output metadata content for (e.g. mts, ite, prod).
@@ -433,6 +424,13 @@ class RealMeSetupTask extends BuildTask {
 	private function writeConfigFile($templatePath, $newFilePath, $replacements = null) {
 		$configText = $this->replaceTemplateContents($templatePath, $replacements);
 
+		// If the parent folder of $newFilePath doesn't already exist, then create it
+		// Specifically only look one level higher, we already validate that everything else exists and can be written
+		$fileParentDir = dirname($newFilePath);
+		if(!is_dir($fileParentDir)) {
+			mkdir($fileParentDir, 0744);
+		}
+
 		if(file_put_contents($newFilePath, $configText) === false) {
 			$this->halt(sprintf("Could not write template file '%s' to location '%s'", $templatePath, $newFilePath));
 		}
@@ -456,24 +454,31 @@ class RealMeSetupTask extends BuildTask {
 	}
 
 	/**
-	 * @return string The path within the SimpleSAMLphp root to the main configuration file
+	 * @return string The path to the README file we create to help identify this configuration directory
+	 */
+	private function getSimpleSAMLConfigReadmeFilePath() {
+		return sprintf('%s/README.md', $this->service->getSimpleSamlConfigDir());
+	}
+
+	/**
+	 * @return string The path to the main SimpleSAMLphp configuration file, once written
 	 */
 	private function getSimpleSAMLConfigFilePath() {
-		return sprintf('%s/config/config.php', $this->getSimpleSAMLVendorPath());
+		return sprintf('%s/config.php', $this->service->getSimpleSamlConfigDir());
 	}
 
 	/**
-	 * @return string The path within the SimpleSAMLphp root to the authentication sources configuration file
+	 * @return string The path to the authentication sources configuration file, once written
 	 */
 	private function getSimpleSAMLAuthSourcesFilePath() {
-		return sprintf('%s/config/authsources.php', $this->getSimpleSAMLVendorPath());
+		return sprintf('%s/authsources.php', $this->service->getSimpleSamlConfigDir());
 	}
 
 	/**
-	 * @return string The path within the SimpleSAMLphp root to the metadata configuration file
+	 * @return string The path to the metadata configuration file, once written
 	 */
 	private function getSimpleSAMLMetadataFilePath() {
-		return sprintf('%s/metadata/saml20-idp-remote.php', $this->getSimpleSAMLVendorPath());
+		return sprintf('%s/metadata/saml20-idp-remote.php', $this->service->getSimpleSamlConfigDir());
 	}
 
 	/**
@@ -534,32 +539,5 @@ class RealMeSetupTask extends BuildTask {
 	 */
 	private function isWriteable($filename) {
 		return is_writeable($filename);
-	}
-
-	/**
-	 * Ensure that a given symlink location is valid. Specifically, we check:
-	 * - The given location is within the webroot of the site (inside BASE_PATH)
-	 * - The given location is *not* the webroot itself (e.g. !== BASE_PATH)
-	 *
-	 * @param string $location The place where the symlink location will end up at
-	 * @return bool true if validation passes, false if it fails
-	 */
-	private function validateSymlinkLocation($location) {
-		// Strip any trailing slash off
-		if(substr($location, -1, 1) === '/') {
-			$location = substr($location, 0, (strlen($location) - 1));
-		}
-
-		$basePath = BASE_PATH;
-		if(substr($basePath, -1, 1) === '/') {
-			$basePath = substr($basePath, 0, (strlen($basePath) - 1));
-		}
-
-		if($location === $basePath) return false;
-
-		// Ensure location is somewhere inside the SS BASE_PATH
-		if(substr($location, 0, strlen($basePath)) !== $basePath) return false;
-
-		return true;
 	}
 }
