@@ -5,11 +5,18 @@ need to specify a special version of SimpleSAMLphp and the SAML2 parsing library
 SimpleSAMLphp with SilverStripe. Eventually, it's hoped that these will not be necessary, but that requires code being 
 merged into SimpleSAMLphp.
 
+Once the RealMe package is recognised by either Packagist or the CWP Satis instance (https://packages.cwp.govt.nz/), the 
+second VCS URL below can be removed, but for now it's required to find this module via `composer`.
+
 ```json
 "repositories": [
     {
         "type": "composer",
         "url": "https://packages.cwp.govt.nz/"
+    },
+    {
+        "type": "vcs",
+       	"url": "https://gitlab.cwp.govt.nz/silverstripe/realme.git"
     },
     {
     	"type": "vcs",
@@ -24,7 +31,7 @@ merged into SimpleSAMLphp.
 Then include the package:
 
 ```bash
-composer require silverstripe/silverstripe-realme
+composer require silverstripe/silverstripe-realme dev-master
 ```
 
 After composer installation, you need to modify your `.htaccess` file in your web-root, in order to allow access to the 
