@@ -19,6 +19,9 @@ In addition to these, YML configuration is required to specify some values that 
 
 Create a file in your project called for example `mysite/_config/realme.yml`. In this file, specify the following, with appropriate values set. Examples are given below, but should be evaluated for your own application.
 ```yml
+---
+Name: realmeproject
+---
 RealMeService:
   entity_ids:
     mts: "http://dev.your-website.govt.nz/privacy-realm/service-name"
@@ -46,6 +49,25 @@ RealMeService:
   metadata_contact_support_company: "SilverStripe"
   metadata_contact_support_firstnames: "Jane"
   metadata_contact_support_surname: "Smith"
+---
+Name: realmetest
+Only:
+  environment: test
+After:
+  - 'RealMe'
+---
+RealMeService:
+  auth_source_name: 'realme-ite'
+---
+Name: realmeprod
+Only:
+  environment: live
+After:
+  - 'RealMe'
+---
+RealMeService:
+  auth_source_name: 'realme-prod'
+---
 ```
 
 The values you set for `entity_ids` should conform to the RealMe standard for entity IDs. In summary, the domain should be relevant to the agency, the first part of the path should be the privacy realm name, and the second part of the path should be the service name.
@@ -82,9 +104,17 @@ cd /path/to/your/webroot
 framework/sake dev/tasks/RealMeSetupTask forEnv=mts
 ```
 
-If any validation errors are found, these will be listed and will need to be fixed. Once you've fixed, just re-run the setup task above. If you need to change YML configuration, just add flush=1 to the third parameter (e.g. `framework/sake dev/tasks/RealMeSetupTask forEnv=mts\&flush=1`).
+If any validation errors are found, these will be listed and will need to be fixed. Once you've fixed these, just re-run the setup task above. If you need to change YML configuration, just add flush=1 to the third parameter (e.g. `framework/sake dev/tasks/RealMeSetupTask forEnv=mts\&flush=1`).
 
-you should be able to proceed to testing the standard login form, or [using the RealMe templates](templates.md).
+If you've already run the setup task, you can re-run it to update configuration files by using `force=1`. 
+
+By default on your development site, the module will use the connection to MTS, so no other changes need to be made. You should now be able to proceed to testing the standard login form, or [using the RealMe templates](templates.md).
+
+If there are difficulties connecting to RealMe using the mutual back-channel SSL certificate (via the `SOAPClient` call), you can use the following `openssl` command to test connectivity outside of PHP to rule out firewall/networking issues (note the paths to the PEM file which may need to change):
+
+```bash
+openssl s_client -tls1 -cert /path/to/certificate/directory/mts_mutual_ssl_sp.pem -connect as.mts.realme.govt.nz:443/sso/ArtifactResolver/metaAlias/logon/logonidp
+```
 
 ### UAT and production environments
 
@@ -92,8 +122,8 @@ The SAML signing and mutual security certificates must be purchased by the agenc
 
 #### When you're hosting on CWP
 
-For UAT and production environments, the above environment consts will be defined for you by CWP Operations once the certificates have been purchased and installed.
+For UAT and production environments, the above environment consts will be defined for you by CWP Operations once the certificates have been purchased and installed. [Create a Service Desk ticket](https://www.cwp.govt.nz/service-desk/new-request/) to request the start of this process.
 
 #### When you're hosting elsewhere
 
-You will need to purchase and install these certificates yourself in appropriate places on your server, and then set the `REALME_SIGNING_CERT_FILENAME` and `REALME_MUTUAL_CERT_FILENAME` consts appropriately. More information on how to do this can be found in the [SSL Certificates](ssl-certs.md) documentation.
+You will need to purchase and install these certificates yourself in appropriate places on your server, and then set all environment constants appropriately. More information on SSL certificates can be found in the [SSL Certificates](ssl-certs.md) documentation.
