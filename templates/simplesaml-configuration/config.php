@@ -75,12 +75,6 @@ $config = array(
 	'metadata.sign.privatekey' => null,
 	'metadata.sign.privatekey_pass' => null,
 	'metadata.sign.certificate' => null,
-	'metadata.sources' => array(
-		array(
-			'type' => 'flatfile',
-			'directory' => 'metadata/'
-		),
-	),
 
 	'trusted.url.domains' => null,
 );
