@@ -2,6 +2,9 @@
 
 # RealMe Primary Login Module
 
+The RealMe primary (webpage body) login box, is available in two sizes, recommended on the right hand side of the page
+near the top.
+
 {@link realme/_config/config.yml}
 {@link realme/code/RealMeLoginForm.php}
 
@@ -33,7 +36,8 @@ or directly in your css, e.g. .realme_popup {width: 450px}
 "--%>
 <div class="realme_widget realme_primary_login realme_theme_{$RealMeWidgetTheme}">
     <h2 class="realme_title">Login with RealMe®</h2>
-    <p class="realme_info">To access the [online service], you need a RealMe account. If you’ve created a RealMe account somewhere else, you can use it here too.</p>
+    <p class="realme_info">To access the [online service], you need a RealMe login. If you’ve created a RealMe login
+    somewhere else, you can use it here too.</p>
     <div class="realme_login_lockup">
         <form $FormAttributes>
             <% if $Actions %>
@@ -54,11 +58,16 @@ or directly in your css, e.g. .realme_popup {width: 450px}
         <div class="realme_popup_wrapper realme_arrow_top_left">
             <!-- realme_popup -->
             <div class="realme_popup">
-                <h2 class="realme_popup_title">To login to this service you now need a RealMe account.</h2>
-                <p><b>RealMe</b> is a service from the New Zealand government and New Zealand Post that includes a single login, letting you use one username and password to access a wide range of services online.</p>
+                <h2 class="realme_popup_title">To login to this service you now need a RealMe login.</h2>
+                <p><b>RealMe</b> is a service from the New Zealand government and New Zealand Post that includes a
+                single login, letting you use one username and password to access a wide range of services online.</p>
                 <p>But there is much more to <b>RealMe</b> than just the convenience of a single login.</p>
                 <h2 class="realme_popup_title">Get Verified</h2>
-                <p><b>RealMe</b> is also your secure online ID. Verify your <b>RealMe</b> account and use it to prove who you are online. This lets you to do lots of useful things over the internet that would normally require you to turn up in person. <a class="realme_find_out_more" target="_blank" href="http://www.realme.govt.nz">Find out more <span class="realme_icon_find_out_more"></span></a></p>
+                <p><b>RealMe</b> is also your secure online ID. Verify your <b>RealMe</b> login and use it to prove who
+                you are online. This lets you to do lots of useful things over the internet that would normally require
+                 you to turn up in person. <a class="realme_find_out_more" target="_blank"
+                 href="http://www.realme.govt.nz">Find out more <span class="realme_icon_find_out_more"></span></a>
+                </p>
                 <span class="arrow">
                     <span class="front"></span>
                 </span>
@@ -66,5 +75,5 @@ or directly in your css, e.g. .realme_popup {width: 450px}
         </div>
         <!-- /realme_popup_wrapper -->
     </div>
-    <a class="realme_create_account" href="https://www.account.realme.govt.nz/account/" target="_blank">Create an account <span class="realme_icon_link"></span></a>
+    <a class="realme_create_account" href="https://www.account.realme.govt.nz/account/" target="_blank">Create a RealMe login <span class="realme_icon_link"></span></a>
 </div>

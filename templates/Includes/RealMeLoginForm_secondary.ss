@@ -1,19 +1,18 @@
 <%--"
 # RealMe Secondary login module
 
+RealMe secondary (webpage header) login component, to be placed in the top header on the right hand side. This is
+intended for use in navigation bars, it does not login, only links to the primary login from on the
+page: /Security/login
+
 {@link realme/_config/config.yml}
 {@link realme/code/RealMeLoginForm.php}
-
-This is intended for use in navigation bars, it does not login, only links to the primary
-login from on the page: /Security/login
-
 
 ## CSS and JavaScript requirements
 
 You should either:
-- inuclde the realme css and javascripts into you site's theme
+- include the realme css and javascript into you site's theme
 - or load them via Requirements in your base page controller, e.g. as RealMeLoginForm.php does
-
 
 ## Color scheme options
 
@@ -23,7 +22,6 @@ apply to the .realme_widget element:
 1. realme_theme_default
 2. realme_theme_dark
 3. realme_theme_light
-
 
 ## Popup window
 

@@ -19,8 +19,8 @@ not currently built in.
 This module doesn't have any specific requirements beyond those required by [SimpleSAMLphp](https://simplesamlphp.org): 
 the tool used to control authentication with the RealMe systems.
 
-These requirements are PHP 5.3+, with the following required PHP extensions enabled: date, dom, hash, libxml, openssl, 
-pcre, SPL, zlib, and mcrypt.
+These requirements are PHP 5.3, with the following required PHP extensions enabled: date, dom, hash, libxml, openssl,
+pcre, SPL, zlib, and mcrypt php53-mcrypt
 
 This module is designed to be run on a [CWP](https://www.cwp.govt.nz/) instance, and there are two sets of installation 
 instructions - one for use on CWP, and one for generic use.
@@ -81,52 +81,91 @@ class RealMeTestController extends Controller {
 }
 ```
 
-
-
-
-
-
-
-
-
-
-### MTS: Messaging Test Environment
+### MTS: [Messaging Test Environment](https://mts.realme.govt.nz/logon-mts/home)
 
 The first environment is MTS. This environment is setup to allow testing of your code on your development environment. 
 In this environment, RealMe provide all SSL certificates required to communicate.
 
 - Obtain access to RealMe and the Shared Workspace for MTS public/private development keys
+- Fill out the "MTS checklist" available from the shared workspace and provide to the DIA RealMe team.
 - Download 'Integration Bundle Login MTS' from the [RealMe Shared Workspace](https://see.govt.nz/realme/realme/Library/Forms/Library.aspx)
-- Unpack the four certificates (mts_saml_idp.cer, mts_saml_sp.pem, mts_mutual_ssl_sp.cer, mts_mutual_ssl_sp.pem) into the directory you've specified in `REALME_CERT_DIR` (ideally outside of your webroot)
-
-
-
-- Run the RealMe build task to create the directores and the metadata files for MTS (coming soon)
-- unpack the certificates into vendor/simplesamlphp/simplesamlphp/cert (create if not present)
+- Unpack the four certificates into the directory you've specified in `REALME_CERT_DIR` (ideally outside of your webroot)
     - mts_mutual_ssl_idp.cer
     - mts_mutual_ssl_sp.cer
     - mts_mutual_ssl_sp.pem
     - mts_saml_idp.cer
     - mts_saml_sp.pem
+
+- Run the RealMe build task to populate the configuration directories, metadata files, and authsources for MTS
+```sake dev/tasks/RealMeSetupTask forEnv=mts```
+
+#### MTS metadata example ####
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata" entityID="http://yourdomain.govt.nz/p-realm/s-name">
+	<SPSSODescriptor AuthnRequestsSigned="true"
+                     WantAssertionsSigned="true"
+                     protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+        <KeyDescriptor use="signing">
+            <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+                <ds:X509Data>
+                    <ds:X509Certificate>
+                        SSL certificate info
+                    </ds:X509Certificate>
+                </ds:X509Data>
+            </ds:KeyInfo>
+        </KeyDescriptor>
+        <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</NameIDFormat>
+        <NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified</NameIDFormat>
+        <AssertionConsumerService
+                Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact"
+                Location="http://yourdomain.govt.nz/vendor/simplesamlphp/simplesamlphp/www/module.php/saml/sp/saml2-acs.php/realme-mts" index="0"
+                isDefault="true">
+        </AssertionConsumerService>
+    </SPSSODescriptor>
+    <Organization>
+        <OrganizationName xml:lang="en-us">CWP Demo Organisation</OrganizationName>
+        <OrganizationDisplayName xml:lang="en-us">CWP Demo Organisation</OrganizationDisplayName>
+        <OrganizationURL xml:lang="en-us">http://yourdomain.govt.nz/</OrganizationURL>
+    </Organization>
+    <ContactPerson contactType="support">
+        <Company>SilverStripe</Company>
+        <GivenName>Jane</GivenName>
+        <SurName>Smith</SurName>
+    </ContactPerson>
+</EntityDescriptor>
+``` 
+
+- Save the XML output from your task to an XML file, and upload this to the [MTS metadata upload](https://mts.realme.govt.nz/logon-mts/metadataupdate). Be sure to click continue and ok after uploading.
+
 - include the session data realme/templates/Layout/RealMeSessionData.ss in your template, or reference session data
 directly from any descendant of SiteTree $RealMeSessionData, or by using SiteConfig: SiteConfig::current_site_config()->RealMeSessionData();
+- See the templates/Includes or templates/Layout directory for more information.
 
 ### ITE: Integration Test Environment
 
-@todo
+- Complete an integration to MTS.
+- Obtain the ITE checklist from the RealMe shared document library and complete it.
+- Publish your site to your CWP UAT environment with a working configuration for MTS and ITE 
+- Create a support ticket with [CWP Service desk](https://www.cwp.govt.nz/service-desk/new-request/) requesting access to ITE, and referencing information about your project, domain, and the ITE checklist
+
+**Note** There will be charges associated with this, as operations will need generate and purchase the SSL certificates required for your domain, and provide them to DIA
+To save time, both ITE and production certificates will be purchased at the same time.
+
+If you wish do do this process yourself please see the [ssl-certs documentation](docs/en/ssl-certs.md) 
  
 ### PROD: Production Environment
 
-@todo
+- Complete an integration to MTS and ITE.
+- Obtain the Production checklist from the RealMe shared document library and complete it.
+- Publish your site to your CWP UAT environment with a working configuration for MTS and ITE and a configuration for production
+- Create a support ticket with [CWP Service desk](https://www.cwp.govt.nz/service-desk/new-request/) requesting access to production, and referencing information about your project, domain, and the production checklist
 
+**Note** There will be charges associated with this, as operations will need generate and purchase the SSL certificates required for your domain, and provide them to DIA
 
-
-
-
-
-
-@todo Refactor all of the below
-
+If you wish do do this process yourself please see the [ssl-certs documentation](docs/en/ssl-certs.md) 
 
 ## Known issues
-RelayState < 80 bytes
+The RelayState must be less than 80 bytes
+
