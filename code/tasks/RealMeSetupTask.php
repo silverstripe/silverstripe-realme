@@ -430,27 +430,39 @@ class RealMeSetupTask extends BuildTask {
                 $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_NO_ENTITYID', '', '', array('env' => $env));
             }
 
-            $urlParts = preg_split("/\\//", $entityId);
-
-            // Validate Privacy Realm
-            $privacyRealm = array_pop($urlParts);
-            if (mb_strlen($privacyRealm) > 10) {
-                $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_ENTITYID_PRIVACY_REALM', '', '',
+			// check it's not localhost and HTTPS.
+			$urlParts = parse_url($entityId);
+			if('localhost' === $urlParts['host'] || 'http' === $urlParts['scheme']){
+				$this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_ENTITYID', '', '',
                     array(
                         'env' => $env,
-                        'privacyRealm' => $privacyRealm,
+                        'entityId' => $entityId
+                    )
+                );
+			}
+
+			$path = ltrim($urlParts['path']);
+			$urlParts = preg_split("/\\//", $path);
+
+            // Validate Service Name
+            $serviceName = array_pop($urlParts);
+            if (mb_strlen($serviceName) > 10 || 0 === mb_strlen($serviceName) ) {
+                $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_ENTITYID_SERVICE_NAME', '', '',
+                    array(
+                        'env' => $env,
+                        'serviceName' => $serviceName,
                         'entityId' => $entityId
                     )
                 );
             }
 
-            // Validate Service Name
-            $serviceName = array_pop($urlParts);
-            if (mb_strlen($serviceName) > 10) {
-                $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_ENTITYID_SERVICE_NAME', '', '',
+            // Validate Privacy Realm
+            $privacyRealm = array_pop($urlParts);
+            if (mb_strlen($privacyRealm) > 10 || 0 === mb_strlen($privacyRealm) ) {
+                $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_ENTITYID_PRIVACY_REALM', '', '',
                     array(
                         'env' => $env,
-                        'serviceName' => $serviceName,
+                        'privacyRealm' => $privacyRealm ,
                         'entityId' => $entityId
                     )
                 );

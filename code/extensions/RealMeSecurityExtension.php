@@ -1,132 +1,185 @@
 <?php
 
 class RealMeSecurityExtension extends Extension {
-	private static $allowed_actions = array(
-		'realme'
-	);
 
-	private static $dependencies = array(
-		'service' => '%$RealMeService'
-	);
+    /**
+     * Error constants used for business logic and switching error messages
+     */
+    const AUTHN_FAILED = 'urn:oasis:names:tc:SAML:2.0:status:AuthnFailed';
+    const TIMEOUT = 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:status:Timeout';
+    const UNKNOWN_PRINCIPAL = 'urn:oasis:names:tc:SAML:2.0:status:UnknownPrincipal';
+    const INTERNAL_ERROR = 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:status:InternalError';
+    const NO_AVAILABLE_IDP = 'urn:oasis:names:tc:SAML:2.0:status:NoAvailableIDP';
+    const GENERAL_ERROR = '';
 
-	/**
-	 * @var RealMeService
-	 */
-	public $service;
+    private static $allowed_actions = array(
+        'realme'
+    );
 
-	/**
-	 * Support the default security logout procedure by ensuring that RealMe hooks are cleared when the standard logout
-	 * is called.
-	 *
-	 * @param $request
-	 * @param $action
-	 */
-	public function beforeCallActionHandler($request, $action){
-		switch($action){
-			case "logout":
-				$this->service->clearLogin();
-			break;
-		}
-	}
+    private static $dependencies = array(
+        'service' => '%$RealMeService'
+    );
 
-	/**
-	 * Invalidate the current session, clearing the login state with RealMe as well as any state within SilverStripe
-	 *
-	 * @param bool $redirect If true, Security::logout() will redirect the user back
-	 *
-	 * @todo At the moment we would always redirectBack(), do we want to support BackURL in these contexts?
-	 */
-	private function realMeLogout($redirect = true) {
-		$this->service->clearLogin();
+    /**
+     * @var RealMeService
+     */
+    public $service;
 
-		if($redirect) {
-			return $this->owner->logout($redirect);
-		} else {
-			return $this->owner->redirectBack();
-		}
-	}
+    /**
+     * Support the default security logout procedure by ensuring that RealMe hooks are cleared when the standard logout
+     * is called.
+     *
+     * @param $request
+     * @param $action
+     */
+    public function beforeCallActionHandler ($request, $action) {
+        switch ($action) {
+            case "logout":
+                $this->service->clearLogin();
+                break;
+        }
+    }
 
-	/**
-	 * All publicly-accessible URLs are routed through this method. Possible method include:
-	 * - acs: User is redirected here after authenticating with RealMe
-	 * - error: Called when an error is logged by SimpleSAMLphp, we redirect to the login form with a messageset defined
-	 * - logout: Ensures the user is logged out from RealMe, as well as this website (via Security::logout())
-	 */
-	public function realme() {
-		$action = $this->owner->getRequest()->param('ID');
+    /**
+     * Invalidate the current session, clearing the login state with RealMe as well as any state within SilverStripe
+     *
+     * @param bool $redirect If true, Security::logout() will redirect the user back
+     *
+     * @todo At the moment we would always redirectBack(), do we want to support BackURL in these contexts?
+     */
+    private function realMeLogout ($redirect = true) {
+        $this->service->clearLogin();
 
-		switch($action) {
-			case 'acs':
-				return $this->realMeACS();
+        if ($redirect) {
+            return $this->owner->logout($redirect);
+        } else {
+            return $this->owner->redirectBack();
+        }
+    }
 
-			case 'error':
-				return $this->realMeErrorHandler();
+    /**
+     * All publicly-accessible URLs are routed through this method. Possible method include:
+     * - acs: User is redirected here after authenticating with RealMe
+     * - error: Called when an error is logged by SimpleSAMLphp, we redirect to the login form with a messageset defined
+     * - logout: Ensures the user is logged out from RealMe, as well as this website (via Security::logout())
+     */
+    public function realme () {
+        $action = $this->owner->getRequest()->param('ID');
 
-			case 'logout':
-				return $this->realMeLogout();
+        switch ($action) {
+            case 'acs':
+                return $this->realMeACS();
 
-			default:
-				throw new InvalidArgumentException(sprintf("Unknown URL param '%s'", Convert::raw2xml($action)));
-		}
-	}
+            case 'error':
+                return $this->realMeErrorHandler();
 
-	private function realMeACS() {
-		$loggedIn = $this->service->enforceLogin();
+            case 'logout':
+                return $this->realMeLogout();
 
-		if($loggedIn) {
-			return $this->owner->redirect($this->service->getBackURL());
-		} else {
-			return Security::permissionFailure(
-				$this->owner,
-				_t(
-					'RealMeSecurityExtension.LOGINFAILURE',
-					'Unfortunately we\'re not able to log you in through RealMe right now.'
-				)
-			);
-		}
-	}
+            default:
+                throw new InvalidArgumentException(sprintf("Unknown URL param '%s'", Convert::raw2xml($action)));
+        }
+    }
 
-	private function realMeErrorHandler() {
-		// Error handling, to prevent infinite login loops if there was an internal error with SimpleSAMLphp
-		if($exceptionId = $this->owner->getRequest()->getVar('SimpleSAML_Auth_State_exceptionId')) {
-			if(is_string($exceptionId) && strlen($exceptionId) > 1) {
-				//				$session = SimpleSAML_Session::getSessionFromRequest();
-				//				$data = $session->getData('SimpleSAML_Auth_State', $exceptionId);
-				$authState = SimpleSAML_Auth_State::loadExceptionState($exceptionId);
-				if(isset($authState['SimpleSAML_Auth_State.exceptionData'])) {
-					$exception = $authState['SimpleSAML_Auth_State.exceptionData'];
-					if($exception instanceof sspmod_saml_Error) {
-						$message = $exception->getStatusMessage();
-					} elseif($exception instanceof SimpleSAML_Error_Exception) {
-						$message = $exception->getMessage();
-					}
+    /**
+     * After a user is authenticated with realme, we attempt to verify the session.
+     *
+     * @return SS_HTTPResponse
+     */
+    private function realMeACS () {
+        $loggedIn = $this->service->enforceLogin();
 
-					if(isset($message)) {
-						SS_Log::log(
-							sprintf('Error while validating RealMe authentication details: %s', $message),
-							SS_Log::ERR
-						);
+        if (true === $loggedIn) {
+            return $this->owner->redirect($this->service->getBackURL());
+        }
 
-						return Security::permissionFailure(
-							$this->owner,
-							_t(
-								'RealMeSecurityExtension.AUTHERROR',
-								'Sorry, we couldn\'t verify your RealMe account. Please try again.'
-							)
-						);
-					}
-				}
-			}
-		}
+        return Security::permissionFailure(
+            $this->owner,
+            _t(
+                'RealMeSecurityExtension.LOGINFAILURE',
+                'Unfortunately we\'re not able to log you in through RealMe right now.'
+            )
+        );
+    }
 
-		SS_Log::log('Unknown error while attempting to parse RealMe authentication errors', SS_Log::ERR);
+    /**
+     * Process the error/Exception returned from SimpleSaml and return an appropriate error to the user.
+     *
+     * @return SS_HTTPResponse
+     */
+    private function realMeErrorHandler () {
+        // Error handling, to prevent infinite login loops if there was an internal error with SimpleSAMLphp
+        if ($exceptionId = $this->owner->getRequest()->getVar('SimpleSAML_Auth_State_exceptionId')) {
 
-		return Security::permissionFailure(
-			$this->owner,
-			_t(
-				'RealMeSecurityExtension.AUTHERROR',
-				'Sorry, we couldn\'t verify your RealMe account. Please try again.'
-			)
-		);
-	}
+            if (is_string($exceptionId) && strlen($exceptionId) > 1) {
+
+                $authState = SimpleSAML_Auth_State::loadExceptionState($exceptionId);
+                if ( true === array_key_exists('SimpleSAML_Auth_State.exceptionData', $authState)
+                    && $authState['SimpleSAML_Auth_State.exceptionData'] instanceof sspmod_saml_Error) {
+
+                    $exception = $authState['SimpleSAML_Auth_State.exceptionData'];
+                    $message = $this->getErrorMessage($exception);
+
+                    SS_Log::log(
+                        sprintf('Error while validating RealMe authentication details: %s', $message),
+                        SS_Log::ERR
+                    );
+
+                    return Security::permissionFailure($this->owner,$message);
+                }
+            }
+        }
+
+        SS_Log::log('Unknown error while attempting to parse RealMe authentication', SS_Log::ERR);
+
+        return Security::permissionFailure(
+            $this->owner,
+            _t('RealMeSecurityExtension.GENERAL_ERROR','',
+                array('errorMsg' => 'Unknown')
+            )
+        );
+    }
+
+    /**
+     * Return the realme error message associated with a SimpleSAML error.
+     *
+     * @param $exception sspmod_saml_Error
+     *
+     * @return string
+     */
+    private function getErrorMessage ($exception) {
+
+        switch ($exception->getSubStatus()) {
+
+            // if the identity provider goes down, it usually means something like the SMS service is down.
+            case self::NO_AVAILABLE_IDP:
+                return _t('RealMeSecurityExtension.NO_AVAILABLE_IDP', '', array('errorMsg' => $exception->getMessage()));
+
+            // Usually means your entity ID is miss-matched against this server metadata (re-upload metadata),
+            // but can mean first time users need to use a specific setting.
+            case self::UNKNOWN_PRINCIPAL:
+                return _t('RealMeSecurityExtension.UNKNOWN_PRINCIPAL', '', array('errorMsg' => $exception->getMessage()));
+
+            // Something went terribly wrong at realme.
+            case self::INTERNAL_ERROR:
+                return _t('RealMeSecurityExtension.INTERNAL_ERROR', '', array('errorMsg' => $exception->getMessage()));
+
+            // General time out
+            case self::TIMEOUT:
+                return _t('RealMeSecurityExtension.TIMEOUT', '', array('errorMsg' => $exception->getMessage()));
+
+            // They logged out from realme.
+            case self::AUTHN_FAILED:
+                return _t('RealMeSecurityExtension.AUTHN_FAILED', '', array('errorMsg' => $exception->getMessage()));
+
+            // Give the general error for all others: REQUEST_UNSUPPORTED,UNSUPPORTED_BINDING,,REQUEST_DENIED or unknown.
+            default :
+                return _t('RealMeSecurityExtension.GENERAL_ERROR',
+                    "RealMe reported a serious application error with the message [{errorMsg}]. " .
+                    "Please try again later. If the problem persists, please contact RealMe Help " .
+                    "Desk on 0800 664 774.",
+                    array('errorMsg' => $exception->getMessage())
+                );
+        }
+    }
 }

@@ -24,17 +24,17 @@ Name: realmeproject
 ---
 RealMeService:
   entity_ids:
-    mts: "http://dev.your-website.govt.nz/privacy-realm/service-name"
-    ite: "https://uat.your-website.govt.nz/privacy-realm/service-name"
-    prod: "https://www.your-website.govt.nz/privacy-realm/service-name"
+    mts: "https://dev.your-website.govt.nz/p-realm/s-name"
+    ite: "https://uat.your-website.govt.nz/p-realm/s-name"
+    prod: "https://www.your-website.govt.nz/p-realm/s-name"
   authn_contexts:
     mts: "urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:LowStrength"
     ite: "urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:LowStrength"
     prod: "urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:LowStrength"
   metadata_assertion_service_domains:
-    mts: "http://dev.realme-demo.govt.nz/"
-    ite: "https://staging.realme-demo.govt.nz/"
-    prod: "https://realme-demo.govt.nz/"
+    mts: "https://dev.your-website.govt.nz/"
+    ite: "https://uat.your-website.govt.nz"
+    prod: "https://www.your-website.govt.nz/"
   backchannel_proxy_hosts:
     mts: null
     ite: "env:http_proxy"
