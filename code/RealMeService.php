@@ -1,5 +1,5 @@
 <?php
-class RealMeService extends Object {
+class 	RealMeService extends Object {
 	/**
 	 * @var ArrayData|null User data returned by RealMe. Provided by {@link self::ensureLogin()}.
 	 *
@@ -180,7 +180,6 @@ class RealMeService extends Object {
 	 * indicates that there was a failure during the authentication process (perhaps a communication issue)
 	 */
 	public function enforceLogin() {
-		// @todo Change this to pull auth_source from Config
 		$auth = new SimpleSAML_Auth_Simple($this->config()->auth_source_name);
 
 		$auth->requireAuth(array(
