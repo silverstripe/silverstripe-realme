@@ -681,7 +681,8 @@ class RealMeSetupTask extends BuildTask {
      */
     private function validateConsumerAssertionURL ($forEnv) {
         // Ensure the assertion consumer service location exists
-        if (true === is_null($this->service->getAssertionConsumerServiceUrlForEnvironment($forEnv))) {
+        if (mb_strlen($forEnv) > 0
+				&& true === is_null($this->service->getAssertionConsumerServiceUrlForEnvironment($forEnv))) {
             $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_NO_ASSERTION_SERVICE_URL', '', '', array('env' => $forEnv));
         }
     }
