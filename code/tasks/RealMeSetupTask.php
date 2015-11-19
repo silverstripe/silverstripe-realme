@@ -15,7 +15,12 @@
  * - Output metadata XML that must be submitted to RealMe in order to integrate with ITE and Production environments
  */
 class RealMeSetupTask extends BuildTask {
-	/**
+
+    protected $title = "RealMe Setup Task";
+
+	protected $description = 'Validates a realme configuration & creates the resources needed to integrate with realme';
+
+    /**
 	 * @var RealMeService
 	 */
 	private $service;
@@ -430,15 +435,31 @@ class RealMeSetupTask extends BuildTask {
                 $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_NO_ENTITYID', '', '', array('env' => $env));
             }
 
-			// check it's not localhost and HTTPS.
+            // make sure the entityID is a valid URL
+            $entityId = filter_var($entityId, FILTER_VALIDATE_URL);
+            if(false === $entityId){
+                $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_ENTITYID', '', '',
+                    array(
+                        'env' => $env,
+                        'entityId' => $entityId
+                    )
+                );
+
+                // invalid entity id, no point continuing.
+                return;
+            }
+
+			// check it's not localhost and HTTPS. and make sure we have a host / scheme
 			$urlParts = parse_url($entityId);
-			if('localhost' === $urlParts['host'] || 'http' === $urlParts['scheme']){
+            if('localhost' === $urlParts['host'] || 'http' === $urlParts['scheme']){
 				$this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_ENTITYID', '', '',
                     array(
                         'env' => $env,
                         'entityId' => $entityId
                     )
                 );
+                // if there's this much wrong, we want them to fix it first.
+                return;
 			}
 
 			$path = ltrim($urlParts['path']);
@@ -477,8 +498,13 @@ class RealMeSetupTask extends BuildTask {
 	 */
 	private function validateAuthNContext(){
 		foreach ($this->service->getAllowedRealMeEnvironments() as $env) {
-			if (true === is_null($this->service->getAuthnContextForEnvironment($env))) {
+			$context = $this->service->getAuthnContextForEnvironment($env);
+            if (true === is_null($context)) {
 				$this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_NO_AUTHNCONTEXT', '', '', array('env' => $env));
+			}
+
+            if (false === in_array($context, $this->service->getAllowedAuthNContextList())) {
+				$this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_INVALID_AUTHNCONTEXT', '', '', array('env' => $env));
 			}
 		}
 	}
@@ -681,9 +707,17 @@ class RealMeSetupTask extends BuildTask {
      */
     private function validateConsumerAssertionURL ($forEnv) {
         // Ensure the assertion consumer service location exists
-        if (mb_strlen($forEnv) > 0
-				&& true === is_null($this->service->getAssertionConsumerServiceUrlForEnvironment($forEnv))) {
-            $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_NO_ASSERTION_SERVICE_URL', '', '', array('env' => $forEnv));
+        $consumerAssertionUrl = $this->service->getAssertionConsumerServiceUrlForEnvironment($forEnv);
+        if (null === $consumerAssertionUrl) {
+            $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_ASSERTION_SERVICE_URL', '', '', array('env' => $forEnv));
+
+            // no point in validating an invalid/missing url.
+            return;
+        }
+
+        $urlParts = parse_url($consumerAssertionUrl);
+        if('localhost' === $urlParts['host'] ||  'http' === $urlParts['scheme']){
+            $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_ASSERTION_SERVICE_URL', '', '', array('env' => $forEnv));
         }
     }
 }

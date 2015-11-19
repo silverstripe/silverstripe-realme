@@ -1,5 +1,21 @@
 <?php
-class 	RealMeService extends Object {
+class RealMeService extends Object {
+
+    /**
+     * Current RealMe supported environments.
+     */
+    const ENV_MTS = 'mts';
+    const ENV_ITE = 'ite';
+    const ENV_PROD = 'prod';
+
+    /**
+     * the valid AuthN context values for each supported RealMe environment.
+     */
+    const AUTHN_LOW_STRENGTH = 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:LowStrength';
+    const AUTHN_MOD_STRENTH = 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength';
+    const AUTHN_MOD_MOBILE_SMS = 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength::OTP:Mobile:SMS';
+    const AUTHN_MOD_TOKEN_SID = 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength::OTP:Token:SID';
+
 	/**
 	 * @var ArrayData|null User data returned by RealMe. Provided by {@link self::ensureLogin()}.
 	 *
@@ -56,7 +72,7 @@ class 	RealMeService extends Object {
 	 * be run again, and updated environment names would need to be put into the authsources.php and
 	 * saml20-idp-remote.php files.
 	 */
-	private static $allowed_realme_environments = array('mts', 'ite', 'prod');
+    private static $allowed_realme_environments = array(self::ENV_MTS, self::ENV_ITE, self::ENV_PROD);
 
 	/**
 	 * @config
@@ -65,9 +81,9 @@ class 	RealMeService extends Object {
 	 * the form of a URL, e.g. https://www.agency.govt.nz/privacy-realm-name/application-name
 	 */
 	private static $entity_ids = array(
-		'mts' => null,
-		'ite' => null,
-		'prod' => null
+		self::ENV_MTS => null,
+		self::ENV_ITE => null,
+		self::ENV_PROD => null
 	);
 
 	/**
@@ -91,10 +107,24 @@ class 	RealMeService extends Object {
 	 * - urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength::OTP:Token:SID
 	 */
 	private static $authn_contexts = array(
-		'mts' => null,
-		'ite' => null,
-		'prod' => null
+        self::ENV_MTS => null,
+		self::ENV_ITE => null,
+		self::ENV_PROD => null
 	);
+
+    /**
+     * @config $allowed_authn_context_list
+     * @var $allowed_authn_context_list array
+     *
+     * A list of the valid authn context values supported for realme.
+     */
+    private static $allowed_authn_context_list = array(
+        self::AUTHN_LOW_STRENGTH,
+        self::AUTHN_MOD_STRENTH,
+        self::AUTHN_MOD_MOBILE_SMS,
+        self::AUTHN_MOD_TOKEN_SID
+    );
+
 
 	/**
 	 * @config
@@ -109,9 +139,9 @@ class 	RealMeService extends Object {
 	 *       for resolving all requests by default.
 	 */
 	private static $backchannel_proxy_hosts = array(
-		'mts' => null,
-		'ite' => null,
-		'prod' => null
+		self::ENV_MTS => null,
+		self::ENV_ITE => null,
+		self::ENV_PROD => null
 	);
 
 	/**
@@ -123,9 +153,9 @@ class 	RealMeService extends Object {
 	 * valid values.
 	 */
 	private static $backchannel_proxy_ports = array(
-		'mts' => null,
-		'ite' => null,
-		'prod' => null
+		self::ENV_MTS => null,
+		self::ENV_ITE => null,
+		self::ENV_PROD => null
 	);
 
 	/**
@@ -133,9 +163,9 @@ class 	RealMeService extends Object {
 	 * @var array Domain names for metadata files. Used in @link RealMeSetupTask when outputting metadata XML
 	 */
 	private static $metadata_assertion_service_domains = array(
-		'mts' => null,
-		'ite' => null,
-		'prod' => null
+		self::ENV_MTS => null,
+		self::ENV_ITE => null,
+		self::ENV_PROD => null
 	);
 
 	/**
@@ -573,19 +603,20 @@ class 	RealMeService extends Object {
 	 * @return string|null Either the assertion consumer service location, or null if information doesn't exist
 	 */
 	public function getAssertionConsumerServiceUrlForEnvironment($env) {
-		$url = null;
+		if(false === in_array($env, $this->getAllowedRealMeEnvironments())) {
+            return null;
+        }
 
-		if(in_array($env, $this->getAllowedRealMeEnvironments())) {
-			// Returns http://domain.govt.nz/vendor/simplesamlphp/simplesamlphp/www/module.php/saml/sp/saml2-acs.php/realme-mts
-			$domain = $this->getMetadataAssertionServiceDomainForEnvironment($env);
-			$basePath = $this->getSimpleSamlBaseUrlPath();
-			$modulePath = 'module.php/saml/sp/saml2-acs.php/';
-			$authSource = sprintf('realme-%s', $env);
+        // Returns http://domain.govt.nz/vendor/simplesamlphp/simplesamlphp/www/module.php/saml/sp/saml2-acs.php/realme-mts
+        $domain = $this->getMetadataAssertionServiceDomainForEnvironment($env);
+        if(false === filter_var($domain, FILTER_VALIDATE_URL)){
+            return null;
+        }
 
-			$url = Controller::join_links($domain, $basePath, $modulePath, $authSource);
-		}
-
-		return $url;
+        $basePath = $this->getSimpleSamlBaseUrlPath();
+        $modulePath = 'module.php/saml/sp/saml2-acs.php/';
+        $authSource = sprintf('realme-%s', $env);
+        return Controller::join_links($domain, $basePath, $modulePath, $authSource);
 	}
 
 	/**
@@ -636,9 +667,18 @@ class 	RealMeService extends Object {
 	}
 
 	/**
-	 * @return array The list of RealMe environments that can be used. By default, we allow mts, ite and production.
+     * The list of RealMe environments that can be used. By default, we allow mts, ite and production.
+	 * @return array
 	 */
 	public function getAllowedRealMeEnvironments() {
 		return $this->config()->allowed_realme_environments;
+	}
+
+    /**
+     * The list of valid realme AuthNContexts
+     * @return array
+     */
+    public function getAllowedAuthNContextList() {
+		return $this->config()->allowed_authn_context_list;
 	}
 }

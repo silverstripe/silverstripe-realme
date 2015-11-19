@@ -18,6 +18,7 @@ The following values need to be defined in your `_ss_environment.php` file for *
 In addition to these, YML configuration is required to specify some values that should be consistently applied across environments. These are noted below.
 
 Create a file in your project called for example `mysite/_config/realme.yml`. In this file, specify the following, with appropriate values set. Examples are given below, but should be evaluated for your own application.
+
 ```yml
 ---
 Name: realmeproject
