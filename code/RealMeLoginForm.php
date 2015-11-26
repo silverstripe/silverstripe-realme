@@ -1,6 +1,7 @@
 <?php
 
-class RealMeLoginForm extends LoginForm {
+class RealMeLoginForm extends LoginForm
+{
     /**
      * @config
      * @var bool true if you want the RealMe login form to include jQuery, false if you're including it yourself
@@ -43,7 +44,8 @@ class RealMeLoginForm extends LoginForm {
      * @param Controller $controller
      * @param string $name
      */
-    public function __construct ($controller, $name) {
+    public function __construct($controller, $name)
+    {
         $fields = new FieldList(array(
             new HiddenField('AuthenticationMethod', null, $this->authenticator_class)
         ));
@@ -93,7 +95,8 @@ class RealMeLoginForm extends LoginForm {
      * @return SS_HTTPResponse|void If successfully processed, returns void (SimpleSAMLphp redirects to RealMe)
      * @throws SS_HTTPResponse_Exception
      */
-    public function redirectToRealMe ($data, Form $form) {
+    public function redirectToRealMe($data, Form $form)
+    {
         /** @var RealMeService $service */
         $service = Injector::inst()->get('RealMeService');
 
@@ -128,7 +131,8 @@ class RealMeLoginForm extends LoginForm {
      *
      * @return string
      */
-    public function getRealMeWidgetTheme () {
+    public function getRealMeWidgetTheme()
+    {
         if ($theme = $this->config()->widget_theme) {
             return $theme;
         }

@@ -5,8 +5,10 @@
  *
  *
  */
-class RealMeAuthenticator extends Authenticator {
-    public static function get_login_form (Controller $controller) {
+class RealMeAuthenticator extends Authenticator
+{
+    public static function get_login_form(Controller $controller)
+    {
         return RealMeLoginForm::create($controller, 'LoginForm');
     }
 
@@ -18,7 +20,8 @@ class RealMeAuthenticator extends Authenticator {
      *
      * @return bool false if the authenticator shouldn't be registered
      */
-    protected static function on_register () {
+    protected static function on_register()
+    {
         $cache = SS_Cache::factory('RealMeAuthenticator');
 
         $cacheKey = 'RegisterCheck';
@@ -74,7 +77,8 @@ class RealMeAuthenticator extends Authenticator {
         return true;
     }
 
-    public static function get_name () {
+    public static function get_name()
+    {
         return _t('RealMeAuthenticator.TITLE', 'RealMe Account');
     }
 }

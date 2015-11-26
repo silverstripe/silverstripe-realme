@@ -19,61 +19,61 @@
 
 // MTS - RealMe Messaging Test Site Environment
 $metadata['https://mts.realme.govt.nz/saml2'] = array(
-	'name' => 'MTS',
-	'description' => 'RealMe MTS authentication system',
+    'name' => 'MTS',
+    'description' => 'RealMe MTS authentication system',
 
-	'SingleSignOnService' => 'https://mts.realme.govt.nz/logon-mts/mtsEntryPoint',
-	'SingleSignOnService.artifact' => 'https://mts.realme.govt.nz/logon-mts/mtsEntryPoint',
+    'SingleSignOnService' => 'https://mts.realme.govt.nz/logon-mts/mtsEntryPoint',
+    'SingleSignOnService.artifact' => 'https://mts.realme.govt.nz/logon-mts/mtsEntryPoint',
 
-	'certificate' => 'mts_saml_idp.cer',
-	'saml.SOAPClient.certificate' => 'mts_mutual_ssl_sp.cer',
-	'saml.SOAPClient.privatekey_pass' => 'password',
+    'certificate' => 'mts_saml_idp.cer',
+    'saml.SOAPClient.certificate' => 'mts_mutual_ssl_sp.cer',
+    'saml.SOAPClient.privatekey_pass' => 'password',
 
-	'ArtifactResolutionService' => array(
-		array(
-			'index' => 0,
-			'Location' => 'https://as.mts.realme.govt.nz/sso/ArtifactResolver/metaAlias/logon/logonidp',
-			'Binding' => 'urn:oasis:names:tc:SAML:2.0:bindings:SOAP'
-		)
-	)
+    'ArtifactResolutionService' => array(
+        array(
+            'index' => 0,
+            'Location' => 'https://as.mts.realme.govt.nz/sso/ArtifactResolver/metaAlias/logon/logonidp',
+            'Binding' => 'urn:oasis:names:tc:SAML:2.0:bindings:SOAP'
+        )
+    )
 );
 
 // ITE - RealMe Integrated Test Environment
 $metadata['https://www.ite.logon.realme.govt.nz/saml2'] = array(
-	'name' => 'ITE',
-	'description' => 'RealMe ITE authentication system',
+    'name' => 'ITE',
+    'description' => 'RealMe ITE authentication system',
 
-	'SingleSignOnService' => 'https://www.ite.logon.realme.govt.nz/sso/logon/metaAlias/logon/logonidp',
-	'SingleSignOnService.artifact' => 'https://www.ite.logon.realme.govt.nz/sso/logon/metaAlias/logon/logonidp',
+    'SingleSignOnService' => 'https://www.ite.logon.realme.govt.nz/sso/logon/metaAlias/logon/logonidp',
+    'SingleSignOnService.artifact' => 'https://www.ite.logon.realme.govt.nz/sso/logon/metaAlias/logon/logonidp',
 
-	'certificate' => 'ite.signing.logon.realme.govt.nz.cer',
-	'saml.SOAPClient.certificate' => 'as.ite.logon.realme.govt.nz.cer',
+    'certificate' => 'ite.signing.logon.realme.govt.nz.cer',
+    'saml.SOAPClient.certificate' => 'as.ite.logon.realme.govt.nz.cer',
 
-	'ArtifactResolutionService' => array(
-		array(
-			'index' => 0,
-			'Location' => 'https://as.ite.logon.realme.govt.nz/sso/ArtifactResolver/metaAlias/logon/logonidp',
-			'Binding' => 'urn:oasis:names:tc:SAML:2.0:bindings:SOAP'
-		)
-	)
+    'ArtifactResolutionService' => array(
+        array(
+            'index' => 0,
+            'Location' => 'https://as.ite.logon.realme.govt.nz/sso/ArtifactResolver/metaAlias/logon/logonidp',
+            'Binding' => 'urn:oasis:names:tc:SAML:2.0:bindings:SOAP'
+        )
+    )
 );
 
 // Production - RealMe Production Environment
 $metadata['https://www.logon.realme.govt.nz/saml2'] = array(
-	'name' => 'Production',
-	'description' => 'RealMe Production authentication system',
+    'name' => 'Production',
+    'description' => 'RealMe Production authentication system',
 
-	'SingleSignOnService' => 'https://www.logon.realme.govt.nz/sso/logon/metaAlias/logon/logonidp',
-	'SingleSignOnService.artifact' => 'https://www.logon.realme.govt.nz/sso/logon/metaAlias/logon/logonidp',
+    'SingleSignOnService' => 'https://www.logon.realme.govt.nz/sso/logon/metaAlias/logon/logonidp',
+    'SingleSignOnService.artifact' => 'https://www.logon.realme.govt.nz/sso/logon/metaAlias/logon/logonidp',
 
-	'certificate' => 'signing.logon.realme.govt.nz.cer',
-	'saml.SOAPClient.certificate' => 'as.logon.realme.govt.nz.cer',
+    'certificate' => 'signing.logon.realme.govt.nz.cer',
+    'saml.SOAPClient.certificate' => 'as.logon.realme.govt.nz.cer',
 
-	'ArtifactResolutionService' => array(
-		array(
-			'index' => 0,
-			'Location' => 'https://as.logon.realme.govt.nz/sso/ArtifactResolver/metaAlias/logon/logonidp',
-			'Binding' => 'urn:oasis:names:tc:SAML:2.0:bindings:SOAP'
-		)
-	)
+    'ArtifactResolutionService' => array(
+        array(
+            'index' => 0,
+            'Location' => 'https://as.logon.realme.govt.nz/sso/ArtifactResolver/metaAlias/logon/logonidp',
+            'Binding' => 'urn:oasis:names:tc:SAML:2.0:bindings:SOAP'
+        )
+    )
 );
