@@ -1,7 +1,7 @@
 <?php
 
-class RealMeSecurityExtension extends Extension {
-
+class RealMeSecurityExtension extends Extension
+{
     /**
      * Error constants used for business logic and switching error messages
      */
@@ -32,7 +32,8 @@ class RealMeSecurityExtension extends Extension {
      * @param $request
      * @param $action
      */
-    public function beforeCallActionHandler ($request, $action) {
+    public function beforeCallActionHandler($request, $action)
+    {
         switch ($action) {
             case "logout":
                 $this->service->clearLogin();
@@ -47,7 +48,8 @@ class RealMeSecurityExtension extends Extension {
      *
      * @todo At the moment we would always redirectBack(), do we want to support BackURL in these contexts?
      */
-    private function realMeLogout ($redirect = true) {
+    private function realMeLogout($redirect = true)
+    {
         $this->service->clearLogin();
 
         if ($redirect) {
@@ -63,7 +65,8 @@ class RealMeSecurityExtension extends Extension {
      * - error: Called when an error is logged by SimpleSAMLphp, we redirect to the login form with a messageset defined
      * - logout: Ensures the user is logged out from RealMe, as well as this website (via Security::logout())
      */
-    public function realme () {
+    public function realme()
+    {
         $action = $this->owner->getRequest()->param('ID');
 
         switch ($action) {
@@ -86,7 +89,8 @@ class RealMeSecurityExtension extends Extension {
      *
      * @return SS_HTTPResponse
      */
-    private function realMeACS () {
+    private function realMeACS()
+    {
         $loggedIn = $this->service->enforceLogin();
 
         if (true === $loggedIn) {
@@ -107,16 +111,14 @@ class RealMeSecurityExtension extends Extension {
      *
      * @return SS_HTTPResponse
      */
-    private function realMeErrorHandler () {
+    private function realMeErrorHandler()
+    {
         // Error handling, to prevent infinite login loops if there was an internal error with SimpleSAMLphp
         if ($exceptionId = $this->owner->getRequest()->getVar('SimpleSAML_Auth_State_exceptionId')) {
-
             if (is_string($exceptionId) && strlen($exceptionId) > 1) {
-
                 $authState = SimpleSAML_Auth_State::loadExceptionState($exceptionId);
-                if ( true === array_key_exists('SimpleSAML_Auth_State.exceptionData', $authState)
+                if (true === array_key_exists('SimpleSAML_Auth_State.exceptionData', $authState)
                     && $authState['SimpleSAML_Auth_State.exceptionData'] instanceof sspmod_saml_Error) {
-
                     $exception = $authState['SimpleSAML_Auth_State.exceptionData'];
                     $message = $this->getErrorMessage($exception);
 
@@ -125,7 +127,7 @@ class RealMeSecurityExtension extends Extension {
                         SS_Log::ERR
                     );
 
-                    return Security::permissionFailure($this->owner,$message);
+                    return Security::permissionFailure($this->owner, $message);
                 }
             }
         }
@@ -134,7 +136,7 @@ class RealMeSecurityExtension extends Extension {
 
         return Security::permissionFailure(
             $this->owner,
-            _t('RealMeSecurityExtension.GENERAL_ERROR','',
+            _t('RealMeSecurityExtension.GENERAL_ERROR', '',
                 array('errorMsg' => 'Unknown')
             )
         );
@@ -147,8 +149,8 @@ class RealMeSecurityExtension extends Extension {
      *
      * @return string
      */
-    private function getErrorMessage ($exception) {
-
+    private function getErrorMessage($exception)
+    {
         switch ($exception->getSubStatus()) {
 
             // if the identity provider goes down, it usually means something like the SMS service is down.

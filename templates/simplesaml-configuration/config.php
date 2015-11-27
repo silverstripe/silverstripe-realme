@@ -15,66 +15,66 @@
  * @see RealMeSetupTask::run()
  */
 $config = array(
-	'baseurlpath' => '{{baseurlpath}}',
-	'certdir' => '{{certdir}}',
-	'loggingdir' => '{{loggingdir}}',
-	'datadir' => 'data/',
-	'tempdir' => '{{tempdir}}',
-	'metadatadir' => '{{metadatadir}}',
+    'baseurlpath' => '{{baseurlpath}}',
+    'certdir' => '{{certdir}}',
+    'loggingdir' => '{{loggingdir}}',
+    'datadir' => 'data/',
+    'tempdir' => '{{tempdir}}',
+    'metadatadir' => '{{metadatadir}}',
 
-	'debug' => false,
-	'showerrors' => false,
-	'errorreporting' => false,
-	'debug.validatexml' => false,
+    'debug' => false,
+    'showerrors' => false,
+    'errorreporting' => false,
+    'debug.validatexml' => false,
 
-	'auth.adminpassword' => '{{adminpassword}}',
-	'admin.protectindexpage' => true,
-	'admin.protectmetadata' => true,
+    'auth.adminpassword' => '{{adminpassword}}',
+    'admin.protectindexpage' => true,
+    'admin.protectmetadata' => true,
 
-	'secretsalt' => '{{secretsalt}}',
+    'secretsalt' => '{{secretsalt}}',
 
-	'timezone' => null,
+    'timezone' => null,
 
-	'logging.level' => SimpleSAML_Logger::DEBUG,
-	'logging.handler' => 'file',
-	'logging.facility' => defined('LOG_LOCAL5') ? constant('LOG_LOCAL5') : LOG_USER,
-	'logging.processname' => 'simplesamlphp',
-	'logging.logfile' => 'simplesamlphp.log',
+    'logging.level' => SimpleSAML_Logger::DEBUG,
+    'logging.handler' => 'file',
+    'logging.facility' => defined('LOG_LOCAL5') ? constant('LOG_LOCAL5') : LOG_USER,
+    'logging.processname' => 'simplesamlphp',
+    'logging.logfile' => 'simplesamlphp.log',
 
-	'enable.saml20-idp' => false,
-	'enable.shib13-idp' => false,
-	'enable.adfs-idp' => false,
-	'enable.wsfed-sp' => false,
-	'enable.authmemcookie' => false,
+    'enable.saml20-idp' => false,
+    'enable.shib13-idp' => false,
+    'enable.adfs-idp' => false,
+    'enable.wsfed-sp' => false,
+    'enable.authmemcookie' => false,
 
-	'store.type' => 'phpsession',
-	'session.duration' => 28800, // 8 hours
-	'session.datastore.timeout' => 14400, // 4 hours
-	'session.state.timeout' => 3600, // 1 hour
-	'session.cookie.name' => 'SimpleSAMLSessionID',
-	'session.cookie.lifetime' => 0, // 0 means expires immediately
-	'session.cookie.path' => '/',
-	'session.cookie.domain' => null,
-	'session.cookie.secure' => false,
-	'session.phpsession.cookiename' => null,
-	'session.phpsession.savepath' => null,
-	'session.phpsession.httponly' => true,
-	'session.authtoken.cookiename' => 'SimpleSAMLAuthToken',
-	'session.rememberme.enable' => false,
-	'session.rememberme.checked' => false,
-	'session.rememberme.lifetime' => 0,
+    'store.type' => 'phpsession',
+    'session.duration' => 28800, // 8 hours
+    'session.datastore.timeout' => 14400, // 4 hours
+    'session.state.timeout' => 3600, // 1 hour
+    'session.cookie.name' => 'SimpleSAMLSessionID',
+    'session.cookie.lifetime' => 0, // 0 means expires immediately
+    'session.cookie.path' => '/',
+    'session.cookie.domain' => null,
+    'session.cookie.secure' => false,
+    'session.phpsession.cookiename' => null,
+    'session.phpsession.savepath' => null,
+    'session.phpsession.httponly' => true,
+    'session.authtoken.cookiename' => 'SimpleSAMLAuthToken',
+    'session.rememberme.enable' => false,
+    'session.rememberme.checked' => false,
+    'session.rememberme.lifetime' => 0,
 
-	'enable.http_post' => false,
+    'enable.http_post' => false,
 
-	'language.available' => array('en'),
-	'language.default' => 'en',
+    'language.available' => array('en'),
+    'language.default' => 'en',
 
-	'shib13.signresponse' => true,
+    'shib13.signresponse' => true,
 
-	'metadata.sign.enable' => false,
-	'metadata.sign.privatekey' => null,
-	'metadata.sign.privatekey_pass' => null,
-	'metadata.sign.certificate' => null,
+    'metadata.sign.enable' => false,
+    'metadata.sign.privatekey' => null,
+    'metadata.sign.privatekey_pass' => null,
+    'metadata.sign.certificate' => null,
 
-	'trusted.url.domains' => null,
+    'trusted.url.domains' => null,
 );

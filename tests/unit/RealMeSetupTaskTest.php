@@ -4,22 +4,22 @@
  * Class RealMeSetupTaskTest
  * Setup to unit test the Setup task to make sure metadata is being generated correctly.
  */
-class RealMeSetupTaskTest extends PHPUnit_Framework_TestCase {
-
+class RealMeSetupTaskTest extends PHPUnit_Framework_TestCase
+{
     /**
      * Valid entity id's tobe used for context.
      * @var array
      */
-	private static $validEntityIDs = array(
-		RealMeService::ENV_MTS => "https://dev.your-website.govt.nz/p-realm/s-name",
-		RealMeService::ENV_ITE => 'https://uat.your-website.govt.nz/p-realm/s-name',
-		RealMeService::ENV_PROD => 'https://www.your-website.govt.nz/p-realm/s-name'
-	);
+    private static $validEntityIDs = array(
+        RealMeService::ENV_MTS => "https://dev.your-website.govt.nz/p-realm/s-name",
+        RealMeService::ENV_ITE => 'https://uat.your-website.govt.nz/p-realm/s-name',
+        RealMeService::ENV_PROD => 'https://www.your-website.govt.nz/p-realm/s-name'
+    );
 
     private static $authnEnvContexts = array(
         RealMeService::ENV_MTS => 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:LowStrength',
-		RealMeService::ENV_ITE => 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:LowStrength',
-		RealMeService::ENV_PROD => 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:LowStrength'
+        RealMeService::ENV_ITE => 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:LowStrength',
+        RealMeService::ENV_PROD => 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:LowStrength'
     );
 
     private static $metadata_assertion_urls = array(
@@ -35,47 +35,48 @@ class RealMeSetupTaskTest extends PHPUnit_Framework_TestCase {
      *
      * We must also not raise an error if we pass a correctly configured environment.
      */
-    public function testEnvironmentValidation() {
+    public function testEnvironmentValidation()
+    {
         // Setup our objects for testing through reflection
         $realMeService = new RealMeService();
         $realMeSetupTask = new RealMeSetupTask();
 
-        $errors = new ReflectionProperty($realMeSetupTask,'errors');
+        $errors = new ReflectionProperty($realMeSetupTask, 'errors');
         $errors->setAccessible(true);
 
-        $service = new ReflectionProperty($realMeSetupTask,'service');
+        $service = new ReflectionProperty($realMeSetupTask, 'service');
         $service->setAccessible(true);
-        $service->setValue($realMeSetupTask,$realMeService);
+        $service->setValue($realMeSetupTask, $realMeService);
 
         // Make sure there's no errors to begin.
         $this->assertCount(0, $errors->getValue($realMeSetupTask));
 
         // Test: Make an error
         $invalidEnv = "wrong-environment";
-        $validateEnvironments = new ReflectionMethod($realMeSetupTask,'validateRealMeEnvironments');
+        $validateEnvironments = new ReflectionMethod($realMeSetupTask, 'validateRealMeEnvironments');
         $validateEnvironments->setAccessible(true);
-        $validateEnvironments->invoke($realMeSetupTask,$invalidEnv);
+        $validateEnvironments->invoke($realMeSetupTask, $invalidEnv);
         $this->assertCount(1, $errors->getValue($realMeSetupTask), "An invalid environment should raise an error");
 
         // reset errors & Make sure there's no errors to begin.
-        $errors->setValue($realMeSetupTask,array());
+        $errors->setValue($realMeSetupTask, array());
         $this->assertCount(0, $errors->getValue($realMeSetupTask));
 
         // Test: No environment passed
         $noEnvironment = null;
-        $validateEnvironments = new ReflectionMethod($realMeSetupTask,'validateRealMeEnvironments');
+        $validateEnvironments = new ReflectionMethod($realMeSetupTask, 'validateRealMeEnvironments');
         $validateEnvironments->setAccessible(true);
-        $validateEnvironments->invoke($realMeSetupTask,$noEnvironment);
-        $this->assertCount(1, $errors->getValue($realMeSetupTask),"Missing environment should raise an error");
+        $validateEnvironments->invoke($realMeSetupTask, $noEnvironment);
+        $this->assertCount(1, $errors->getValue($realMeSetupTask), "Missing environment should raise an error");
 
         // reset errors &&  Make sure there's no errors to begin.
-        $errors->setValue($realMeSetupTask,array());
+        $errors->setValue($realMeSetupTask, array());
         $this->assertCount(0, $errors->getValue($realMeSetupTask));
 
         // Test: allowed environments pass without error.
-        $reflectionMethod = new ReflectionMethod($realMeService,'getAllowedRealMeEnvironments');
+        $reflectionMethod = new ReflectionMethod($realMeService, 'getAllowedRealMeEnvironments');
         $reflectionMethod->setAccessible(true);
-        foreach($reflectionMethod->invoke($realMeService) as $validEnvironment){
+        foreach ($reflectionMethod->invoke($realMeService) as $validEnvironment) {
             $validateEnvironments->invoke($realMeSetupTask, $validEnvironment);
         }
 
@@ -90,26 +91,27 @@ class RealMeSetupTaskTest extends PHPUnit_Framework_TestCase {
      * - it's not http (must be https)
      * - service name and privacy realm < 10 char.
      */
-    public function testValidateEntityID(){
+    public function testValidateEntityID()
+    {
         $realMeService = new RealMeService();
         $realMeSetupTask = new RealMeSetupTask();
 
-        $errors = new ReflectionProperty($realMeSetupTask,'errors');
+        $errors = new ReflectionProperty($realMeSetupTask, 'errors');
         $errors->setAccessible(true);
 
-        $service = new ReflectionProperty($realMeSetupTask,'service');
+        $service = new ReflectionProperty($realMeSetupTask, 'service');
         $service->setAccessible(true);
-        $service->setValue($realMeSetupTask,$realMeService);
+        $service->setValue($realMeSetupTask, $realMeService);
 
         // Make sure there's no errors to begin.
         $this->assertCount(0, $errors->getValue($realMeSetupTask));
 
         // Test valid entityIds just in case they're different in this configuration.
         $config = Config::inst();
-        $config->update('RealMeService','entity_ids', self::$validEntityIDs);
+        $config->update('RealMeService', 'entity_ids', self::$validEntityIDs);
 
         // validate our list of valid entity IDs;
-        $validateEntityId = new ReflectionMethod($realMeSetupTask,'validateEntityID');
+        $validateEntityId = new ReflectionMethod($realMeSetupTask, 'validateEntityID');
         $validateEntityId->setAccessible(true);
         $validateEntityId->invoke($realMeSetupTask);
 
@@ -119,63 +121,63 @@ class RealMeSetupTaskTest extends PHPUnit_Framework_TestCase {
         // TEST entityId missing.
         $entityIdList = self::$validEntityIDs;
         $entityIdList[RealMeService::ENV_MTS] = 'destroy-humans-with-incorrect-entity-ids';
-        $config->update('RealMeService','entity_ids', $entityIdList);
+        $config->update('RealMeService', 'entity_ids', $entityIdList);
         $validateEntityId->invoke($realMeSetupTask);
-        $this->assertCount(1, $errors->getValue($realMeSetupTask),'validate entity id should fail for an invalid url');
+        $this->assertCount(1, $errors->getValue($realMeSetupTask), 'validate entity id should fail for an invalid url');
 
         // reset errors &&  Make sure there's no errors to begin.
-        $errors->setValue($realMeSetupTask,array());
+        $errors->setValue($realMeSetupTask, array());
         $this->assertCount(0, $errors->getValue($realMeSetupTask));
 
         // TEST entityId localhost.
         $entityIdList = self::$validEntityIDs;
         $entityIdList[RealMeService::ENV_MTS] = 'https://localhost/';
-        $config->update('RealMeService','entity_ids', $entityIdList);
+        $config->update('RealMeService', 'entity_ids', $entityIdList);
         $validateEntityId->invoke($realMeSetupTask);
-        $this->assertCount(1, $errors->getValue($realMeSetupTask),'validate entity id should fail for localhost');
+        $this->assertCount(1, $errors->getValue($realMeSetupTask), 'validate entity id should fail for localhost');
 
-        $errors->setValue($realMeSetupTask,array());
+        $errors->setValue($realMeSetupTask, array());
         $this->assertCount(0, $errors->getValue($realMeSetupTask));
 
         // TEST entityId not http
         $entityIdList = self::$validEntityIDs;
         $entityIdList[RealMeService::ENV_MTS] = 'http://dev.realme-integration.govt.nz/p-realm/s-name';
-        $config->update('RealMeService','entity_ids', $entityIdList);
+        $config->update('RealMeService', 'entity_ids', $entityIdList);
         $validateEntityId->invoke($realMeSetupTask);
-        $this->assertCount(1, $errors->getValue($realMeSetupTask),'validate entity id should fail for http');
+        $this->assertCount(1, $errors->getValue($realMeSetupTask), 'validate entity id should fail for http');
 
-        $errors->setValue($realMeSetupTask,array());
+        $errors->setValue($realMeSetupTask, array());
         $this->assertCount(0, $errors->getValue($realMeSetupTask));
 
         // TEST privacy realm /service name  missing
         $entityIdList = self::$validEntityIDs;
         $entityIdList[RealMeService::ENV_MTS] = 'https://dev.realme-integration.govt.nz/';
-        $config->update('RealMeService','entity_ids', $entityIdList);
+        $config->update('RealMeService', 'entity_ids', $entityIdList);
         $validateEntityId->invoke($realMeSetupTask);
         $this->assertCount(2,
             $errors->getValue($realMeSetupTask),
             'validate entity id should fail for missing service name and privacy realm'
         );
 
-        $errors->setValue($realMeSetupTask,array());
+        $errors->setValue($realMeSetupTask, array());
         $this->assertCount(0, $errors->getValue($realMeSetupTask));
 
          // TEST privacy realm missing
         $entityIdList = self::$validEntityIDs;
         $entityIdList[RealMeService::ENV_MTS] = 'https://dev.realme-integration.govt.nz/privacy-realm-is-too-big/s-name';
-        $config->update('RealMeService','entity_ids', $entityIdList);
+        $config->update('RealMeService', 'entity_ids', $entityIdList);
         $validateEntityId->invoke($realMeSetupTask);
-        $this->assertCount(1, $errors->getValue($realMeSetupTask),'validate entity id should fail for privacy-realm-is-too-big');
+        $this->assertCount(1, $errors->getValue($realMeSetupTask), 'validate entity id should fail for privacy-realm-is-too-big');
 
-        $errors->setValue($realMeSetupTask,array());
+        $errors->setValue($realMeSetupTask, array());
         $this->assertCount(0, $errors->getValue($realMeSetupTask));
 
          // TEST servicename realm missing
         $entityIdList = self::$validEntityIDs;
         $entityIdList[RealMeService::ENV_MTS] = 'https://dev.realme-integration.govt.nz/p-realm/service-name-is-too-big';
-        $config->update('RealMeService','entity_ids', $entityIdList);
+        $config->update('RealMeService', 'entity_ids', $entityIdList);
         $validateEntityId->invoke($realMeSetupTask);
-        $this->assertCount(1, $errors->getValue($realMeSetupTask),'validate entity id should fail for service-name-is-too-big');
+        $this->assertCount(1, $errors->getValue($realMeSetupTask), 'validate entity id should fail for service-name-is-too-big');
     }
 
 
@@ -183,33 +185,34 @@ class RealMeSetupTaskTest extends PHPUnit_Framework_TestCase {
      * We require an authn context for each environment to determine how secure to ask realme to validate.
      * - it should be present for each environment, and one of four pre-determined authncontexts.
      */
-    public function testValidateAuthNContext(){
+    public function testValidateAuthNContext()
+    {
         $realMeService = new RealMeService();
         $realMeSetupTask = new RealMeSetupTask();
 
-        $errors = new ReflectionProperty($realMeSetupTask,'errors');
+        $errors = new ReflectionProperty($realMeSetupTask, 'errors');
         $errors->setAccessible(true);
 
-        $service = new ReflectionProperty($realMeSetupTask,'service');
+        $service = new ReflectionProperty($realMeSetupTask, 'service');
         $service->setAccessible(true);
-        $service->setValue($realMeSetupTask,$realMeService);
+        $service->setValue($realMeSetupTask, $realMeService);
 
         // Make sure there's no errors to begin.
         $this->assertCount(0, $errors->getValue($realMeSetupTask));
 
         // Test valid authnContexts just in case they're different in this configuration.
         $config = Config::inst();
-        $config->update('RealMeService','authn_contexts', self::$authnEnvContexts);
+        $config->update('RealMeService', 'authn_contexts', self::$authnEnvContexts);
 
         // validate our list of valid entity IDs;
-        $validateAuthNContext = new ReflectionMethod($realMeSetupTask,'validateAuthNContext');
+        $validateAuthNContext = new ReflectionMethod($realMeSetupTask, 'validateAuthNContext');
         $validateAuthNContext->setAccessible(true);
         $validateAuthNContext->invoke($realMeSetupTask);
         $this->assertCount(0, $errors->getValue($realMeSetupTask));
 
         $invalidAuthNContextList = self::$authnEnvContexts;
         $invalidAuthNContextList[RealMeService::ENV_MTS] = 'im-an-invalid-context';
-        $config->update('RealMeService','authn_contexts', $invalidAuthNContextList);
+        $config->update('RealMeService', 'authn_contexts', $invalidAuthNContextList);
 
         $validateAuthNContext->invoke($realMeSetupTask);
         $this->assertCount(1, $errors->getValue($realMeSetupTask), "The authncontext validation should fail if invalid.");
@@ -222,26 +225,27 @@ class RealMeSetupTaskTest extends PHPUnit_Framework_TestCase {
      * - ensure it's a valid URL
      * - ensure it's not localhost.
      */
-    public function testValidateConsumerAssertionURL(){
+    public function testValidateConsumerAssertionURL()
+    {
         $realMeService = new RealMeService();
         $realMeSetupTask = new RealMeSetupTask();
 
-        $errors = new ReflectionProperty($realMeSetupTask,'errors');
+        $errors = new ReflectionProperty($realMeSetupTask, 'errors');
         $errors->setAccessible(true);
 
-        $service = new ReflectionProperty($realMeSetupTask,'service');
+        $service = new ReflectionProperty($realMeSetupTask, 'service');
         $service->setAccessible(true);
-        $service->setValue($realMeSetupTask,$realMeService);
+        $service->setValue($realMeSetupTask, $realMeService);
 
         // Make sure there's no errors to begin.
         $this->assertCount(0, $errors->getValue($realMeSetupTask));
 
         // Test valid entityIds just in case they're different in this configuration.
         $config = Config::inst();
-        $config->update('RealMeService','metadata_assertion_service_domains', self::$metadata_assertion_urls);
+        $config->update('RealMeService', 'metadata_assertion_service_domains', self::$metadata_assertion_urls);
 
         // validate our list of valid entity IDs;
-        $validateAuthNContext = new ReflectionMethod($realMeSetupTask,'validateConsumerAssertionURL');
+        $validateAuthNContext = new ReflectionMethod($realMeSetupTask, 'validateConsumerAssertionURL');
         $validateAuthNContext->setAccessible(true);
         $validateAuthNContext->invoke($realMeSetupTask, RealMeService::ENV_MTS);
         $this->assertCount(0, $errors->getValue($realMeSetupTask));
@@ -249,33 +253,33 @@ class RealMeSetupTaskTest extends PHPUnit_Framework_TestCase {
         // Test an invalid metadata assertion URL.
         $metadataAssertionUrls = self::$metadata_assertion_urls;
         $metadataAssertionUrls[RealMeService::ENV_MTS] = 'invalid-url';
-        $config->update('RealMeService','metadata_assertion_service_domains', $metadataAssertionUrls);
+        $config->update('RealMeService', 'metadata_assertion_service_domains', $metadataAssertionUrls);
 
         $validateAuthNContext->invoke($realMeSetupTask, RealMeService::ENV_MTS);
-        $this->assertCount(1, $errors->getValue($realMeSetupTask),"The validation should fail for an invalid URL");
+        $this->assertCount(1, $errors->getValue($realMeSetupTask), "The validation should fail for an invalid URL");
 
         // Make sure there's no errors to begin.
-        $errors->setValue($realMeSetupTask,array());
+        $errors->setValue($realMeSetupTask, array());
         $this->assertCount(0, $errors->getValue($realMeSetupTask));
 
         // Test should fail for non HTTPs
         $metadataAssertionUrls = self::$metadata_assertion_urls;
         $metadataAssertionUrls[RealMeService::ENV_MTS] = 'http://my-broken-url.govt.nz';
-        $config->update('RealMeService','metadata_assertion_service_domains', $metadataAssertionUrls);
+        $config->update('RealMeService', 'metadata_assertion_service_domains', $metadataAssertionUrls);
 
         $validateAuthNContext->invoke($realMeSetupTask, RealMeService::ENV_MTS);
-        $this->assertCount(1, $errors->getValue($realMeSetupTask),"The validation should fail for non-HTTPs");
+        $this->assertCount(1, $errors->getValue($realMeSetupTask), "The validation should fail for non-HTTPs");
 
         // Make sure there's no errors to begin.
-        $errors->setValue($realMeSetupTask,array());
+        $errors->setValue($realMeSetupTask, array());
         $this->assertCount(0, $errors->getValue($realMeSetupTask));
 
         // Test should fail for localhost
         $metadataAssertionUrls = self::$metadata_assertion_urls;
         $metadataAssertionUrls[RealMeService::ENV_MTS] = 'https://localhost';
-        $config->update('RealMeService','metadata_assertion_service_domains', $metadataAssertionUrls);
+        $config->update('RealMeService', 'metadata_assertion_service_domains', $metadataAssertionUrls);
 
         $validateAuthNContext->invoke($realMeSetupTask, RealMeService::ENV_MTS);
-        $this->assertCount(1, $errors->getValue($realMeSetupTask),"The validation should fail for non-HTTPs");
+        $this->assertCount(1, $errors->getValue($realMeSetupTask), "The validation should fail for non-HTTPs");
     }
 }
