@@ -4,7 +4,7 @@
  * Class RealMeSetupTaskTest
  * Setup to unit test the Setup task to make sure metadata is being generated correctly.
  */
-class RealMeSetupTaskTest extends PHPUnit_Framework_TestCase
+class RealMeSetupTaskTest extends SapphireTest
 {
     /**
      * Valid entity id's tobe used for context.
