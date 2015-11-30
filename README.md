@@ -1,6 +1,12 @@
 silverstripe-realme
 ============================
 
+[![Build Status](http://img.shields.io/travis/silverstripe/silverstripe-realme.svg?style=flat-square)](https://travis-ci.org/silverstripe/silverstripe-realme)
+[![Code Quality](http://img.shields.io/scrutinizer/g/silverstripe/silverstripe-realme.svg?style=flat-square)](https://scrutinizer-ci.com/g/silverstripe/silverstripe-realme)
+[![License](http://img.shields.io/packagist/l/silverstripe/realme.svg?style=flat-square)](LICENSE.md)
+
+<!-- [![Version](http://img.shields.io/packagist/v/silverstripe/realme.svg?style=flat-square)](https://packagist.org/packages/silverstripe/realme) -->
+
 Adds support to SilverStripe for authentication via [RealMe](https://www.realme.govt.nz/).
 
 This module provides the foundation to support a quick integration for a SilverStripe application with RealMe as an 
