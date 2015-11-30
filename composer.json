@@ -18,7 +18,7 @@
     "require": {
         "composer/installers": "*",
         "silverstripe/framework": "~3.1",
-        "simplesamlphp/simplesamlphp": "dev-realme-integration-fixes"
+        "madmatt/simplesamlphp": "dev-ss-master"
     },
     "require-dev": {
         "hafriedlander/silverstripe-phockito": "*"
