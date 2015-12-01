@@ -67,7 +67,7 @@ Normally, you'd have something like the following:
 Just prior to the 'vendor' lines above, insert the following:
 ```
 	# Allow access to SimpleSAMLphp directory within vendor/
-	RewriteRule ^vendor/simplesamlphp/simplesamlphp/www - [L,NC]
+	RewriteRule ^vendor/madmatt/simplesamlphp/www - [L,NC]
 ```
 
 Once installation is completed, configuration is required before this module will work. See the 

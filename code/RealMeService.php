@@ -41,11 +41,11 @@ class RealMeService extends Object
      * @config
      * @var string The base url path that is passed through to SimpleSAMLphp. This should be relative to the web root,
      * and is passed through to SimpleSAMLphp's config.php for it to base all its URLs from. The default is
-     * 'simplesaml/', which implies that 'https://your-site-url.com/simplesaml/' is routed through to the SimpleSAMLphp
-     * `www` directory.
+     * 'vendor/madmatt/simplesamlphp/www/', which implies that '//your-site-url.com/vendor/madmatt/simplesamlphp/www/' 
+     * is routed through to the SimpleSAMLphp `www` directory.
      * @see RealMeSetupTask for more information on how this is configured
      */
-    private static $simplesaml_base_url_path = 'vendor/simplesamlphp/simplesamlphp/www/';
+    private static $simplesaml_base_url_path = 'vendor/madmatt/simplesamlphp/www/';
 
     /**
      * @config
@@ -374,7 +374,7 @@ class RealMeService extends Object
     /**
      * This looks first to a Config variable that can be set in YML configuration, and falls back to generating a
      * salted SHA256-hashed password. To generate a password in this format, see the bin/pwgen.php file in the
-     * SimpleSAMLphp vendor directory (normally vendor/simplesamlphp/simplesamlphp/bin/pwgen.php). If setting a password
+     * SimpleSAMLphp vendor directory (normally vendor/madmatt/simplesamlphp/bin/pwgen.php). If setting a password
      * via Config, ensure it contains {SSHA256} at the start of the line.
      *
      * @return string|null The administrator password set for SimpleSAMLphp. If null, it means a strong hash couldn't be
@@ -632,7 +632,7 @@ class RealMeService extends Object
             return null;
         }
 
-        // Returns http://domain.govt.nz/vendor/simplesamlphp/simplesamlphp/www/module.php/saml/sp/saml2-acs.php/realme-mts
+        // Returns http://domain.govt.nz/vendor/madmatt/simplesamlphp/www/module.php/saml/sp/saml2-acs.php/realme-mts
         $domain = $this->getMetadataAssertionServiceDomainForEnvironment($env);
         if (false === filter_var($domain, FILTER_VALIDATE_URL)) {
             return null;
