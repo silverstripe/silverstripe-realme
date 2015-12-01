@@ -1,37 +1,9 @@
 # Installation of the RealMe module
 
-The module is best installed via Composer. Ensure the CWP Composer repository is added to your composer.json. We also 
-need to specify a special version of SimpleSAMLphp and the SAML2 parsing library which contain fixes specific to using 
-SimpleSAMLphp with SilverStripe. Eventually, it's hoped that these will not be necessary, but that requires code being 
-merged into SimpleSAMLphp.
-
-Once the RealMe package is recognised by either Packagist or the CWP Satis instance (https://packages.cwp.govt.nz/), the 
-second VCS URL below can be removed, but for now it's required to find this module via `composer`.
-
-```json
-"repositories": [
-    {
-        "type": "composer",
-        "url": "https://packages.cwp.govt.nz/"
-    },
-    {
-        "type": "vcs",
-       	"url": "https://gitlab.cwp.govt.nz/silverstripe/realme.git"
-    },
-    {
-    	"type": "vcs",
-    	"url": "https://github.com/madmatt/simplesamlphp.git"
-    },
-    {
-    	"type": "vcs",
-    	"url": "https://github.com/madmatt/saml2.git"
-    }
-```
-
-Then include the package:
+The module is best installed via Composer by running the below command:
 
 ```bash
-composer require silverstripe/silverstripe-realme dev-master
+composer require silverstripe/realme dev-master
 ```
 
 After composer installation, you need to modify your `.htaccess` file in your web-root, in order to allow access to the 
