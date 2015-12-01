@@ -98,7 +98,25 @@ In production, you allow real users to use RealMe for authentication.
 
 The required SSL certificates for MTS are provided by the RealMe Operations team, once you have access to the RealMe Shared Workspace. These certificates (at time of writing they are named `mts_saml_sp.pem`, `mts_mutual_ssl_sp.pem`) should be loaded into the directory specified by `REALME_CERT_DIR`.
 
+You will also need to place `mts_saml_idp.cer` into the same directory, however this file as provided by RealMe is incorrect and requires a minor edit.
+
+* On the first line of the file, before the certificate starts, you need to add the following: `-----BEGIN CERTIFICATE-----`
+* Add a new line to the end of the file, after the certificate ends, and add the following: `-----END CERTIFICATE-----`
+
+The file should now look something like this:
+```
+-----BEGIN CERTIFICATE-----
+MIIECT...
+...
+...
+-----END CERTIFICATE-----
+```
+
 Once in place, and ensuring the `REALME_SIGNING_CERT_FILENAME` and `REALME_MUTUAL_CERT_FILENAME` consts are defined correctly, you can run the setup task which will validate all provided details, create the configuration files required, and provide you with the XML you need to provide to RealMe.
+
+If you are developing locally, note that the module enforces your environment to be configured for https. If you don't have this setup by default, [ngrok](https://ngrok.com/download) is a nice, easy to use tool that provides this functionality. You just run ngrok, and copy the https URL that it gives you - this will let you access your site protected via https, however you will need to ensure you set the `TRUSTED_PROXY` const in your _ss_environment.php , e.g. `define('TRUSTED_PROXY', true);` so that we know that ngrok is trust-worthy and allowed to pass http traffic as https.
+
+If you do this, ngrok will give you a random URL each time you start it, which means that you will need to change the above YML configuration and re-run the below task every time you restart ngrok. Alternatively, set this up on a development server that has the capability to perform SSL communication natively. You can use self-signed certificates if required.
 
 ```bash
 cd /path/to/your/webroot
@@ -108,6 +126,8 @@ framework/sake dev/tasks/RealMeSetupTask forEnv=mts
 If any validation errors are found, these will be listed and will need to be fixed. Once you've fixed these, just re-run the setup task above. If you need to change YML configuration, just add flush=1 to the third parameter (e.g. `framework/sake dev/tasks/RealMeSetupTask forEnv=mts\&flush=1`).
 
 If you've already run the setup task, you can re-run it to update configuration files by using `force=1`. 
+
+The above command will generate a screen of XML configuration. This needs to be copied into a new XML file and [uploaded to MTS here](https://mts.realme.govt.nz/logon-mts/metadataupdate) in order to verify bi-directional communication between the RealMe MTS servers and your local development environment. Note that this means the URLs you use to access the website cannot change - if you do change them, you will need to re-run the `RealMeSetupTask` and re-upload the resulting XML to RealMe.
 
 By default on your development site, the module will use the connection to MTS, so no other changes need to be made. You should now be able to proceed to testing the standard login form, or [using the RealMe templates](templates.md).
 
