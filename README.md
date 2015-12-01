@@ -126,7 +126,7 @@ In this environment, RealMe provide all SSL certificates required to communicate
         <NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified</NameIDFormat>
         <AssertionConsumerService
                 Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact"
-                Location="http://yourdomain.govt.nz/vendor/simplesamlphp/simplesamlphp/www/module.php/saml/sp/saml2-acs.php/realme-mts" index="0"
+                Location="http://yourdomain.govt.nz/vendor/madmatt/simplesamlphp/www/module.php/saml/sp/saml2-acs.php/realme-mts" index="0"
                 isDefault="true">
         </AssertionConsumerService>
     </SPSSODescriptor>

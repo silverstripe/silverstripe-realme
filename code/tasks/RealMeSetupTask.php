@@ -387,7 +387,7 @@ class RealMeSetupTask extends BuildTask
      */
     private function getSimpleSAMLVendorPath()
     {
-        return sprintf('%s/vendor/simplesamlphp/simplesamlphp', BASE_PATH);
+        return sprintf('%s/vendor/madmatt/simplesamlphp', BASE_PATH);
     }
 
     /**
