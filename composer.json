@@ -25,5 +25,8 @@
     },
     "support": {
         "issues": "https://gitlab.cwp.govt.nz/silverstripe/realme/issues"
+    },
+    "autoload": {
+        "files": [ "bootstrap.php" ]
     }
 }
