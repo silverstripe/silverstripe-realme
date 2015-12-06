@@ -6,23 +6,30 @@ Information regarding purchasing and using SSL certificates for RealMe will be d
 
 Four certificates must be purchased by the agency - two each for ITE and production environments.
 
-**Note: This is not required if using CWP infrastructure. In CWP, you should [raise a service desk ticket](https://www.cwp.govt.nz/service-desk/new-request/) to begin this process - CWP Operations staff will purchase certificates, install them, and invoice you for this service. These instructions are only necessary when using this module on infrastructure other than CWP. 
+**Note: This is not required if using CWP infrastructure. In CWP, you should
+[raise a service desk ticket](https://www.cwp.govt.nz/service-desk/new-request/) to begin this process -
+CWP Operations staff will purchase certificates, install them, and invoice you for this service. These
+instructions are only necessary when using this module on infrastructure other than CWP. 
 
 ### Requirements when purchasing & installing certificates
 
-RealMe places some restrictions on which certificate authorities can be used, and also the type of certificates purchased. Of note, these are:
+RealMe places some restrictions on which certificate authorities can be used, and also the type of
+certificates purchased. Of note, these are:
 
-* SSL Certificates must be purchased from either [RapidSSL](https://www.rapidssl.com/) or [VeriSign](https://www.verisign.com/).
+* SSL Certificates must be purchased from either [RapidSSL](https://www.rapidssl.com/) or 
+  [VeriSign](https://www.verisign.com/).
 * When purchasing certificates, RealMe requires that three-year expiries are purchased and used.
 * The certificate bit length must be 2048 (this is generally the default).
 * The serial number must be non-negative (the default).
-* The common name on the certificates must be as per RealMe instructions for the different environments - see the below table.
+* The common name on the certificates must be as per RealMe instructions for the different
+  environments - see the below table.
 
 ### Certificate naming requirements
 
 Exact instructions can be found in the Technical Architecture document within the RealMe Shared Workspace.
 
-In the table below, `highlighted` text indicates sections of the common name that would be changed when purchasing certificates.
+In the table below, `highlighted` text indicates sections of the common name that would be changed when
+purchasing certificates.
 
 | **Certificate Description**                | **Common Name Example**                      |
 | ------------------------------------------ | -------------------------------------------- |
