@@ -141,6 +141,8 @@ change the above YML configuration and re-run the below task every time you rest
 set this up on a development server that has the capability to perform SSL communication natively. You
 can use self-signed certificates if required.
 
+Run the below task as the user that your web server runs as (for example, the `www-data` or `httpd` user).
+
 ```bash
 cd /path/to/your/webroot
 framework/sake dev/tasks/RealMeSetupTask forEnv=mts
