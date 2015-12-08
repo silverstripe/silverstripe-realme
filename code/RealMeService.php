@@ -494,8 +494,20 @@ class RealMeService extends Object
         $port = $this->getConfigurationVarByEnv('backchannel_proxy_ports', $env);
 
         // Allow usage of an environment variable to define this
-        if (substr($port, 0, 4) === 'env:' && defined(substr($port, 4))) {
-            $port = parse_url(constant(substr($port, 4)), PHP_URL_PORT);
+        if (substr($port, 0, 4) === 'env:') {
+            $port = getenv(substr($port, 4));
+
+            if($port === false) {
+                // getenv() didn't return a valid environment var, it's either mis-spelled or doesn't exist
+                $port = null;
+            } else {
+                $port = parse_url($port, PHP_URL_PORT);
+
+                // This may happen on seriously malformed URLs, in which case we should return null
+                if ($port === false) {
+                    $port = null;
+                }
+            }
         }
 
         return $port;
