@@ -5,7 +5,7 @@ en:
   RealMeSecurityExtension:
     LOGINFAILURE: "Unfortunately we're not able to authenticate you via RealMe right now."
     AUTHERROR: "Sorry, we couldn't verify your RealMe account. Please try again."
-    AUTHN_FAILED: "You have chosen to leave RealMe."
+    AUTHN_FAILED: "You have chosen to leave RealMe without completing the login process."
     TIMEOUT: "Your session has expired due to inactivity."
     UNKNOWN_PRINCIPAL: "Your RealMe login could not be completed because you are accessing the service for the first time. Please use the first time option."
     INTERNAL_ERROR: "RealMe was unable to process your request due to a RealMe internal error. Please try again. If the problem persists, please contact RealMe Help Desk on 0800 664 774"
