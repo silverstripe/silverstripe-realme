@@ -483,6 +483,8 @@ class RealMeSetupTask extends BuildTask
             $path = ltrim($urlParts['path']);
             $urlParts = preg_split("/\\//", $path);
 
+
+            // "https://www.domain.govt.nz/<privacy-realm>/<service-name>"
             // Validate Service Name
             $serviceName = array_pop($urlParts);
             if (mb_strlen($serviceName) > 10 || 0 === mb_strlen($serviceName)) {
@@ -497,7 +499,7 @@ class RealMeSetupTask extends BuildTask
 
             // Validate Privacy Realm
             $privacyRealm = array_pop($urlParts);
-            if (mb_strlen($privacyRealm) > 10 || 0 === mb_strlen($privacyRealm)) {
+            if (null === $privacyRealm || 0 === mb_strlen($privacyRealm)) {
                 $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_ENTITYID_PRIVACY_REALM', '', '',
                     array(
                         'env' => $env,

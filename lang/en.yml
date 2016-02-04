@@ -33,7 +33,7 @@ en:
     ERR_CONFIG_NO_ENTITYID: "No entityID specified for environment '{env}'. Specify this in your YML configuration, see the module documentation for more details"
     ERR_CONFIG_ENTITYID: "The '{env}' entityId ('{entityId}') must be https, not be 'localhost', and must contain a valid service name and privacy realm e.g. https://my-realme-integration.govt.nz/p-realm/s-name"
     ERR_CONFIG_ENTITYID_SERVICE_NAME: "The '{env}' service name '{serviceName}' must be under 10 characters and not blank for entityID '{entityId}' "
-    ERR_CONFIG_ENTITYID_PRIVACY_REALM: "The '{env}' privacy realm '{privacyRealm}' must be under 10 characters and not blank for entityID '{entityId}' "
+    ERR_CONFIG_ENTITYID_PRIVACY_REALM: "The '{env}' privacy realm '{privacyRealm}' must not be blank for entityID '{entityId}' "
     ERR_CONFIG_NO_AUTHNCONTEXT: "No AuthnContext specified for environment '{env}'. Specify this in your YML configuration, see the module documentation for more details"
     ERR_CONFIG_INVALID_AUTHNCONTEXT: "The AuthnContext specified for environment '{env}' is invalid, please check your configuration"
     ERR_CONFIG_ASSERTION_SERVICE_URL: "The assertion consumer service URL is missing or invalid for environment '{env}'. The metadata_assertion_service_domains list needs to be added in your YML configuration for all RealMe environments, it must be a valid URL, and not localhost"
