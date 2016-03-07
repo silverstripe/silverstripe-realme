@@ -76,7 +76,9 @@ RealMeService:
 
 The values you set for `entity_ids` should conform to the RealMe standard for entity IDs. In summary, the
 domain should be relevant to the agency, the first part of the path should be the privacy realm name, and
-the second part of the path should be the service name.
+the second part of the path should be the service name. 
+
+#### Note: the service name cannot be more than 10 characters in length, or the validation will fail.
 
 The values you set for `authn_contexts` can be one of the following, depending on the requirements of your
 application:
