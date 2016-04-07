@@ -396,12 +396,13 @@ class RealMeSetupTask extends BuildTask
     private function getConfigurationTemplateDir()
     {
         $dir = $this->config()->template_config_dir;
+        $path = Controller::join_links(BASE_PATH, $dir);
 
-        if (!$dir || false === $this->isReadable($dir)) {
-            $dir = REALME_MODULE_PATH . '/templates/simplesaml-configuration';
+        if ($dir && false !== $this->isReadable($path)) {
+            return $path;
         }
 
-        return Controller::join_links(BASE_PATH, $dir);
+        return Controller::join_links(BASE_PATH, REALME_MODULE_PATH . '/templates/simplesaml-configuration');
     }
 
     /**
