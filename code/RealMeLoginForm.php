@@ -53,7 +53,7 @@ class RealMeLoginForm extends LoginForm
         $actions = new FieldList(array(
             FormAction::create('redirectToRealMe', _t('RealMeLoginForm.LOGINBUTTON', 'LoginAction'))
                 ->setUseButtonTag(true)
-                ->setButtonContent('<span class="realme_button_padding">Login or register with RealMe<span class="realme_icon_new_window"></span> <span class="realme_icon_padlock"></span>')
+                ->setButtonContent(_t('RealMeLoginForm.LOGINBUTTONCONTENT', '<span class="realme_button_padding">Login or register with RealMe<span class="realme_icon_new_window"></span> <span class="realme_icon_padlock"></span>'))
                 ->setAttribute('class', 'realme_button')
         ));
 
