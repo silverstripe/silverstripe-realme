@@ -13,7 +13,6 @@ en:
     GENERAL_ERROR: "RealMe reported a serious application error with the message [{errorMsg}]. Please try again later. If the problem persists, please contact RealMe Help Desk on 0800 664 774."
   RealMeLoginForm:
     LOGINBUTTON: "Login or Register with RealMe"
-    LOGINBUTTONCONTENT: '<span class="realme_button_padding">Login or register with RealMe<span class="realme_icon_new_window"></span> <span class="realme_icon_padlock"></span>'
   RealMeSetupTask:
     ERR_NOT_CLI: "This task can only be run from the command-line, not in your browser."
     ERR_ALREADY_RUN: "This task has already been run once ({path} already exists). If you want to re-run it, please add force=1 as the third arg"

@@ -50,10 +50,14 @@ class RealMeLoginForm extends LoginForm
             new HiddenField('AuthenticationMethod', null, $this->authenticator_class)
         ));
 
+        $loginButtonContent = ArrayData::create(array(
+            'Label' => _t('RealMeLoginForm.LOGINBUTTON', 'Login or register with RealMe')
+        ))->renderWith('RealMeLoginButton');
+
         $actions = new FieldList(array(
             FormAction::create('redirectToRealMe', _t('RealMeLoginForm.LOGINBUTTON', 'LoginAction'))
                 ->setUseButtonTag(true)
-                ->setButtonContent(_t('RealMeLoginForm.LOGINBUTTONCONTENT', '<span class="realme_button_padding">Login or register with RealMe<span class="realme_icon_new_window"></span> <span class="realme_icon_padlock"></span>'))
+                ->setButtonContent($loginButtonContent)
                 ->setAttribute('class', 'realme_button')
         ));
 
