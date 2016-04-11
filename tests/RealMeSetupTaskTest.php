@@ -286,4 +286,42 @@ class RealMeSetupTaskTest extends SapphireTest
         $validateAuthNContext->invoke($realMeSetupTask, RealMeService::ENV_MTS);
         $this->assertCount(1, $errors->getValue($realMeSetupTask), "The validation should fail for non-HTTPs");
     }
+
+    /**
+     * Ensure that setting the RealMeSetupTask template_config_dir config value
+     * can adjust the path that the task looks in for its templates.
+     * - ensure the default works
+     * - ensure configuring a bad directory name falls back to the default
+     * - ensure that configuring a good value uses the configured directory
+     */
+    public function testConfigurationTemplateDir()
+    {
+        $realMeSetupTask = new RealMeSetupTask();
+
+        $getConfigurationTemplateDirMethod = new ReflectionMethod('RealMeSetupTask', 'getConfigurationTemplateDir');
+        $getConfigurationTemplateDirMethod->setAccessible(true);
+
+        $config = Config::inst();
+
+        $config->update('RealMeSetupTask', 'template_config_dir', '');
+        $this->assertEquals(
+            BASE_PATH . DIRECTORY_SEPARATOR . REALME_MODULE_PATH . '/templates/simplesaml-configuration',
+            $getConfigurationTemplateDirMethod->invoke($realMeSetupTask),
+            'Using no configuration for template_config_dir should use the default template directory.'
+        );
+
+        $config->update('RealMeSetupTask', 'template_config_dir', 'xyzzy');
+        $this->assertEquals(
+            BASE_PATH . DIRECTORY_SEPARATOR . REALME_MODULE_PATH . '/templates/simplesaml-configuration',
+            $getConfigurationTemplateDirMethod->invoke($realMeSetupTask),
+            'Configuring a directory that does not exist should use the default template directory.'
+        );
+
+        $config->update('RealMeSetupTask', 'template_config_dir', REALME_MODULE_PATH);
+        $this->assertEquals(
+            BASE_PATH . DIRECTORY_SEPARATOR . REALME_MODULE_PATH, // doesn't contain templates, but does exist
+            $getConfigurationTemplateDirMethod->invoke($realMeSetupTask),
+            'Configuring a directory that exists should use the configured template directory.'
+        );
+    }
 }
