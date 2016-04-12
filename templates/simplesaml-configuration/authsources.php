@@ -53,10 +53,10 @@ $config['realme-mts'] = array(
     'privatekey' => '{{mts-privatepemfile-signing}}',
     'saml.SOAPClient.certificate' => '{{mts-privatepemfile-mutual}}',
     'saml.SOAPClient.ssl' => array(
-        'verify_peer' => true,
-        'verify_peer_name' => true,
+        'verify_peer' => false,
+        'verify_peer_name' => false,
         'capture_peer_cert' => true,
-        'allow_self_signed' => false,
+        'allow_self_signed' => true,
         'verify_depth' => 5,
         'peer_name' => 'as.mts.realme.govt.nz',
         'cafile' => $_SERVER['DOCUMENT_ROOT']. "/mysite/certificate-bundle.pem"
@@ -107,7 +107,7 @@ $config['realme-ite'] = array(
         'capture_peer_cert' => true,
         'allow_self_signed' => false,
         'verify_depth' => 5,
-        'peer_name' => 'as.ite.logon.realme.govt.nz',
+        'peer_name' => 'ws.ite.realme.govt.nz',
         'cafile' => $_SERVER['DOCUMENT_ROOT']. "/mysite/certificate-bundle.pem"
     )
 );
