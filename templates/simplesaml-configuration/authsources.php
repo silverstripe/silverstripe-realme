@@ -86,7 +86,7 @@ if (strlen($proxyHost) > 0 && strlen($proxyPort) > 0) {
 // ITE - RealMe Integrated Test Environment
 $config['realme-ite'] = array(
     'saml:SP',
-    'entityID' => '{{ite-entityID}}', // https://realme-demo.cwp.govt.nz/realme-demo/service1
+    'entityID' => '{{ite-entityID}}',
     'idp' => 'https://www.ite.logon.realme.govt.nz/saml2',
     'discoURL' => null,
 
@@ -107,7 +107,7 @@ $config['realme-ite'] = array(
         'capture_peer_cert' => true,
         'allow_self_signed' => false,
         'verify_depth' => 5,
-        'peer_name' => 'as.ite.logon.realme.govt.nz',
+        'peer_name' => 'ws.ite.realme.govt.nz',
         'cafile' => $_SERVER['DOCUMENT_ROOT']. "/mysite/certificate-bundle.pem"
     )
 );
@@ -156,7 +156,7 @@ $config['realme-prod'] = array(
         'capture_peer_cert' => true,
         'allow_self_signed' => false,
         'verify_depth' => 5,
-        'peer_name' => 'as.logon.realme.govt.nz',
+        'peer_name' => 'ws.realme.govt.nz',
         'cafile' => $_SERVER['DOCUMENT_ROOT']. "/mysite/certificate-bundle.pem"
     )
 );
