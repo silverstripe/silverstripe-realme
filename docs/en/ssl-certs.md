@@ -9,14 +9,14 @@ Four certificates must be purchased by the agency - two each for ITE and product
 **Note: This is not required if using CWP infrastructure. In CWP, you should
 [raise a service desk ticket](https://www.cwp.govt.nz/service-desk/new-request/) to begin this process -
 CWP Operations staff will purchase certificates, install them, and invoice you for this service. These
-instructions are only necessary when using this module on infrastructure other than CWP. 
+instructions are only necessary when using this module on infrastructure other than CWP.
 
 ### Requirements when purchasing & installing certificates
 
 RealMe places some restrictions on which certificate authorities can be used, and also the type of
 certificates purchased. Of note, these are:
 
-* SSL Certificates must be purchased from either [RapidSSL](https://www.rapidssl.com/) or 
+* SSL Certificates must be purchased from either [RapidSSL](https://www.rapidssl.com/) or
   [VeriSign](https://www.verisign.com/).
 * When purchasing certificates, RealMe requires that three-year expiries are purchased and used.
 * The certificate bit length must be 2048 (this is generally the default).
@@ -70,3 +70,9 @@ When prompted by `openssl`, use the following parameters:
 | A challenge password     | Leave blank                            |
 | An optional company name | Leave blank                            |
 
+### Manually installing certificates
+
+If not running on CWP, then you must manually create the directory that the `REALME_CERT_DIR` environment variable
+points to. As well as loading the certificates that have been purchased into this folder, the appropriate public keys
+from the RealMe Shared Workspace must be added as well. More information on this process is available within the RealMe
+shared workspace.
