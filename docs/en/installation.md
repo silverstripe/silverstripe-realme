@@ -44,13 +44,3 @@ Just prior to the 'vendor' lines above, insert the following:
 
 Once installation is completed, configuration is required before this module will work. See the 
 [configuration section](configuration.md) for full details.
-
-### SimpleSAML Admin password
-
-You can define a simplesaml admin password in the configuration by adding a simplesaml_hashed_admin_password to the 
-realme.yml if this is not set, it is generated each time the setup task is run. 
-
-```
-RealMeService:
-  simplesaml_hashed_admin_password: my-special-password
-```

@@ -6,7 +6,6 @@ The following values need to be defined in your `_ss_environment.php` file for *
 
 | **Environment Const**          | **Example**                     | **Notes**                                                                                                                                                                      |
 | ------------------------------ | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `REALME_CONFIG_DIR`            | /sites/realme-dev/secure/config | Directory where SimpleSAMLphp configuration will reside. Needs to be writeable by the web server user during setup, and readable afterwards.                                   |
 | `REALME_CERT_DIR`              | /sites/realme-dev/secure/certs  | Directory where certificates will reside. All certificates should be placed here. Needs to be readable (but ideally not writeable) by the web server user.                     |
 | `REALME_LOG_DIR`               | /sites/realme-dev/logs          | Directory where SimpleSAMLphp logs will reside. Needs to be writeable by the web server user.                                                                                  |
 | `REALME_TEMP_DIR`              | /tmp/simplesaml                 | Directory where SimpleSAMLphp can create temporary files. Needs to be writeable by the web server user.                                                                        |
@@ -27,7 +26,9 @@ application.
 Name: realmeproject
 ---
 RealMeService:
-  entity_ids:
+  realme_env: 'mts'
+  integration_type: 'login'
+  sp_entity_ids:
     mts: "https://dev.your-website.govt.nz/p-realm/s-name"
     ite: "https://uat.your-website.govt.nz/p-realm/s-name"
     prod: "https://www.your-website.govt.nz/p-realm/s-name"
@@ -39,14 +40,6 @@ RealMeService:
     mts: "https://dev.your-website.govt.nz/"
     ite: "https://uat.your-website.govt.nz"
     prod: "https://www.your-website.govt.nz/"
-  backchannel_proxy_hosts:
-    mts: null
-    ite: "env:http_proxy"
-    prod: "env:http_proxy"
-  backchannel_proxy_ports:
-    mts: null
-    ite: "env:http_proxy"
-    prod: "env:http_proxy"
   metadata_organisation_name: "RealMe Demo Organisation"
   metadata_organisation_display_name: "RealMe Demo Organisation"
   metadata_organisation_url: "https://realme-demo.govt.nz"
@@ -61,7 +54,7 @@ After:
   - 'RealMe'
 ---
 RealMeService:
-  auth_source_name: 'realme-ite'
+  realme_env: 'ite'
 ---
 Name: realmeprod
 Only:
@@ -70,11 +63,15 @@ After:
   - 'RealMe'
 ---
 RealMeService:
-  auth_source_name: 'realme-prod'
+  realme_env: 'prod'
 ---
 ```
 
-The values you set for `entity_ids` should conform to the RealMe standard for entity IDs. In summary, the
+The value you set for `realme_env` must be one of 'mts', 'ite' or 'prod'.
+
+The value you set for `integration_type` must be one of 'login' or 'assert'.
+
+The values you set for `sp_entity_ids` should conform to the RealMe standard for entity IDs. In summary, the
 domain should be relevant to the agency, the first part of the path should be the privacy realm name, and
 the second part of the path should be the service name. 
 
@@ -89,6 +86,9 @@ application:
 | urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength                 | Requires a username, password, and a moderate-security second factor of authentication (Google Auth, SMS token, RSA token). |
 | urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength::OTP:Mobile:SMS | Not recommended. Requires a username, password, and specifically requires the use of an SMS token.                          |
 | urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength::OTP:Token:SID  | Not recommended. Requires a username, password, and specifically requires the use of an RSA token.                          |
+
+*Note:* The AuthN context must be set to 'ModStrength' if you are using the 'assert' integration type, low strength is 
+not available for this integration type.
 
 If you are wanting to test SMS tokens on the ITE environment, further documentation is available on the RealMe
 Shared Workspace.

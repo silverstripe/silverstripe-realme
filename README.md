@@ -145,9 +145,24 @@ In this environment, RealMe provide all SSL certificates required to communicate
 
 - Save the XML output from your task to an XML file, and upload this to the [MTS metadata upload](https://mts.realme.govt.nz/logon-mts/metadataupdate). Be sure to click continue and ok after uploading.
 
-- include the session data realme/templates/Layout/RealMeSessionData.ss in your template, or reference session data
-directly from any descendant of SiteTree $RealMeSessionData, or by using SiteConfig: SiteConfig::current_site_config()->RealMeSessionData();
-- See the templates/Includes or templates/Layout directory for more information.
+- Include code to ensure that pages are protected, for example in your controller:
+
+```php
+class Page_Controller extends ContentController {
+    public function index() {
+        $service = Injector::inst()->get('RealMeService');
+        
+        if($service->enforceLogin()) {
+            var_dump($service->getUserData());
+        } else {
+            echo "Failure during RealMe authentication.";
+        }
+    }
+}
+```
+
+- You can also access user data from any descendant of SiteTree using `$RealMeUser`
+- Or by using SiteConfig: `SiteConfig::current_site_config()->RealMeUser();`
 
 ### ITE: Integration Test Environment
 

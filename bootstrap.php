@@ -6,10 +6,6 @@
 // Load _ss_environment.php settings
 // Replace https://github.com/madmatt/simplesamlphp/commit/43a910d49106ea60dee9f771a6347649917098cf
 require_once dirname(__DIR__) . '/framework/core/Constants.php';
-$configDir = defined('REALME_CONFIG_DIR') ? constant('REALME_CONFIG_DIR') : null;
-if($configDir) {
-    putenv("SIMPLESAMLPHP_CONFIG_DIR={$configDir}");
-}
 
 // Detect forwarded protocol (HTTPS detection)
 // Replaces https://github.com/madmatt/simplesamlphp/commit/e0d5ca8da8a10a611e45651b122486d5eb7da1eb

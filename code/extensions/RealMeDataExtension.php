@@ -11,10 +11,16 @@ class RealMeDataExtension extends DataExtension
     public $service;
 
     /**
-     *
+     * @return RealMeUser|false
      */
-    public function RealMeSessionData()
+    public function RealMeUser()
     {
-        return $this->service->getUserData();
+        $user = $this->service->getUserData();
+
+        if($user && $user->isValid()) {
+            return $user;
+        } else {
+            return false;
+        }
     }
 }

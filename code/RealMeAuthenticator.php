@@ -30,7 +30,7 @@ class RealMeAuthenticator extends Authenticator
         }
 
         // check we have config constants present.
-        $configs = array('REALME_CONFIG_DIR', 'REALME_CERT_DIR', 'REALME_LOG_DIR', 'REALME_TEMP_DIR');
+        $configs = array('REALME_CERT_DIR', 'REALME_LOG_DIR', 'REALME_TEMP_DIR');
         foreach ($configs as $config) {
             if (false === defined($config)) {
                 SS_Log::log(
@@ -61,16 +61,6 @@ class RealMeAuthenticator extends Authenticator
                 );
                 return false;
             }
-        }
-
-        // if we haven't created this file, or it doesn't exist, then the setup task hasn't run correctly.
-        $authSource = REALME_CONFIG_DIR . '/authsources.php';
-        if (false === file_exists($authSource)) {
-            SS_Log::log(
-                sprintf('RealMe Setup task not complete. missing auth source: %s', $authSource),
-                SS_Log::ERR
-            );
-            return false;
         }
 
         $cache->save('true', $cacheKey);

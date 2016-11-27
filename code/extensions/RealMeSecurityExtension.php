@@ -50,11 +50,13 @@ class RealMeSecurityExtension extends Extension
      */
     private function realMeLogout($redirect = true)
     {
+        Session::clear('RealMeSessionData');
         $this->service->clearLogin();
 
         if ($redirect) {
             return $this->owner->logout($redirect);
         } else {
+            $this->owner->logout();
             return $this->owner->redirectBack();
         }
     }
@@ -91,17 +93,36 @@ class RealMeSecurityExtension extends Extension
      */
     private function realMeACS()
     {
-        $loggedIn = $this->service->enforceLogin();
+        try {
+            $authenticated = $this->service->enforceLogin();
 
-        if (true === $loggedIn) {
-            return $this->owner->redirect($this->service->getBackURL());
+            if($authenticated === true) {
+                $authData = $this->service->getAuthData();
+
+                // If more session vars are set here, they must be cleared in realmeLogout()
+                Session::set('RealMeSessionData', serialize($authData));
+                return $this->owner->redirect($this->service->getBackURL());
+            } else {
+                throw new RealMeException(
+                    'Attempted access of RealMeSecurityExtension->realMeACS() without SAML response',
+                    RealMeException::MISSING_AUTHN_RESPONSE
+                );
+            }
+        } catch(Exception $e) {
+            $msg = sprintf(
+                'Error during RealMe authentication process. Code: %d, Message: %s',
+                $e->getCode(),
+                $e->getMessage()
+            );
+
+            SS_Log::log($msg, SS_Log::ERR);
         }
 
         return Security::permissionFailure(
             $this->owner,
             _t(
                 'RealMeSecurityExtension.LOGINFAILURE',
-                'Unfortunately we\'re not able to log you in through RealMe right now.'
+                'Unfortunately we\'re not able to log you in through RealMe right now. Please try again shortly.'
             )
         );
     }
