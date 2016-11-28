@@ -464,7 +464,7 @@ class RealMeService extends Object
                 if($contentType == 'certificate') {
                     $pattern = '/-----BEGIN CERTIFICATE-----\n([^-]*)\n-----END CERTIFICATE-----/';
                 } elseif($contentType == 'key') {
-                    $pattern = '/-----BEGIN PRIVATE KEY-----\n([^-]*)\n-----END PRIVATE KEY-----/';
+                    $pattern = '/-----BEGIN [A-Z ]*PRIVATE KEY-----\n([^-]*)\n-----END [A-Z ]*PRIVATE KEY-----/';
                 } else {
                     throw new InvalidArgumentException('Argument contentType must be either "certificate" or "key"');
                 }
