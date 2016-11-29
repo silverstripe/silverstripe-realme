@@ -11,11 +11,6 @@
  * @property RealMeFederatedIdentity FederatedIdentity
  */
 class RealMeUser extends ArrayData {
-    public function setFederatedIdentity($data)
-    {
-
-    }
-
     /**
      * @return bool true if the data given to this object is sufficient to ensure the user is valid
      */
@@ -24,8 +19,8 @@ class RealMeUser extends ArrayData {
         $valid = is_string($this->NameID) && is_string($this->SessionIndex) && $this->Attributes instanceof ArrayData;
 
         // Only validate the FederatedIdentity if it exists
-        if($valid && $this->FederatedIdentity && $this->FederatedIdentity instanceof RealMeFederatedIdentity) {
-            $valid = $this->FederatedIdentity->isValid();
+        if($valid && $this->array['FederatedIdentity'] && $this->array['FederatedIdentity'] instanceof RealMeFederatedIdentity) {
+            $valid = $this->array['FederatedIdentity']->isValid();
         }
 
         return $valid;
@@ -39,5 +34,13 @@ class RealMeUser extends ArrayData {
     public function isAuthenticated()
     {
         return $this->isValid();
+    }
+
+    /**
+     * @return RealMeFederatedIdentity|null
+     */
+    public function getFederatedIdentity()
+    {
+        return $this->array['FederatedIdentity'];
     }
 }

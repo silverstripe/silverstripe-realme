@@ -240,14 +240,14 @@ class RealMeSetupTaskTest extends SapphireTest
 
         $config->update('RealMeSetupTask', 'template_config_dir', '');
         $this->assertEquals(
-            BASE_PATH . DIRECTORY_SEPARATOR . REALME_MODULE_PATH . '/templates/simplesaml-configuration',
+            BASE_PATH . DIRECTORY_SEPARATOR . REALME_MODULE_PATH . '/templates/saml-conf',
             $getConfigurationTemplateDirMethod->invoke($realMeSetupTask),
             'Using no configuration for template_config_dir should use the default template directory.'
         );
 
         $config->update('RealMeSetupTask', 'template_config_dir', 'xyzzy');
         $this->assertEquals(
-            BASE_PATH . DIRECTORY_SEPARATOR . REALME_MODULE_PATH . '/templates/simplesaml-configuration',
+            BASE_PATH . DIRECTORY_SEPARATOR . REALME_MODULE_PATH . '/templates/saml-conf',
             $getConfigurationTemplateDirMethod->invoke($realMeSetupTask),
             'Configuring a directory that does not exist should use the default template directory.'
         );

@@ -45,11 +45,10 @@ class RealMeSetupTask extends BuildTask
             }
 
             // Validate all required values exist
-            $forceRun = ($request->getVar('force') == 1);
             $forEnv = $request->getVar('forEnv');
 
             // Throws an exception if there was a problem with the config.
-            $this->validateInputs($forceRun, $forEnv);
+            $this->validateInputs($forEnv);
 
             $this->outputMetadataXmlContent($forEnv);
 
@@ -63,12 +62,11 @@ class RealMeSetupTask extends BuildTask
      * Validate all inputs to this setup script. Ensures that all required values are available, where-ever they need to
      * be loaded from (environment variables, Config API, or directly passed to this script via the cmd-line)
      *
-     * @param bool           $forceRun Whether or not to force the setup (therefore skip checks around existing files)
-     * @param string         $forEnv   The environment that we want to output content for (mts, ite, or prod)
+     * @param string $forEnv The environment that we want to output content for (mts, ite, or prod)
      *
      * @throws Exception if there were errors with the request or setup format.
      */
-    private function validateInputs($forceRun, $forEnv)
+    private function validateInputs($forEnv)
     {
         // Ensure that 'forEnv=' is specified on the cli, and ensure that it matches a RealMe environment
         $this->validateRealMeEnvironments($forEnv);
@@ -134,6 +132,7 @@ class RealMeSetupTask extends BuildTask
             array(
                 '{{entityID}}' => $this->service->getSPEntityID(),
                 '{{certificate-data}}' => $this->service->getSPCertContent(),
+                '{{acs-url}}' => $this->service->getAssertionConsumerServiceUrlForEnvironment($forEnv),
                 '{{organisation-name}}' => $this->service->getMetadataOrganisationName(),
                 '{{organisation-display-name}}' => $this->service->getMetadataOrganisationDisplayName(),
                 '{{organisation-url}}' => $this->service->getMetadataOrganisationUrl(),
@@ -176,7 +175,7 @@ class RealMeSetupTask extends BuildTask
             return $path;
         }
 
-        return Controller::join_links(BASE_PATH, REALME_MODULE_PATH . '/templates/simplesaml-configuration');
+        return Controller::join_links(BASE_PATH, REALME_MODULE_PATH . '/templates/saml-conf');
     }
 
     /**
@@ -327,9 +326,9 @@ class RealMeSetupTask extends BuildTask
      */
     private function validateDirectoryStructure()
     {
-        if (true === is_null($this->service->getCertDir())) {
+        if (is_null($this->service->getCertDir())) {
             $this->errors[] = _t('RealMeSetupTask.ERR_CERT_DIR_MISSING');
-        } elseif (false === $this->isReadable($this->service->getCertDir())) {
+        } elseif (!$this->isReadable($this->service->getCertDir())) {
             $this->errors[] = _t(
                 'RealMeSetupTask.ERR_CERT_DIR_NOT_READABLE',
                 '',
@@ -344,20 +343,20 @@ class RealMeSetupTask extends BuildTask
      */
     private function validateMetadata()
     {
-        if (true === is_null($this->service->getMetadataOrganisationName())) {
+        if (is_null($this->service->getMetadataOrganisationName())) {
             $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_NO_ORGANISATION_NAME');
         }
 
-        if (true === is_null($this->service->getMetadataOrganisationDisplayName())) {
+        if (is_null($this->service->getMetadataOrganisationDisplayName())) {
             $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_NO_ORGANISATION_DISPLAY_NAME');
         }
 
-        if (true === is_null($this->service->getMetadataOrganisationUrl())) {
+        if (is_null($this->service->getMetadataOrganisationUrl())) {
             $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_NO_ORGANISATION_URL');
         }
 
         $contact = $this->service->getMetadataContactSupport();
-        if (true === is_null($contact['company']) || true === is_null($contact['firstNames']) || is_null($contact['surname'])) {
+        if (is_null($contact['company']) || is_null($contact['firstNames']) || is_null($contact['surname'])) {
             $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_NO_SUPPORT_CONTACT');
         }
     }
@@ -368,7 +367,7 @@ class RealMeSetupTask extends BuildTask
     private function validateCertificates()
     {
         $signingCertFile = $this->service->getSigningCertPath();
-        if (true === is_null($signingCertFile) || false === $this->isReadable($signingCertFile)) {
+        if (is_null($signingCertFile) || !$this->isReadable($signingCertFile)) {
             $this->errors[] = _t(
                 'RealMeSetupTask.ERR_CERT_NO_SIGNING_CERT',
                 '',
@@ -377,7 +376,7 @@ class RealMeSetupTask extends BuildTask
                     'const' => 'REALME_SIGNING_CERT_FILENAME'
                 )
             );
-        } elseif (true === is_null($this->service->getSPCertContent())) {
+        } elseif (is_null($this->service->getSPCertContent())) {
             // Signing cert exists, but doesn't include BEGIN/END CERTIFICATE lines, or doesn't contain the cert
             $this->errors[] = _t(
                 'RealMeSetupTask.ERR_CERT_SIGNING_CERT_CONTENT',

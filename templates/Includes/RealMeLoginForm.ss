@@ -36,7 +36,7 @@ or directly in your css, e.g. .realme_popup {width: 450px}
 "--%>
 <div class="realme_widget realme_primary_login realme_theme_{$RealMeWidgetTheme}">
     <h2 class="realme_title">Login with RealMe®</h2>
-    <p class="realme_info">To access the [online service], you need a RealMe login. If you’ve created a RealMe login
+    <p class="realme_info">To access $SiteConfig.Title, you need a RealMe login. If you’ve created a RealMe login
     somewhere else, you can use it here too.</p>
     <div class="realme_login_lockup">
         <form $FormAttributes>
