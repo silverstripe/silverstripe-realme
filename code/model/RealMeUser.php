@@ -16,7 +16,7 @@ class RealMeUser extends ArrayData {
      */
     public function isValid()
     {
-        $valid = is_string($this->NameID) && is_string($this->SessionIndex) && $this->Attributes instanceof ArrayData;
+        $valid = is_string($this->SPNameID) && is_string($this->UserFederatedTag) && is_string($this->SessionIndex) && $this->Attributes instanceof ArrayData;
 
         // Only validate the FederatedIdentity if it exists
         if($valid && $this->array['FederatedIdentity'] && $this->array['FederatedIdentity'] instanceof RealMeFederatedIdentity) {

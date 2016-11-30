@@ -46,13 +46,24 @@ class RealMeLoginForm extends LoginForm
      */
     public function __construct($controller, $name)
     {
+        /** @var RealMeService $service */
+        $service = Injector::inst()->get('RealMeService');
+        $integrationType = $service->config()->integration_type;
+
         $fields = new FieldList(array(
             new HiddenField('AuthenticationMethod', null, $this->authenticator_class)
         ));
 
-        $loginButtonContent = ArrayData::create(array(
-            'Label' => _t('RealMeLoginForm.LOGINBUTTON', 'Login or register with RealMe')
-        ))->renderWith('RealMeLoginButton');
+        if($integrationType === RealMeService::TYPE_ASSERT) {
+            $loginButtonContent = ArrayData::create(array(
+                'Label' => _t('RealMeLoginForm.ASSERTLOGINBUTTON', 'Share your details with {orgname}', '', ['orgname' => $service->config()->metadata_organisation_display_name])
+            ))->renderWith('RealMeLoginButton');
+        } else {
+            // Login button
+            $loginButtonContent = ArrayData::create(array(
+                'Label' => _t('RealMeLoginForm.LOGINBUTTON', 'Login or register with RealMe')
+            ))->renderWith('RealMeLoginButton');
+        }
 
         $actions = new FieldList(array(
             FormAction::create('redirectToRealMe', _t('RealMeLoginForm.LOGINBUTTON', 'LoginAction'))
@@ -142,5 +153,25 @@ class RealMeLoginForm extends LoginForm
         }
 
         return 'default';
+    }
+
+    public function forTemplate()
+    {
+        /** @var RealMeService $service */
+        $service = Injector::inst()->get('RealMeService');
+        $integrationType = $service->config()->integration_type;
+
+        if($integrationType === RealMeService::TYPE_ASSERT) {
+            $html = $this->renderWith([
+                'RealMeAssertForm'
+            ]);
+
+            // Now that we've rendered, clear message
+            $this->clearMessage();
+
+            return $html;
+        } else {
+            return parent::forTemplate();
+        }
     }
 }

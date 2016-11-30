@@ -290,8 +290,8 @@ class RealMeService extends Object
                 );
             }
 
-            $nameId = $auth->getNameId();
-            if(!is_string($nameId)) {
+            $spNameId = $auth->getNameId();
+            if(!is_string($spNameId)) {
                 throw new RealMeException('Invalid/Missing NameID in SAML response', RealMeException::MISSING_NAMEID);
             }
 
@@ -313,8 +313,16 @@ class RealMeService extends Object
 
             $federatedIdentity = $this->retrieveFederatedIdentity($auth);
 
+            // We will have either a FLT or FIT, depending on integration type
+            if($this->config()->integration_type == self::TYPE_ASSERT) {
+                $userTag = $this->retrieveFederatedIdentityTag($auth);
+            } else {
+                $userTag = $this->retrieveFederatedLogonTag($auth);
+            }
+
             return new RealMeUser([
-                'NameID' => $nameId,
+                'SPNameID' => $spNameId,
+                'UserFederatedTag' => $userTag,
                 'SessionIndex' => $sessionIndex,
                 'Attributes' => $attributes,
                 'FederatedIdentity' => $federatedIdentity
@@ -726,6 +734,31 @@ class RealMeService extends Object
     private function getMetadataAssertionServiceDomainForEnvironment($env)
     {
         return $this->getConfigurationVarByEnv('metadata_assertion_service_domains', $env);
+    }
+
+    /**
+     * @param OneLogin_Saml2_Auth $auth
+     * @return string|null null if there's no FLT, or a string if there is one
+     */
+    private function retrieveFederatedLogonTag(OneLogin_Saml2_Auth $auth)
+    {
+        return null; // @todo
+    }
+
+    /**
+     * @param OneLogin_Saml2_Auth $auth
+     * @return string|null null if there's not FIT, or a string if there is one
+     */
+    private function retrieveFederatedIdentityTag(OneLogin_Saml2_Auth $auth)
+    {
+        $fit = null;
+        $attributes = $auth->getAttributes();
+
+        if(isset($attributes['urn:nzl:govt:ict:stds:authn:attribute:igovt:IVS:FIT'])) {
+            $fit = $attributes['urn:nzl:govt:ict:stds:authn:attribute:igovt:IVS:FIT'][0];
+        }
+
+        return $fit;
     }
 
     /**
