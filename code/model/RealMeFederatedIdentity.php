@@ -101,10 +101,16 @@ class RealMeFederatedIdentity extends ViewableData
 
     public function getDateOfBirth()
     {
-        $value = sprintf('%d-%d-%d', $this->BirthYear, $this->BirthMonth, $this->BirthDay);
-        $field = SS_Datetime::create('DateOfBirth');
-        $field->setValue($value);
+        if($this->BirthYear && $this->BirthMonth && $this->BirthDay) {
+            $value = sprintf('%d-%d-%d', $this->BirthYear, $this->BirthMonth, $this->BirthDay);
+            $field = SS_Datetime::create('DateOfBirth');
+            $field->setValue($value);
 
-        return $field;
+            return $field;
+        } else {
+            return null;
+        }
+
+
     }
 }

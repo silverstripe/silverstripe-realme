@@ -470,7 +470,7 @@ class RealMeService extends Object
             } else {
                 // Otherwise, inspect the file and match based on the full contents
                 if($contentType == 'certificate') {
-                    $pattern = '/-----BEGIN CERTIFICATE-----\n([^-]*)\n-----END CERTIFICATE-----/';
+                    $pattern = '/-----BEGIN CERTIFICATE-----[\r\n]*([^-]*)[\r\n]*-----END CERTIFICATE-----/';
                 } elseif($contentType == 'key') {
                     $pattern = '/-----BEGIN [A-Z ]*PRIVATE KEY-----\n([^-]*)\n-----END [A-Z ]*PRIVATE KEY-----/';
                 } else {
@@ -609,7 +609,7 @@ class RealMeService extends Object
      *
      * @return OneLogin_Saml2_Auth
      */
-    private function getAuth()
+    public function getAuth()
     {
         if(isset($this->auth)) return $this->auth;
 
