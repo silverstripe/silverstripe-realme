@@ -18,7 +18,7 @@
     "require": {
         "composer/installers": "*",
         "silverstripe/framework": "~3.1",
-        "onelogin/php-saml": "v2.10.2"
+        "onelogin/php-saml": "2.10.2"
     },
     "require-dev": {
         "hafriedlander/silverstripe-phockito": "*"
