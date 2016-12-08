@@ -110,7 +110,5 @@ class RealMeFederatedIdentity extends ViewableData
         } else {
             return null;
         }
-
-
     }
 }
