@@ -238,7 +238,15 @@ class RealMeService extends Object
             $errors = $this->getAuth()->getErrors();
 
             if(is_array($errors) && sizeof($errors) > 0) {
-                SS_Log::log(sprintf('onelogin/php-saml error messages: %s', join(', ', $errors)), SS_Log::ERR);
+                SS_Log::log(
+                    sprintf(
+                        'onelogin/php-saml error messages: %s (%s)',
+                        join(', ', $errors),
+                        $this->getAuth()->getLastErrorReason()
+                    ),
+                    SS_Log::ERR
+                );
+
                 return false;
             }
 
