@@ -622,6 +622,10 @@ class RealMeService extends Object
     {
         if(isset($this->auth)) return $this->auth;
 
+        // Force onelogin to assume the protocol is https always. We enforce https, but in some situations the web
+        // server may be behind a trusted load balancer that is proxying https requests down to http
+        OneLogin_Saml2_Utils::setSelfProtocol('https');
+
         $settings = [
             'strict' => true,
             'debug' => false,
