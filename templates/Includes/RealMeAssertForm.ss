@@ -62,7 +62,7 @@ or directly in your css, e.g. .realme_popup {width: 450px}
     <%--</div>--%>
 
     <div class="realme_popup_position">
-        <a class="js_toggle_popup link whats_realme" href="http://preview.realme.springload.co.nz/whats-realme">What’s RealMe?</a>
+        <a class="js_toggle_popup link whats_realme" href="http://www.realme.govt.nz">What’s RealMe?</a>
 
         <div class="realme_popup_wrapper realme_arrow_top_left">
             <!-- realme_popup -->
