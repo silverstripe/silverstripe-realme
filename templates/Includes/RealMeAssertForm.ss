@@ -34,6 +34,10 @@ You can specify the width of the popup by specifying a width attribute for the .
 or directly in your css, e.g. .realme_popup {width: 450px}
 
 "--%>
+<% if $HasRealMeLastError %>
+    <div class="message bad">$RealMeLastError</div>
+<% end_if %>
+
 <div class="realme_widget realme_assert realme_theme_{$RealMeWidgetTheme} no_touch" style="z-index: 1;">
     <h2 class="realme_title">Prove your identity with RealMe</h2>
     <p class="realme_info">If you have a verified RealMe account you can securely prove who you are, right now.</p>
@@ -53,13 +57,6 @@ or directly in your css, e.g. .realme_popup {width: 450px}
             <% end_loop %>
         </form>
     </div>
-
-    <%--<div class="realme_login_lockup">--%>
-        <%--<img src="images/logo.png" alt="RealMe" width="42" height="41">--%>
-        <%--<div class="realme_btn_margin">--%>
-            <%--<a class="realme_button" href="#"><span class="realme_button_padding">Share your details with [Organisation] </span> <span class="realme_icon_padlock"></span></a>--%>
-        <%--</div>--%>
-    <%--</div>--%>
 
     <div class="realme_popup_position">
         <a class="js_toggle_popup link whats_realme" href="http://www.realme.govt.nz">What’s RealMe?</a>

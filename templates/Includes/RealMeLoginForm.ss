@@ -34,6 +34,10 @@ You can specify the width of the popup by specifying a width attribute for the .
 or directly in your css, e.g. .realme_popup {width: 450px}
 
 "--%>
+<% if $HasRealMeLastError %>
+    <div class="message bad">$RealMeLastError</div>
+<% end_if %>
+
 <div class="realme_widget realme_primary_login realme_theme_{$RealMeWidgetTheme}">
     <h2 class="realme_title">Login with RealMe®</h2>
     <p class="realme_info">To access $SiteConfig.Title, you need a RealMe login. If you’ve created a RealMe login

@@ -105,6 +105,17 @@ class RealMeSecurityExtension extends Extension
                 Session::set('RealMeOriginalResponse', $_POST['SAMLResponse']);
                 return $this->owner->redirect($this->service->getBackURL());
             } else {
+                if(is_string($this->service->getLastError())) {
+                    Session::set('RealMeLastErrorMessage', $this->service->getLastError());
+                    if($this->owner->redirectBack()) {
+                        return $this->owner->redirectBack();
+                    } else {
+                        // Fallback to homepage
+                        return $this->owner->redirect('/');
+                    }
+
+                }
+
                 throw new RealMeException(
                     'Attempted access of RealMeSecurityExtension->realMeACS() without SAML response',
                     RealMeException::MISSING_AUTHN_RESPONSE

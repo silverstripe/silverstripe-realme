@@ -174,4 +174,21 @@ class RealMeLoginForm extends LoginForm
             return parent::forTemplate();
         }
     }
+
+    /**
+     * Returns the last error message that the RealMe service provided, if any
+     * @return string|null
+     */
+    public function RealMeLastError()
+    {
+        $message = Session::get('RealMeLastErrorMessage');
+        Session::clear('RealMeLastErrorMessage');
+
+        return $message;
+    }
+
+    public function HasRealMeLastError()
+    {
+        return Session::get('RealMeLastErrorMessage') !== null;
+    }
 }

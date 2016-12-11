@@ -180,6 +180,24 @@ class RealMeService extends Object
 
     /**
      * @config
+     * @var array A list of error messages to display if RealMe returns error statuses, instead of the default
+     * translations (found in realme/lang/en.yml for example).
+     */
+    private static $realme_error_message_overrides = array(
+        'urn:oasis:names:tc:SAML:2.0:status:AuthnFailed' => null,
+        'urn:nzl:govt:ict:stds:authn:deployment:RealMe:SAML:2.0:status:Timeout' => null,
+        'urn:nzl:govt:ict:stds:authn:deployment:RealMe:SAML:2.0:status:InternalError' => null,
+        'urn:oasis:names:tc:SAML:2.0:status:NoAvailableIDP' => null,
+        'urn:oasis:names:tc:SAML:2.0:status:RequestUnsupported' => null,
+        'urn:oasis:names:tc:SAML:2.0:status:NoPassive' => null,
+        'urn:oasis:names:tc:SAML:2.0:status:RequestDenied' => null,
+        'urn:oasis:names:tc:SAML:2.0:status:UnsupportedBinding' => null,
+        'urn:oasis:names:tc:SAML:2.0:status:UnknownPrincipal' => null,
+        'urn:oasis:names:tc:SAML:2.0:status:NoAuthnContext' => null
+    );
+
+    /**
+     * @config
      * @var string|null The organisation name to be used in metadata XML that is submitted to RealMe
      */
     private static $metadata_organisation_name = null;
@@ -221,9 +239,15 @@ class RealMeService extends Object
     private $auth = null;
 
     /**
+     * @var string|null The last error message during login enforcement
+     */
+    private $lastError = null;
+
+    /**
      * @return bool true if the user is correctly authenticated, false if there was an error with login
      * NB: If the user is not authenticated, they will be redirected to RealMe to login, so a boolean false return here
-     * indicates that there was a failure during the authentication process (perhaps a communication issue)
+     * indicates that there was a failure during the authentication process (perhaps a communication issue). You can
+     * check getLastError() to see if a human-readable error message exists for display.
      */
     public function enforceLogin()
     {
@@ -236,8 +260,26 @@ class RealMeService extends Object
         try {
             $this->getAuth()->processResponse();
             $errors = $this->getAuth()->getErrors();
+            $translatedMessage = null;
 
             if(is_array($errors) && sizeof($errors) > 0) {
+                // The error message returned by onelogin/php-saml is the top-level error, but we want the actual error
+                if(isset($_POST) && isset($_POST['SAMLResponse'])) {
+                    $response = new OneLogin_Saml2_Response($this->getAuth()->getSettings(), $_POST['SAMLResponse']);
+                    $internalError = OneLogin_Saml2_Utils::query($response->document, "/samlp:Response/samlp:Status/samlp:StatusCode/samlp:StatusCode/@Value");
+
+                    if($internalError instanceof DOMNodeList && $internalError->length > 0) {
+                        $internalErrorCode = $internalError->item(0)->textContent;
+                        $translatedMessage = $this->findErrorMessageForCode($internalErrorCode);
+                    }
+                }
+
+                // If we found a message to display, then let's redirect to the form and display it
+                if($translatedMessage) {
+                    $this->lastError = $translatedMessage;
+                    return false;
+                }
+
                 SS_Log::log(
                     sprintf(
                         'onelogin/php-saml error messages: %s (%s)',
@@ -354,6 +396,11 @@ class RealMeService extends Object
     public function clearLogin()
     {
         $this->config()->__set('user_data', null);
+    }
+
+    public function getLastError()
+    {
+        return $this->lastError;
     }
 
     /**
@@ -838,5 +885,63 @@ class RealMeService extends Object
 
             // @todo
         }
+    }
+
+    private function findErrorMessageForCode($errorCode) {
+        $message = null;
+        $messageOverrides = $this->config()->realme_error_message_overrides;
+
+        switch($errorCode) {
+            case 'urn:oasis:names:tc:SAML:2.0:status:AuthnFailed':
+                $message = _t('RealMeService.ERROR_AUTHNFAILED');
+                break;
+
+            case 'urn:nzl:govt:ict:stds:authn:deployment:RealMe:SAML:2.0:status:Timeout':
+                $message = _t('RealMeService.ERROR_TIMEOUT');
+                break;
+
+            case 'urn:nzl:govt:ict:stds:authn:deployment:RealMe:SAML:2.0:status:InternalError':
+                $message = _t('RealMeService.ERROR_INTERNAL');
+                break;
+
+            case 'urn:oasis:names:tc:SAML:2.0:status:NoAvailableIDP':
+                $message = _t('RealMeService.ERROR_NOAVAILABLEIDP');
+                break;
+
+            case 'urn:oasis:names:tc:SAML:2.0:status:RequestUnsupported':
+                $message = _t('RealMeService.ERROR_REQUESTUNSUPPORTED');
+                break;
+
+            case 'urn:oasis:names:tc:SAML:2.0:status:NoPassive':
+                $message = _t('RealMeService.ERROR_NOPASSIVE');
+                break;
+
+            case 'urn:oasis:names:tc:SAML:2.0:status:RequestDenied':
+                $message = _t('RealMeService.ERROR_REQUESTDENIED');
+                break;
+
+            case 'urn:oasis:names:tc:SAML:2.0:status:UnsupportedBinding':
+                $message = _t('RealMeService.ERROR_UNSUPPORTEDBINDING');
+                break;
+
+            case 'urn:oasis:names:tc:SAML:2.0:status:UnknownPrincipal':
+                $message = _t('RealMeService.ERROR_UNKNOWNPRINCIPAL');
+                break;
+
+            case 'urn:oasis:names:tc:SAML:2.0:status:NoAuthnContext':
+                $message = _t('RealMeService.ERROR_NOAUTHNCONTEXT');
+                break;
+
+            default:
+                $message = _t('RealMeService.ERROR_GENERAL');
+                break;
+        }
+
+        // Allow message overrides if they exist
+        if(array_key_exists($errorCode, $messageOverrides) && !is_null($messageOverrides[$errorCode])) {
+            $message = $messageOverrides[$errorCode];
+        }
+
+        return $message;
     }
 }
