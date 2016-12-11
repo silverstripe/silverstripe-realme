@@ -58,7 +58,7 @@ or directly in your css, e.g. .realme_popup {width: 450px}
         </form>
     </div>
     <div class="realme_popup_position">
-        <a class="js_toggle_popup whats_realme" href="http://www.realme.govt.nz">What’s RealMe?</a>
+        <a class="js_toggle_popup whats_realme" href="https://www.realme.govt.nz">What’s RealMe?</a>
         <div class="realme_popup_wrapper realme_arrow_top_left">
             <!-- realme_popup -->
             <div class="realme_popup">
@@ -69,8 +69,8 @@ or directly in your css, e.g. .realme_popup {width: 450px}
                 <h2 class="realme_popup_title">Get Verified</h2>
                 <p><b>RealMe</b> is also your secure online ID. Verify your <b>RealMe</b> login and use it to prove who
                 you are online. This lets you to do lots of useful things over the internet that would normally require
-                 you to turn up in person. <a class="realme_find_out_more" target="_blank"
-                 href="http://www.realme.govt.nz">Find out more <span class="realme_icon_find_out_more"></span></a>
+                 you to turn up in person. <a class="realme_find_out_more" target="_blank" rel="noopener noreferrer"
+                 href="https://www.realme.govt.nz">Find out more <span class="realme_icon_find_out_more"></span></a>
                 </p>
                 <span class="arrow">
                     <span class="front"></span>
@@ -79,5 +79,5 @@ or directly in your css, e.g. .realme_popup {width: 450px}
         </div>
         <!-- /realme_popup_wrapper -->
     </div>
-    <a class="realme_create_account" href="https://www.account.realme.govt.nz/account/" target="_blank">Create a RealMe login <span class="realme_icon_link"></span></a>
+    <a class="realme_create_account" href="https://www.account.realme.govt.nz/account/" target="_blank" rel="noopener noreferrer">Create a RealMe login <span class="realme_icon_link"></span></a>
 </div>

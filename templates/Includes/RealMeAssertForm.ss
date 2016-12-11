@@ -59,7 +59,7 @@ or directly in your css, e.g. .realme_popup {width: 450px}
     </div>
 
     <div class="realme_popup_position">
-        <a class="js_toggle_popup link whats_realme" href="http://www.realme.govt.nz">What’s RealMe?</a>
+        <a class="js_toggle_popup link whats_realme" href="https://www.realme.govt.nz">What’s RealMe?</a>
 
         <div class="realme_popup_wrapper realme_arrow_top_left">
             <!-- realme_popup -->
@@ -68,9 +68,9 @@ or directly in your css, e.g. .realme_popup {width: 450px}
                 <h2 class="realme_popup_title">The easy way to prove who you are online</h2>
                 <p><b>RealMe</b> is a service from the New Zealand government and New Zealand Post that allows you to prove who you are online.</p>
                 <h2 class="realme_popup_title">How do I get a verified RealMe account?</h2>
-                <p>To get a verified <b>RealMe</b> account you need to apply online at <a class="realme_find_out_more" target="_blank" href="http://www.realme.govt.nz/">www.realme.govt.nz<span class="realme_icon_find_out_more"></span>  </a>, then visit a PostShop in person, so your online identity can be linked to you.</p>
+                <p>To get a verified <b>RealMe</b> account you need to apply online at <a class="realme_find_out_more" target="_blank" rel="noopener noreferrer" href="https://www.realme.govt.nz/">www.realme.govt.nz<span class="realme_icon_find_out_more"></span>  </a>, then visit a PostShop in person, so your online identity can be linked to you.</p>
                 <h2 class="realme_popup_title">What's so good about being verified? </h2>
-                <p>Once your <b>RealMe</b> account is verified, you'll be able to do lots of useful things online - like applying for a new bank account or getting a birth certificate - without needing to visit a branch. <a class="realme_find_out_more" target="_blank" href="http://www.realme.govt.nz/get-realme">Find out more<span class="realme_icon_find_out_more"></span>  </a> </p>
+                <p>Once your <b>RealMe</b> account is verified, you'll be able to do lots of useful things online - like applying for a new bank account or getting a birth certificate - without needing to visit a branch. <a class="realme_find_out_more" target="_blank" rel="noopener noreferrer" href="https://www.realme.govt.nz/what-it-is/verify-your-identity/">Find out more<span class="realme_icon_find_out_more"></span>  </a> </p>
 
                 <span class="arrow">
                                     <span class="front"></span>
