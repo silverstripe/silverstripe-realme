@@ -543,7 +543,7 @@ class RealMeService extends Object
                 );
 
                 if (isset($matches) && is_array($matches) && isset($matches[1])) {
-                    $text = $matches[1];
+                    $text = trim($matches[1]);
                 }
             }
 
