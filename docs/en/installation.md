@@ -1,45 +1,23 @@
 # Installation of the RealMe module
 
-The module is best installed via Composer by running the below command:
+The module is best installed via Composer, by adding the below to your composer.json. For now, we need to specify a 
+custom version of the excellent onelogin/php-saml module to fix some XMLDSig validation errors with the RealMe XML 
+responses, hence the custom `repositories` section.
 
-```bash
-composer require silverstripe/realme dev-master
 ```
-
-After composer installation, you need to modify your `.htaccess` file in your web-root, in order to allow access to the 
-SimpleSAMLphp web-root - normally this is not allowed as it's within the 'vendor' directory, however SimpleSAMLphp 
-requires this.
-
-Normally, you'd have something like the following:
-```
-<IfModule mod_rewrite.c>
-	SetEnv HTTP_MOD_REWRITE On
-	RewriteEngine On
-
-	# Enable HTTP Basic authentication workaround for PHP running in CGI mode
-	RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-
-	# Deny access to potentially sensitive files and folders
-	RewriteRule ^vendor(/|$) - [F,L,NC]
-	RewriteRule silverstripe-cache(/|$) - [F,L,NC]
-	RewriteRule composer\.(json|lock) - [F,L,NC]
-
-	# Redirect legacy index.php requests
-	RewriteCond %{REQUEST_URI} ^(?:(.*)/)?index\.php [NC]
-	RewriteRule ^index\.php(?:/(.*))?$ %1/$1 [R=301,L]
-
-	# Process through SilverStripe if no file with the requested name exists.
-	# Pass through the original path as a query parameter, and retain the existing parameters.
-	RewriteCond %{REQUEST_URI} ^(.*)$
-	RewriteCond %{REQUEST_FILENAME} !-f
-	RewriteRule .* framework/main.php?url=%1 [QSA]
-</IfModule>
-```
-
-Just prior to the 'vendor' lines above, insert the following:
-```
-	# Allow access to SimpleSAMLphp directory within vendor/
-	RewriteRule ^vendor/madmatt/simplesamlphp/www - [L,NC]
+{
+    "require": {
+        "silverstripe/realme": "dev-pulls/onelogin",
+        "onelogin/php-saml": "dev-tmp/remove-sig-validation as 2.10.2"
+    },
+    
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/madmatt/php-saml.git"
+        }
+    ]
+}
 ```
 
 Once installation is completed, configuration is required before this module will work. See the 
