@@ -489,6 +489,7 @@ class RealMeService extends Object
      * certificates used for ITE and production don't need one.
      *
      * @return string|null Either the password, or null if there is no password.
+     * @deprecated 3.0
      */
     public function getSigningCertPassword()
     {
@@ -880,10 +881,7 @@ class RealMeService extends Object
      */
     private function syncWithLocalMemberDatabase() {
         if($this->config()->sync_with_local_member_database === true) {
-            // Ensure database is built with extension applied
-            $member = Member::create()->dbObject('RealMeFLT');
-
-            // @todo
+            // TODO
         }
     }
 

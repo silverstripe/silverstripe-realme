@@ -4,15 +4,11 @@
 
 The following values need to be defined in your `_ss_environment.php` file for **all** environments. See the [SilverStripe documentation on environment management](https://docs.silverstripe.org/en/3.1/getting_started/environment_management/) for more information.
 
-| **Environment Const**          | **Example**                     | **Notes**                                                                                                                                                                      |
-| ------------------------------ | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `REALME_CERT_DIR`              | /sites/realme-dev/secure/certs  | Directory where certificates will reside. All certificates should be placed here. Needs to be readable (but ideally not writeable) by the web server user.                     |
-| `REALME_LOG_DIR`               | /sites/realme-dev/logs          | Directory where SimpleSAMLphp logs will reside. Needs to be writeable by the web server user.                                                                                  |
-| `REALME_TEMP_DIR`              | /tmp/simplesaml                 | Directory where SimpleSAMLphp can create temporary files. Needs to be writeable by the web server user.                                                                        |
-| `REALME_SIGNING_CERT_FILENAME` | mts_saml_sp.pem                 | Name of the SAML secure signing certificate for the required environment. For MTS, this is provided by RealMe, and is available in the RealMe Shared Workspace.                |
-| `REALME_MUTUAL_CERT_FILENAME`  | mts_mutual_ssl_sp.pem           | Name of the mutual back-channel secure signing certificate for the required environment. For MTS, this is provided by RealMe, and is available in the RealMe Shared Workspace. |
-| `REALME_SIGNING_CERT_PASSWORD` | password                        | Only required if your SAML secure signing certificate (`REALME_SIGNING_CERT_FILENAME`) requires a password to use. Do not define this unless it's required.                    |
-| `REALME_MUTUAL_CERT_PASSWORD`  | password                        | Only required if your mutual back-channel secure signing certificate (`REALME_SIGNING_CERT_FILENAME`) requires a password to use. Do not define this unless it's required.     |
+| **Environment Const**          | **Example**                     | **Notes**                                                                                                                                                                       |
+| ------------------------------ | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `REALME_CERT_DIR`              | /sites/realme-dev/secure/certs  | Directory where certificates will reside. All certificates should be placed here. Needs to be readable (but ideally not writeable) by the web server user.                      |
+| `REALME_SIGNING_CERT_FILENAME` | mts_saml_sp.pem                 | Name of the SAML secure signing certificate for the required environment. For MTS, this is provided by RealMe, and is available in the RealMe Shared Workspace.                 |
+| `REALME_SIGNING_CERT_PASSWORD` | password                        | Only required if your SAML secure signing certificate (`REALME_SIGNING_CERT_FILENAME`) requires a password to use. Do not define this unless it's required. This is deprecated. |
 
 In addition to these, YML configuration is required to specify some values that should be consistently
 applied across environments. These are noted below.

@@ -21,12 +21,18 @@ intended to purely provide an authentication mechanism that can be extended by c
 extension would be to create standard SilverStripe `Member` records linked to a unique RealMe identifier, but that's 
 not currently built in.
 
-## Requirements
-This module doesn't have any specific requirements beyond those required by [SimpleSAMLphp](https://simplesamlphp.org): 
-the tool used to control authentication with the RealMe systems.
+## Work in progress
+This module is a work in progress. It is generally considered stable, but should have a decent knowledge of RealMe or at 
+least standard SAML conventions in order to debug issues. Support is provided via the GitHub Issues for this module. If 
+you encounter any issues, please [open a new issue here](https://github.com/silverstripe/silverstripe-realme/issues). 
 
-These requirements are PHP 5.3, with the following required PHP extensions enabled: date, dom, hash, libxml, openssl,
-pcre, SPL, zlib, and mcrypt php53-mcrypt
+## Requirements
+This module doesn't have any specific requirements beyond those required by 
+[onelogin/php-saml](https://github.com/onelogin/php-saml/blob/master/composer.json), the tool used to control 
+authentication with the RealMe systems.
+
+These requirements are PHP 5.6, with the following required PHP extensions enabled: date, dom, hash, libxml, openssl,
+pcre, SPL, zlib, and mcrypt with the PHP bindings.
 
 This module is designed to be run on a [CWP](https://www.cwp.govt.nz/) instance, and there are two sets of installation 
 instructions - one for use on CWP, and one for generic use.

@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [2.0.0] - Unreleased
 - [Removed]: RealMeSessionData.ss template helper (instead, use `$RealMeUser` directly from your templates)
-- [Removed]: Dependency on convoluted SimpleSAMLphp module no longer necessary, now using onelogin/php-saml which is a much cleaner separation of concerns
+- [Removed]: Dependency on convoluted SimpleSAMLphp module no longer necessary, now using onelogin/php-saml
+- [Changed]: Module no longer uses the HTTP-Artifact binding, it now supports HTTP-Post binding only
+- [Removed]: `REALME_MUTUAL_CERT_FILENAME`, `REALME_MUTUAL_CERT_PASSWORD`, `REALME_LOG_DIR`, `REALME_TEMP_DIR` constants
+- [Deprecated]: `REALME_SIGNING_CERT_PASSWORD` should no longer be required, marked for removal
 
 ## [0.9.1] - 2016-04-28
 - [Added]: 
