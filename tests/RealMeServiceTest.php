@@ -5,6 +5,7 @@ class RealMeServiceTest extends SapphireTest
 
     public function setUpOnce()
     {
+        parent::setUpOnce();
         $this->pathForTempCertificate = ASSETS_PATH . '/tmpcert.pem';
     }
 
@@ -71,6 +72,7 @@ EOF;
 
     public function tearDownOnce()
     {
+        parent::tearDownOnce();
         // Ensure $this->pathForTempCertificate is unlink'd (doesn't get unlinked if the test fails)
         if(file_exists($this->pathForTempCertificate)) {
             unlink($this->pathForTempCertificate);
