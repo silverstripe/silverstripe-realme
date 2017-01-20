@@ -73,25 +73,25 @@ class RealMeFederatedIdentity extends ViewableData
         $xpath->registerNamespace('addr', 'urn:oasis:names:tc:ciq:xal:3');
 
         // Name elements
-        $this->FirstName = $xpath->query("/p:Party/p:PartyName/n:PersonName/n:NameElement[@n:ElementType='FirstName']")->item(0)->nodeValue;
-        $this->MiddleName = $xpath->query("/p:Party/p:PartyName/n:PersonName/n:NameElement[@n:ElementType='MiddleName']")->item(0)->nodeValue;
-        $this->LastName = $xpath->query("/p:Party/p:PartyName/n:PersonName/n:NameElement[@n:ElementType='LastName']")->item(0)->nodeValue;
+        $this->FirstName = $this->getNodeValue($xpath, "/p:Party/p:PartyName/n:PersonName/n:NameElement[@n:ElementType='FirstName']");
+        $this->MiddleName = $this->getNodeValue($xpath, "/p:Party/p:PartyName/n:PersonName/n:NameElement[@n:ElementType='MiddleName']");
+        $this->LastName = $this->getNodeValue($xpath, "/p:Party/p:PartyName/n:PersonName/n:NameElement[@n:ElementType='LastName']");
 
         // Gender
-        $this->Gender = $xpath->query("/p:Party/p:PersonInfo[@p:Gender]")->item(0)->attributes->getNamedItem('Gender')->nodeValue;
+        $this->Gender = $this->getNamedItemNodeValue($xpath, '/p:Party/p:PersonInfo[@p:Gender]', 'Gender');
 
         // Birth info
-        $this->BirthInfoQuality = $xpath->query("/p:Party/p:BirthInfo[@dataQuality:DataQualityType]")->item(0)->attributes->getNamedItem('DataQualityType')->nodeValue;
+        $this->BirthInfoQuality = $xpath->query("/p:Party/p:BirthInfo[@dataQuality:DataQualityType]");
 
         // Birth date
-        $this->BirthYear = $xpath->query("/p:Party/p:BirthInfo/p:BirthInfoElement[@p:Type='BirthYear']")->item(0)->nodeValue;
-        $this->BirthMonth = $xpath->query("/p:Party/p:BirthInfo/p:BirthInfoElement[@p:Type='BirthMonth']")->item(0)->nodeValue;
-        $this->BirthDay = $xpath->query("/p:Party/p:BirthInfo/p:BirthInfoElement[@p:Type='BirthDay']")->item(0)->nodeValue;
+        $this->BirthYear = $this->getNodeValue($xpath, "/p:Party/p:BirthInfo/p:BirthInfoElement[@p:Type='BirthYear']");
+        $this->BirthMonth = $this->getNodeValue($xpath, "/p:Party/p:BirthInfo/p:BirthInfoElement[@p:Type='BirthMonth']");
+        $this->BirthDay = $this->getNodeValue($xpath, "/p:Party/p:BirthInfo/p:BirthInfoElement[@p:Type='BirthDay']");
 
         // Birth place
-        $this->BirthPlaceQuality = $xpath->query("/p:Party/p:BirthInfo/p:BirthPlaceDetails[@dataQuality:DataQualityType]")->item(0)->attributes->getNamedItem('DataQualityType')->nodeValue;
-        $this->BirthPlaceCountry = $xpath->query("/p:Party/p:BirthInfo/p:BirthPlaceDetails/addr:Country/addr:NameElement[@addr:NameType='Name']")->item(0)->nodeValue;
-        $this->BirthPlaceLocality = $xpath->query("/p:Party/p:BirthInfo/p:BirthPlaceDetails/addr:Locality/addr:NameElement[@addr:NameType='Name']")->item(0)->nodeValue;
+        $this->BirthPlaceQuality = $this->getNamedItemNodeValue($xpath, '/p:Party/p:BirthInfo/p:BirthPlaceDetails[@dataQuality:DataQualityType]', 'DataQualityType');
+        $this->BirthPlaceCountry = $this->getNodeValue($xpath, "/p:Party/p:BirthInfo/p:BirthPlaceDetails/addr:Country/addr:NameElement[@addr:NameType='Name']");
+        $this->BirthPlaceLocality = $this->getNodeValue($xpath, "/p:Party/p:BirthInfo/p:BirthPlaceDetails/addr:Locality/addr:NameElement[@addr:NameType='Name']");
     }
 
     public function isValid()
@@ -110,5 +110,42 @@ class RealMeFederatedIdentity extends ViewableData
         } else {
             return null;
         }
+    }
+
+    /**
+     * @param DOMXPath $xpath The DOMXPath object to carry out the query on
+     * @param string $query The XPath query to find the relevant node
+     * @param string $namedAttr The named attribute to retrieve from the XPath query
+     * @return string|null Either the value from the named item, or null if no item exists
+     */
+    private function getNamedItemNodeValue(DOMXPath $xpath, $query, $namedAttr)
+    {
+        $query = $xpath->query($query);
+        $value = null;
+
+        if($query->length > 0) {
+            $item = $query->item(0);
+
+            if($item->hasAttributes()) {
+                $value = $item->attributes->getNamedItem($namedAttr);
+
+                if(strlen($value->nodeValue) > 0) {
+                    $value = $value->nodeValue;
+                }
+            }
+        }
+
+        return $value;
+    }
+
+    /**
+     * @param DOMXPath $xpath The DOMXPath object to carry out the query on
+     * @param string $query The XPath query to find the relevant node
+     * @return string|null Either the first matching node's value (there should only ever be one), or null if none found
+     */
+    private function getNodeValue(DOMXPath $xpath, $query)
+    {
+        $query = $xpath->query($query);
+        return ($query->length > 0 ? $query->item(0)->nodeValue : null);
     }
 }

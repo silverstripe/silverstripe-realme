@@ -300,7 +300,7 @@ class RealMeService extends Object
             }
         } catch(Exception $e) {
             // No auth data or failed to decrypt, enforce login again
-            $this->getAuth()->login();
+            $this->getAuth()->login(Director::absoluteBaseURL());
             die;
         }
 
@@ -429,9 +429,9 @@ class RealMeService extends Object
     {
         if (!empty($_REQUEST['BackURL'])) {
             $url = $_REQUEST['BackURL'];
-        } elseif (Session::get('BackURL')) {
-            $url = Session::get('BackURL');
-            Session::clear('BackURL'); // Ensure we don't redirect back to the same error twice
+        } elseif (Session::get('RealMeBackURL')) {
+            $url = Session::get('RealMeBackURL');
+            Session::clear('RealMeBackURL'); // Ensure we don't redirect back to the same error twice
         }
 
         if (isset($url) && Director::is_site_url($url)) {

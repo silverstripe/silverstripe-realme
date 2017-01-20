@@ -248,7 +248,7 @@ class RealMeSetupTask extends BuildTask
         // A valid Entity ID is in the form of "https://www.domain.govt.nz/<privacy-realm>/<service-name>"
         // Validate Service Name
         $serviceName = array_pop($urlParts);
-        if (mb_strlen($serviceName) > 10 || 0 === mb_strlen($serviceName)) {
+        if (mb_strlen($serviceName) > 20 || 0 === mb_strlen($serviceName)) {
             $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_ENTITYID_SERVICE_NAME', '', '',
                 array(
                     'serviceName' => $serviceName,

@@ -75,8 +75,8 @@ class RealMeLoginForm extends LoginForm
         // Taken from MemberLoginForm
         if (isset($_REQUEST['BackURL'])) {
             $backURL = $_REQUEST['BackURL'];
-        } elseif (Session::get('BackURL')) {
-            $backURL = Session::get('BackURL');
+        } elseif (Session::get('RealMeBackURL')) {
+            $backURL = Session::get('RealMeBackURL');
         }
 
         if (isset($backURL)) {
