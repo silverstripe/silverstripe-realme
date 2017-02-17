@@ -291,7 +291,7 @@ class RealMeSetupTask extends BuildTask
     /**
      * Ensure's the environment we're building the setup for exists.
      *
-     * @param $forEnv string
+     * @param string $forEnv The environment that we're going to configure with this run.
      */
     private function validateRealMeEnvironments($forEnv)
     {

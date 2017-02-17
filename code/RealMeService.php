@@ -244,7 +244,8 @@ class RealMeService extends Object
     private $lastError = null;
 
     /**
-     * @return bool true if the user is correctly authenticated, false if there was an error with login
+     * @return bool|null true if the user is correctly authenticated, false if there was an error with login
+     *
      * NB: If the user is not authenticated, they will be redirected to RealMe to login, so a boolean false return here
      * indicates that there was a failure during the authentication process (perhaps a communication issue). You can
      * check getLastError() to see if a human-readable error message exists for display.
@@ -323,9 +324,11 @@ class RealMeService extends Object
     }
 
     /**
+     * Returns a {@link RealMeUser} object if one can be built from the RealMe session data.
+     *
      * @throws OneLogin_Saml2_Error Passes on the SAML error if it's not indicating a lack of SAML response data
      * @throws RealMeException If identity information exists but couldn't be decoded, or doesn't exist
-     * @return ArrayData
+     * @return RealMeUser|null
      */
     public function getAuthData()
     {
@@ -599,7 +602,7 @@ class RealMeService extends Object
     }
 
     /**
-     * @return array The support contact details to be used in metadata XML output, with null values if they don't exist
+     * @return string[] The support contact details to be used in metadata XML output, with null values if they don't exist
      */
     public function getMetadataContactSupport()
     {
@@ -885,6 +888,11 @@ class RealMeService extends Object
         }
     }
 
+    /**
+     * Finds a human-readable error message based on the error code provided in the RealMe SAML response
+     *
+     * @return string|null The human-readable error message, or null if one can't be found
+     */
     private function findErrorMessageForCode($errorCode) {
         $message = null;
         $messageOverrides = $this->config()->realme_error_message_overrides;
