@@ -107,13 +107,15 @@ class RealMeSecurityExtension extends Extension
             } else {
                 if(is_string($this->service->getLastError())) {
                     Session::set('RealMeLastErrorMessage', $this->service->getLastError());
-                    if($this->owner->redirectBack()) {
-                        return $this->owner->redirectBack();
+
+                    // Redirect to the 'Error Back URL' if set
+                    $backUrl = $this->service->getErrorBackURL();
+                    if($backUrl) {
+                        return $this->owner->redirect($backUrl);
                     } else {
                         // Fallback to homepage
                         return $this->owner->redirect('/');
                     }
-
                 }
 
                 throw new RealMeException(

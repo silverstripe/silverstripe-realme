@@ -430,14 +430,31 @@ class RealMeService extends Object
      */
     public function getBackURL()
     {
-        if (!empty($_REQUEST['BackURL'])) {
-            $url = $_REQUEST['BackURL'];
-        } elseif (Session::get('RealMeBackURL')) {
+        $url = null;
+
+        if(Session::get('RealMeBackURL')) {
             $url = Session::get('RealMeBackURL');
             Session::clear('RealMeBackURL'); // Ensure we don't redirect back to the same error twice
         }
 
-        if (isset($url) && Director::is_site_url($url)) {
+        return $this->validSiteURL($url);
+    }
+
+    public function getErrorBackURL()
+    {
+        $url = null;
+
+        if(Session::get('RealMeErrorBackURL')) {
+            $url = Session::get('RealMeErrorBackURL');
+            Session::clear('RealMeErrorBackURL'); // Ensure we don't redirect back to the same error twice
+        }
+
+        return $this->validSiteURL($url);
+    }
+
+    private function validSiteURL($url = null)
+    {
+        if(isset($url) && Director::is_site_url($url)) {
             $url = Director::absoluteURL($url);
         } else {
             // Spoofing attack or no back URL set, redirect to homepage instead of spoofing url
