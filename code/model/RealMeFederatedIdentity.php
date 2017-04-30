@@ -103,10 +103,7 @@ class RealMeFederatedIdentity extends ViewableData
     {
         if($this->BirthYear && $this->BirthMonth && $this->BirthDay) {
             $value = sprintf('%d-%d-%d', $this->BirthYear, $this->BirthMonth, $this->BirthDay);
-            $field = SS_Datetime::create('DateOfBirth');
-            $field->setValue($value);
-
-            return $field;
+            return DBField::create_field('SS_DateTime', $value);
         } else {
             return null;
         }

@@ -7,53 +7,34 @@ class RealMeServiceTest extends SapphireTest
     {
         $this->pathForTempCertificate = ASSETS_PATH . '/tmpcert.pem';
 
-        // Test standard certificate
-        $contents = <<<EOF
-Bag Attributes
-    friendlyName: mts.client.signing
-    localKeyID: 12 34 56 78 90 AA BB CC DD EE FF 
-Key Attributes: <No Attributes>
------BEGIN PRIVATE KEY-----
-Redacted private key goes here
------END PRIVATE KEY-----
-Bag Attributes
-    friendlyName: mts.client.signing
-    localKeyID: 12 34 56 78 90 AA BB CC DD EE FF GG 
-subject=/C=NZ/ST=Unknown/L=Unknown/O=Unknown/OU=Unknown/CN=mts.client.signing
-issuer=/C=NZ/ST=Unknown/L=Unknown/O=Unknown/OU=Unknown/CN=mts.client.signing
------BEGIN CERTIFICATE-----
-Redacted certificate goes here
------END CERTIFICATE-----
-EOF;
+        /**
+         * Test standard certificate
+         */
+
+        $contents = file_get_contents(BASE_PATH . '/realme/tests/certs/standard_cert.pem');
+
+        // Strip carriage returns
+        $contents = str_replace("\r", '', $contents);
 
         $path = $this->pathForTempCertificate;
         file_put_contents($path, $contents);
 
         /** @var RealMeService $service */
         $service = Injector::inst()->get('RealMeService');
+
         $this->assertEquals('Redacted private key goes here', $service->getCertificateContents($path, 'key'));
         $this->assertEquals('Redacted certificate goes here', $service->getCertificateContents($path, 'certificate'));
 
         unlink($path);
 
-        // Test certificate with RSA private key
-        $contents = <<<EOF
-Bag Attributes
-    friendlyName: mts.client.signing
-    localKeyID: 12 34 56 78 90 AA BB CC DD EE FF 
-Key Attributes: <No Attributes>
------BEGIN RSA PRIVATE KEY-----
-Redacted private key goes here
------END RSA PRIVATE KEY-----
-Bag Attributes
-    friendlyName: mts.client.signing
-    localKeyID: 12 34 56 78 90 AA BB CC DD EE FF GG 
-subject=/C=NZ/ST=Unknown/L=Unknown/O=Unknown/OU=Unknown/CN=mts.client.signing
-issuer=/C=NZ/ST=Unknown/L=Unknown/O=Unknown/OU=Unknown/CN=mts.client.signing
------BEGIN CERTIFICATE-----
-Redacted certificate goes here
------END CERTIFICATE-----
-EOF;
+        /**
+         * Test certificate with RSA private key
+         */
+
+        $contents = file_get_contents(BASE_PATH . '/realme/tests/certs/rsa_cert.pem');
+
+        // Strip carriage returns
+        $contents = str_replace("\r", '', $contents);
 
         $path = $this->pathForTempCertificate;
         file_put_contents($path, $contents);

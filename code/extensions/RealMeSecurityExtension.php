@@ -50,8 +50,7 @@ class RealMeSecurityExtension extends Extension
      */
     private function realMeLogout($redirect = true)
     {
-        Session::clear('RealMeSessionData');
-        Session::clear('RealMeOriginalResponse');
+        Session::clear('RealMe');
         $this->service->clearLogin();
 
         if ($redirect) {
@@ -101,12 +100,12 @@ class RealMeSecurityExtension extends Extension
                 $authData = $this->service->getAuthData();
 
                 // If more session vars are set here, they must be cleared in realmeLogout()
-                Session::set('RealMeSessionData', serialize($authData));
-                Session::set('RealMeOriginalResponse', $_POST['SAMLResponse']);
+                Session::set('RealMe.SessionData', serialize($authData));
+                Session::set('RealMe.OriginalResponse', $_POST['SAMLResponse']);
                 return $this->owner->redirect($this->service->getBackURL());
             } else {
                 if(is_string($this->service->getLastError())) {
-                    Session::set('RealMeLastErrorMessage', $this->service->getLastError());
+                    Session::set('RealMe.LastErrorMessage', $this->service->getLastError());
 
                     // Redirect to the 'Error Back URL' if set
                     $backUrl = $this->service->getErrorBackURL();

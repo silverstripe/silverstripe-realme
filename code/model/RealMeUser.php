@@ -19,8 +19,8 @@ class RealMeUser extends ArrayData {
         $valid = is_string($this->SPNameID) && is_string($this->UserFederatedTag) && is_string($this->SessionIndex) && $this->Attributes instanceof ArrayData;
 
         // Only validate the FederatedIdentity if it exists
-        if($valid && $this->array['FederatedIdentity'] && $this->array['FederatedIdentity'] instanceof RealMeFederatedIdentity) {
-            $valid = $this->array['FederatedIdentity']->isValid();
+        if($valid && $this->getFederatedIdentity()) {
+            $valid = $this->getFederatedIdentity()->isValid();
         }
 
         return $valid;
@@ -41,6 +41,20 @@ class RealMeUser extends ArrayData {
      */
     public function getFederatedIdentity()
     {
-        return $this->array['FederatedIdentity'];
+
+        // Check if identity is present
+        if(!array_key_exists('FederatedIdentity', $this->array)) {
+            return null;
+        }
+
+        // Get federated identity from array
+        $id = $this->array['FederatedIdentity'];
+
+        // Sanity check class
+        if(!$id instanceof RealMeFederatedIdentity) {
+            return null;
+        }
+
+        return $id;
     }
 }

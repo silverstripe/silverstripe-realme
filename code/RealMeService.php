@@ -1,5 +1,5 @@
 <?php
-class RealMeService extends Object
+class RealMeService extends Object implements TemplateGlobalProvider
 {
     /**
      * Current RealMe supported environments.
@@ -244,6 +244,70 @@ class RealMeService extends Object
     private $lastError = null;
 
     /**
+     * @return array
+     */
+    public static function get_template_global_variables()
+    {
+        return array(
+            'RealMeUser' => array(
+                'method' => 'current_realme_user'
+            )
+        );
+    }
+
+    /**
+     * Return the user data which was saved to session from the first RealMe
+     * auth.
+     * Note: Does not check authenticity or expiry of this data
+     *
+     * @return RealMeUser
+     */
+    public static function user_data()
+    {
+        $sessionData = Session::get('RealMe.SessionData');
+
+        // Exit point
+        if(is_null($sessionData)) {
+            return null;
+        }
+
+        // Unserialise stored data
+        $user = unserialize($sessionData);
+
+        if($user == false || !$user instanceof RealMeUser) {
+            return null;
+        }
+    }
+
+    /**
+     * Calls available user data and checks for validity
+     *
+     * @return RealMeUser
+     */
+    public static function current_realme_user()
+    {
+
+        $user = self::user_data();
+
+        if(!$user->isValid()) {
+            return null;
+        }
+
+        return $user;
+    }
+
+    /**
+     * A helpful static method that follows silverstripe naming for
+     * Member::currentUser();
+     *
+     * @return RealMeUser
+     */
+    public static function currentRealMeUser()
+    {
+        return self::current_realme_user();
+    }
+
+    /**
      * @return bool|null true if the user is correctly authenticated, false if there was an error with login
      *
      * NB: If the user is not authenticated, they will be redirected to RealMe to login, so a boolean false return here
@@ -263,7 +327,7 @@ class RealMeService extends Object
             $errors = $this->getAuth()->getErrors();
             $translatedMessage = null;
 
-            if(is_array($errors) && sizeof($errors) > 0) {
+            if(is_array($errors) && !empty($errors)) {
                 // The error message returned by onelogin/php-saml is the top-level error, but we want the actual error
                 if(isset($_POST) && isset($_POST['SAMLResponse'])) {
                     $response = new OneLogin_Saml2_Response($this->getAuth()->getSettings(), $_POST['SAMLResponse']);
@@ -304,9 +368,6 @@ class RealMeService extends Object
             $this->getAuth()->login(Director::absoluteBaseURL());
             die;
         }
-
-        $this->config()->user_data = $authData;
-
 
         $this->syncWithLocalMemberDatabase();
 
@@ -407,22 +468,13 @@ class RealMeService extends Object
     }
 
     /**
-     * Return the user data which was saved to session from the first RealMe auth.
-     * Note: Does not check authenticity or expiry of this data
+     * Helper method, alias for RealMeService::user_data()
      *
      * @return RealMeUser
      */
     public function getUserData()
     {
-        if (is_null($this->config()->user_data)) {
-            $sessionData = Session::get('RealMeSessionData');
-
-            if (!is_null($sessionData) && unserialize($sessionData) !== false) {
-                $this->config()->user_data = unserialize($sessionData);
-            }
-        }
-
-        return $this->config()->user_data;
+        return self::user_data();
     }
 
     /**
@@ -465,11 +517,22 @@ class RealMeService extends Object
     }
 
     /**
-     * @return string|null Either the directory where certificates are stored, or null if undefined
+     * @param String $subdir A sub-directory where certificates may be stored for
+     * a specific case
+     * @return string|null Either the directory where certificates are stored,
+     * or null if undefined
      */
-    public function getCertDir()
+    public function getCertDir($subdir = null)
     {
-        return (defined('REALME_CERT_DIR') ? REALME_CERT_DIR : null);
+
+        // Trim prepended seprator to avoid absolute path
+        $path = ltrim(ltrim($subdir, '/'), '\\');
+
+        if(defined('REALME_CERT_DIR')) {
+            $path = REALME_CERT_DIR . '/' . $path; // Duplicate slashes will be handled by realpath()
+        }
+
+        return realpath($path);
     }
 
     /**
@@ -500,7 +563,8 @@ class RealMeService extends Object
     {
         $cfg = $this->config();
         $name = $this->getConfigurationVarByEnv('idp_x509_cert_filenames', $cfg->realme_env, $cfg->integration_type);
-        return Controller::join_links($this->getCertDir(), $name);
+
+        return $this->getCertDir($name);
     }
 
     /**
@@ -523,7 +587,7 @@ class RealMeService extends Object
 
     public function getIdPCertContent()
     {
-        return $this->getCertificateContents(Controller::join_links($this->getIdPCertPath()), 'certificate');
+        return $this->getCertificateContents($this->getIdPCertPath(), 'certificate');
     }
 
     /**
@@ -707,7 +771,7 @@ class RealMeService extends Object
                 'privateKey' => $this->getSPCertContent('key'),
 
                 // According to RealMe messaging spec, must always be transient for assert; is irrelevant for login
-                'NameIDFormat' => 'urn:oasis:names:tc:SAML:2.0:nameid-format:transient',
+                // 'NameIDFormat' => 'urn:oasis:names:tc:SAML:2.0:nameid-format:transient',
 
                 'assertionConsumerService' => [
                     'url' => $this->getAssertionConsumerServiceUrlForEnvironment($this->config()->realme_env),
@@ -792,13 +856,11 @@ class RealMeService extends Object
     private function getCertPath($certName)
     {
         $certPath = null;
-        $certDir = $this->getCertDir();
 
         if (in_array($certName, array('SIGNING', 'MUTUAL'))) {
             $constName = sprintf('REALME_%s_CERT_FILENAME', strtoupper($certName));
             if (defined($constName)) {
-                $filename = constant($constName);
-                $certPath = Controller::join_links($certDir, $filename);
+                $certPath = $this->getCertDir(constant($constName));
             }
         }
 

@@ -25,7 +25,7 @@ class RealMeAuthenticator extends Authenticator
         $cache = SS_Cache::factory('RealMeAuthenticator');
 
         $cacheKey = 'RegisterCheck';
-        if ((bool) $cache->load($cacheKey)) {
+        if ($cache->test($cacheKey)) {
             return true;
         }
 
@@ -48,7 +48,7 @@ class RealMeAuthenticator extends Authenticator
             return false;
         }
 
-        $cache->save('true', $cacheKey);
+        $cache->save('1', $cacheKey);
         return true;
     }
 
