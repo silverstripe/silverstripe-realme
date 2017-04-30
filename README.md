@@ -193,6 +193,10 @@ If you wish do do this process yourself please see the [ssl-certs documentation]
 
 If you wish do do this process yourself please see the [ssl-certs documentation](docs/en/ssl-certs.md)
 
+## Appreciation
+
+* Sincere thanks to Jackson (@jakxnz) for his work reviewing and updating pull requests.
+
 ## Known issues
 The RelayState must be less than 80 bytes
 
