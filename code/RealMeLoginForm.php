@@ -107,7 +107,7 @@ class RealMeLoginForm extends LoginForm
      *
      * @param array $data
      * @param Form $form
-     * @return SS_HTTPResponse|void If successfully processed, returns void (SimpleSAMLphp redirects to RealMe)
+     * @return SS_HTTPResponse If successfully processed, returns void (SimpleSAMLphp redirects to RealMe)
      * @throws SS_HTTPResponse_Exception
      */
     public function redirectToRealMe($data, Form $form)
@@ -181,14 +181,14 @@ class RealMeLoginForm extends LoginForm
      */
     public function RealMeLastError()
     {
-        $message = Session::get('RealMeLastErrorMessage');
-        Session::clear('RealMeLastErrorMessage');
+        $message = Session::get('RealMe.LastErrorMessage');
+        Session::clear('RealMe.LastErrorMessage');
 
         return $message;
     }
 
     public function HasRealMeLastError()
     {
-        return Session::get('RealMeLastErrorMessage') !== null;
+        return Session::get('RealMe.LastErrorMessage') !== null;
     }
 }

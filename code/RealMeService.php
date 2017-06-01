@@ -8,16 +8,37 @@ class RealMeService extends Object implements TemplateGlobalProvider
     const ENV_ITE = 'ite';
     const ENV_PROD = 'prod';
 
+    /**
+     * SAML binding types
+     */
     const TYPE_LOGIN = 'login';
     const TYPE_ASSERT = 'assert';
 
     /**
      * the valid AuthN context values for each supported RealMe environment.
      */
-    const AUTHN_LOW_STRENGTH = 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:LowStrength';
-    const AUTHN_MOD_STRENTH = 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength';
-    const AUTHN_MOD_MOBILE_SMS = 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength::OTP:Mobile:SMS';
-    const AUTHN_MOD_TOKEN_SID = 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength::OTP:Token:SID';
+    const AUTHN_LOW_STRENGTH    = 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:LowStrength';
+    const AUTHN_MOD_STRENTH     = 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength';
+    const AUTHN_MOD_MOBILE_SMS  = 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength::OTP:Mobile:SMS';
+    const AUTHN_MOD_TOKEN_SID   = 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength::OTP:Token:SID';
+
+    /**
+     * Realme SAML2 error status constants
+     */
+    const ERR_TIMEOUT                = 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:status:Timeout';
+    const ERR_INTERNAL_ERROR         = 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:status:InternalError';
+
+    /**
+     * SAML2 Error constants used for business logic and switching error messages
+     */
+    const ERR_AUTHN_FAILED           = 'urn:oasis:names:tc:SAML:2.0:status:AuthnFailed';
+    const ERR_UNKNOWN_PRINCIPAL      = 'urn:oasis:names:tc:SAML:2.0:status:UnknownPrincipal';
+    const ERR_NO_AVAILABLE_IDP       = 'urn:oasis:names:tc:SAML:2.0:status:NoAvailableIDP';
+    const ERR_NO_PASSIVE             = 'urn:oasis:names:tc:SAML:2.0:status:NoPassive';
+    const ERR_NO_AUTHN_CONTEXT       = 'urn:oasis:names:tc:SAML:2.0:status:NoAuthnContext';
+    const ERR_REQUEST_UNSUPPORTED    = 'urn:oasis:names:tc:SAML:2.0:status:RequestUnsupported';
+    const ERR_REQUEST_DENIED         = 'urn:oasis:names:tc:SAML:2.0:status:RequestDenied';
+    const ERR_UNSUPPORTED_BINDING    = 'urn:oasis:names:tc:SAML:2.0:status:UnsupportedBinding';
 
     /**
      * @var bool true to sync RealMe data and create/update local {@link Member} objects upon successful authentication
@@ -26,7 +47,7 @@ class RealMeService extends Object implements TemplateGlobalProvider
     private static $sync_with_local_member_database = false;
 
     /**
-     * @var ArrayData|null User data returned by RealMe. Provided by {@link self::ensureLogin()}.
+     * @var RealMeUser|null User data returned by RealMe. Provided by {@link self::ensureLogin()}.
      *
      * Data within this ArrayData is as follows:
      * - NameID:       ArrayData   Includes the UserFlt and associated formatting information
@@ -184,16 +205,16 @@ class RealMeService extends Object implements TemplateGlobalProvider
      * translations (found in realme/lang/en.yml for example).
      */
     private static $realme_error_message_overrides = array(
-        'urn:oasis:names:tc:SAML:2.0:status:AuthnFailed' => null,
-        'urn:nzl:govt:ict:stds:authn:deployment:RealMe:SAML:2.0:status:Timeout' => null,
-        'urn:nzl:govt:ict:stds:authn:deployment:RealMe:SAML:2.0:status:InternalError' => null,
-        'urn:oasis:names:tc:SAML:2.0:status:NoAvailableIDP' => null,
-        'urn:oasis:names:tc:SAML:2.0:status:RequestUnsupported' => null,
-        'urn:oasis:names:tc:SAML:2.0:status:NoPassive' => null,
-        'urn:oasis:names:tc:SAML:2.0:status:RequestDenied' => null,
-        'urn:oasis:names:tc:SAML:2.0:status:UnsupportedBinding' => null,
-        'urn:oasis:names:tc:SAML:2.0:status:UnknownPrincipal' => null,
-        'urn:oasis:names:tc:SAML:2.0:status:NoAuthnContext' => null
+        self::ERR_AUTHN_FAILED => null,
+        self::ERR_TIMEOUT => null,
+        self::ERR_INTERNAL_ERROR => null,
+        self::ERR_NO_AVAILABLE_IDP => null,
+        self::ERR_REQUEST_UNSUPPORTED => null,
+        self::ERR_NO_PASSIVE => null,
+        self::ERR_REQUEST_DENIED => null,
+        self::ERR_UNSUPPORTED_BINDING => null,
+        self::ERR_UNKNOWN_PRINCIPAL => null,
+        self::ERR_NO_AUTHN_CONTEXT => null
     );
 
     /**
@@ -264,6 +285,10 @@ class RealMeService extends Object implements TemplateGlobalProvider
      */
     public static function user_data()
     {
+        if(!is_null(static::$user_data)){
+            return static::$user_data;
+        }
+
         $sessionData = Session::get('RealMe.SessionData');
 
         // Exit point
@@ -273,10 +298,12 @@ class RealMeService extends Object implements TemplateGlobalProvider
 
         // Unserialise stored data
         $user = unserialize($sessionData);
-
         if($user == false || !$user instanceof RealMeUser) {
             return null;
         }
+
+        static::$user_data = $user;
+        return static::$user_data;
     }
 
     /**
@@ -286,10 +313,8 @@ class RealMeService extends Object implements TemplateGlobalProvider
      */
     public static function current_realme_user()
     {
-
         $user = self::user_data();
-
-        if(!$user->isValid()) {
+        if($user && !$user->isValid()) {
             return null;
         }
 
@@ -323,37 +348,16 @@ class RealMeService extends Object implements TemplateGlobalProvider
 
         // If not, attempt to retrieve authentication data from OneLogin (in case this is called during SAML assertion)
         try {
+            if(!Session::get("RealMeErrorBackURL")){
+                Session::set("RealMeErrorBackURL", Controller::curr()->Link("Login"));
+            }
+
             $this->getAuth()->processResponse();
+
+            // if there were any errors from the SAML request, process and translate them.
             $errors = $this->getAuth()->getErrors();
-            $translatedMessage = null;
-
             if(is_array($errors) && !empty($errors)) {
-                // The error message returned by onelogin/php-saml is the top-level error, but we want the actual error
-                if(isset($_POST) && isset($_POST['SAMLResponse'])) {
-                    $response = new OneLogin_Saml2_Response($this->getAuth()->getSettings(), $_POST['SAMLResponse']);
-                    $internalError = OneLogin_Saml2_Utils::query($response->document, "/samlp:Response/samlp:Status/samlp:StatusCode/samlp:StatusCode/@Value");
-
-                    if($internalError instanceof DOMNodeList && $internalError->length > 0) {
-                        $internalErrorCode = $internalError->item(0)->textContent;
-                        $translatedMessage = $this->findErrorMessageForCode($internalErrorCode);
-                    }
-                }
-
-                // If we found a message to display, then let's redirect to the form and display it
-                if($translatedMessage) {
-                    $this->lastError = $translatedMessage;
-                    return false;
-                }
-
-                SS_Log::log(
-                    sprintf(
-                        'onelogin/php-saml error messages: %s (%s)',
-                        join(', ', $errors),
-                        $this->getAuth()->getLastErrorReason()
-                    ),
-                    SS_Log::ERR
-                );
-
+                $this->processSamlErrors($errors);
                 return false;
             }
 
@@ -363,6 +367,7 @@ class RealMeService extends Object implements TemplateGlobalProvider
             if(is_null($authData)) {
                 throw new RealMeException('No SAML data, enforcing login', RealMeException::NOT_AUTHENTICATED);
             }
+
         } catch(Exception $e) {
             // No auth data or failed to decrypt, enforce login again
             $this->getAuth()->login(Director::absoluteBaseURL());
@@ -372,6 +377,42 @@ class RealMeService extends Object implements TemplateGlobalProvider
         $this->syncWithLocalMemberDatabase();
 
         return $this->getAuth()->isAuthenticated();
+    }
+
+    /**
+     * If there was an error returned from the saml response, process the errors
+     *
+     * @param $errors
+     */
+    private function processSamlErrors(array $errors){
+        $translatedMessage = null;
+
+        // The error message returned by onelogin/php-saml is the top-level error, but we want the actual error
+        $request = Controller::curr()->getRequest();
+        if($request->isPOST() && $request->postVar("SAMLResponse")) {
+
+            $response = new OneLogin_Saml2_Response($this->getAuth()->getSettings(), $request->postVar("SAMLResponse"));
+            $internalError = OneLogin_Saml2_Utils::query($response->document, "/samlp:Response/samlp:Status/samlp:StatusCode/samlp:StatusCode/@Value");
+
+            if($internalError instanceof DOMNodeList && $internalError->length > 0) {
+                $internalErrorCode = $internalError->item(0)->textContent;
+                $translatedMessage = $this->findErrorMessageForCode($internalErrorCode);
+            }
+        }
+
+        // If we found a message to display, then let's redirect to the form and display it
+        if($translatedMessage) {
+            $this->lastError = $translatedMessage;
+        }
+
+        SS_Log::log(
+            sprintf(
+                'onelogin/php-saml error messages: %s (%s)',
+                join(', ', $errors),
+                $this->getAuth()->getLastErrorReason()
+            ),
+            SS_Log::ERR
+        );
     }
 
     /**
@@ -460,6 +501,12 @@ class RealMeService extends Object implements TemplateGlobalProvider
     public function clearLogin()
     {
         $this->config()->__set('user_data', null);
+
+        Session::set("RealMeBackURL", null);
+        Session::set("RealMeErrorBackURL", null);
+        Session::set("RealMe.SessionData", null);
+        Session::set("RealMe.OriginalResponse", null);
+        Session::set("RealMe.LastErrorMessage", null);
     }
 
     public function getLastError()
@@ -963,7 +1010,16 @@ class RealMeService extends Object implements TemplateGlobalProvider
      */
     private function syncWithLocalMemberDatabase() {
         if($this->config()->sync_with_local_member_database === true) {
-            // TODO
+            $member = DataObject::get_one("Member",
+                sprintf("RealmeSPNameID = '%s'", Convert::raw2sql($this->getAuthData()->SPNameID))
+            );
+
+            if(!$member){
+                $member = Member::create(["RealmeSPNameID" => $this->getAuthData()->SPNameID]);
+                $member->write();
+            }
+
+            $member->logIn();
         }
     }
 
@@ -977,43 +1033,43 @@ class RealMeService extends Object implements TemplateGlobalProvider
         $messageOverrides = $this->config()->realme_error_message_overrides;
 
         switch($errorCode) {
-            case 'urn:oasis:names:tc:SAML:2.0:status:AuthnFailed':
+            case self::ERR_AUTHN_FAILED:
                 $message = _t('RealMeService.ERROR_AUTHNFAILED');
                 break;
 
-            case 'urn:nzl:govt:ict:stds:authn:deployment:RealMe:SAML:2.0:status:Timeout':
+            case self::ERR_TIMEOUT:
                 $message = _t('RealMeService.ERROR_TIMEOUT');
                 break;
 
-            case 'urn:nzl:govt:ict:stds:authn:deployment:RealMe:SAML:2.0:status:InternalError':
+            case self::ERR_INTERNAL_ERROR:
                 $message = _t('RealMeService.ERROR_INTERNAL');
                 break;
 
-            case 'urn:oasis:names:tc:SAML:2.0:status:NoAvailableIDP':
+            case self::ERR_NO_AVAILABLE_IDP:
                 $message = _t('RealMeService.ERROR_NOAVAILABLEIDP');
                 break;
 
-            case 'urn:oasis:names:tc:SAML:2.0:status:RequestUnsupported':
+            case self::ERR_REQUEST_UNSUPPORTED:
                 $message = _t('RealMeService.ERROR_REQUESTUNSUPPORTED');
                 break;
 
-            case 'urn:oasis:names:tc:SAML:2.0:status:NoPassive':
+            case self::ERR_NO_PASSIVE:
                 $message = _t('RealMeService.ERROR_NOPASSIVE');
                 break;
 
-            case 'urn:oasis:names:tc:SAML:2.0:status:RequestDenied':
+            case self::ERR_REQUEST_DENIED:
                 $message = _t('RealMeService.ERROR_REQUESTDENIED');
                 break;
 
-            case 'urn:oasis:names:tc:SAML:2.0:status:UnsupportedBinding':
+            case self::ERR_UNSUPPORTED_BINDING:
                 $message = _t('RealMeService.ERROR_UNSUPPORTEDBINDING');
                 break;
 
-            case 'urn:oasis:names:tc:SAML:2.0:status:UnknownPrincipal':
+            case self::ERR_UNKNOWN_PRINCIPAL:
                 $message = _t('RealMeService.ERROR_UNKNOWNPRINCIPAL');
                 break;
 
-            case 'urn:oasis:names:tc:SAML:2.0:status:NoAuthnContext':
+            case self::ERR_NO_AUTHN_CONTEXT:
                 $message = _t('RealMeService.ERROR_NOAUTHNCONTEXT');
                 break;
 

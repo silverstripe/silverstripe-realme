@@ -11,19 +11,25 @@
  * @property RealMeFederatedIdentity FederatedIdentity
  */
 class RealMeUser extends ArrayData {
+
     /**
-     * @return bool true if the data given to this object is sufficient to ensure the user is valid
+     * @return bool true if the data given to this object is sufficient to ensure the user is valid for the given authentication type
      */
     public function isValid()
     {
-        $valid = is_string($this->SPNameID) && is_string($this->UserFederatedTag) && is_string($this->SessionIndex) && $this->Attributes instanceof ArrayData;
-
-        // Only validate the FederatedIdentity if it exists
-        if($valid && $this->getFederatedIdentity()) {
-            $valid = $this->getFederatedIdentity()->isValid();
+        // Login Assertion requires only the SPNameID and Session ID.
+        $validLogin = is_string($this->SPNameID) && is_string($this->SessionIndex);
+        if (Config::inst()->get("RealMeService", "integration_type") === RealMeService::TYPE_LOGIN) {
+            return $validLogin;
         }
 
-        return $valid;
+        // Federated login requires the FIT.
+        $hasFederatedLogin = $validLogin && is_string($this->UserFederatedTag) && $this->Attributes instanceof ArrayData;
+        if ($hasFederatedLogin && $this->getFederatedIdentity()) {
+            return $this->getFederatedIdentity()->isValid();
+        }
+
+        return false;
     }
 
     /**
@@ -41,7 +47,6 @@ class RealMeUser extends ArrayData {
      */
     public function getFederatedIdentity()
     {
-
         // Check if identity is present
         if(!array_key_exists('FederatedIdentity', $this->array)) {
             return null;
