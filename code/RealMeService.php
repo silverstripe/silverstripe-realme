@@ -1019,7 +1019,9 @@ class RealMeService extends Object implements TemplateGlobalProvider
                 $member->write();
             }
 
-            $member->logIn();
+            if($this->config()->login_member_after_authentication){
+                $member->logIn();
+            }
         }
     }
 

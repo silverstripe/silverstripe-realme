@@ -170,6 +170,33 @@ to rule out firewall/networking issues (note the paths to the PEM file which may
 openssl s_client -tls1 -cert /path/to/certificate/directory/mts_mutual_ssl_sp.pem -connect as.mts.realme.govt.nz:443/sso/ArtifactResolver/metaAlias/logon/logonidp
 ```
 
+## Syncing Realme with SilverStripe members
+After logging in realme can sync the attributes returned from realme (depending on your assertion type) and sync
+the details with the appropriate members.
+
+To setup syncing, you must have the `RealMeMemberExtension` enabled on Member (or subclass) and the tell
+ realme to sync with local via the following configuration in realme.yml
+ 
+```yml
+RealMeService:
+  sync_with_local_member_database: true
+  login_member_after_authentication: true
+  <other Realme options>
+```
+
+and add the extension to your projects `_config.php`
+
+```php 
+Member::add_extension('RealMeMemberExtension');
+```
+
+Run a `dev/build` and after a valid realme login, a new member will be synced based on the realme FLT. 
+If not found, a new member will be created.
+
+If you wish to also have the realme authenticated member logged in to silverstripe - also include the 
+`login_member_after_authentication` to true. For this to work, `sync_with_local_member_database` must
+also be enabled.
+
 ### UAT and production environments
 
 The SAML signing and mutual security certificates must be purchased by the agency. More information
