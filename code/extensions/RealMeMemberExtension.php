@@ -6,7 +6,7 @@
 class RealMeMemberExtension extends DataExtension
 {
     private static $db = array(
-        "RealmeSPNameID" => "Varchar(50)",
+        "RealmeSPNameID" => "Varchar(35)",
     );
 
     private static $indexes = array(
