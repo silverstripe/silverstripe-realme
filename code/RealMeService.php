@@ -368,13 +368,19 @@ class RealMeService extends Object implements TemplateGlobalProvider
                 throw new RealMeException('No SAML data, enforcing login', RealMeException::NOT_AUTHENTICATED);
             }
 
+            // call a success method as we've successfully logged in (if it exists)
+            Member::singleton()->extend('onRealMeLoginSuccess', $authData);
+
+            // Sync with local member
+            $this->syncWithLocalMemberDatabase();
+
         } catch(Exception $e) {
+            Member::singleton()->extend("onRealMeLoginFailure", $e);
+
             // No auth data or failed to decrypt, enforce login again
             $this->getAuth()->login(Director::absoluteBaseURL());
             die;
         }
-
-        $this->syncWithLocalMemberDatabase();
 
         return $this->getAuth()->isAuthenticated();
     }

@@ -5,7 +5,7 @@
  *
  * Holds information about a RealMe user, as stored and retrieved from session.
  *
- * @property string NameID
+ * @property string SPNameID
  * @property string SessionIndex
  * @property ArrayData Attributes
  * @property RealMeFederatedIdentity FederatedIdentity
