@@ -77,8 +77,8 @@
 }
 
 /*
-  The base RealMe widget
-  -----------------------------------------------------
+	The base RealMe widget
+	-----------------------------------------------------
 */
 .realme_widget {
   padding: 0.76923em 1.07692em;
@@ -108,8 +108,8 @@
 }
 
 /*
-  Typography
-  -----------------------------------------------------
+	Typography
+	-----------------------------------------------------
 */
 .realme_title {
   margin-top: 0;
@@ -124,8 +124,8 @@
 }
 
 /*
-  Buttons
-  -----------------------------------------------------
+	Buttons
+	-----------------------------------------------------
 */
 .realme_button {
   line-height: 1;
@@ -150,6 +150,14 @@
   border-color: #1d5794;
   -webkit-appearance: none;
   -webkit-border-image: none;
+
+  /**
+   * Added for SilverStripe module:
+   * SilverStripe uses <button> rather than <a>, which has different default browser styling, so we need to add custom
+   * styling to ensure the button is still full-width and text is left-aligned
+   */
+  width: 100%;
+  text-align: left;
 }
 .realme_button:hover, .realme_button:focus {
   background-color: #2f5f93;
@@ -164,8 +172,8 @@
 }
 
 /*
-  Top-level widgets
-  -----------------------------------------------------
+	Top-level widgets
+	-----------------------------------------------------
  */
 .realme_primary_login {
   max-width: 28em;
@@ -228,8 +236,8 @@
 }
 
 /*
-  Components
-  -----------------------------------------------------
+	Components
+	-----------------------------------------------------
 */
 /* Used to separate elements vertically. Can be themed*/
 .realme_hr {
@@ -267,8 +275,8 @@
 }
 
 /*
-  Popup
-  -----------------------------------------------------
+	Popup
+	-----------------------------------------------------
 */
 .realme_arrow_top_left, .realme_arrow_top_right, .realme_arrow_side_left, .realme_arrow_side_right {
   padding-top: 1.2em;
@@ -336,7 +344,7 @@
   transition: opacity 0.3s;
   opacity: 0;
   visibility: hidden;
-  z-index: -1;
+  z-index: 2;
   _display: none;
   /*ie6*/
 }
@@ -484,7 +492,6 @@
 .no_touch .realme_popup_wrapper:hover {
   opacity: 1 !important;
   visibility: visible !important;
-  z-index: 2;
 }
 
 .realme_find_out_more {
@@ -545,8 +552,8 @@
 }
 
 /*
-  Colour themes
-  -----------------------------------------------------
+	Colour themes
+	-----------------------------------------------------
 */
 .realme_theme_default {
   color: #000 !important;

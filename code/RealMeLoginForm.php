@@ -61,7 +61,7 @@ class RealMeLoginForm extends LoginForm
         } else {
             // Login button
             $loginButtonContent = ArrayData::create(array(
-                'Label' => _t('RealMeLoginForm.LOGINBUTTON', 'Login or register with RealMe')
+                'Label' => _t('RealMeLoginForm.LOGINBUTTON', 'Login')
             ))->renderWith('RealMeLoginButton');
         }
 

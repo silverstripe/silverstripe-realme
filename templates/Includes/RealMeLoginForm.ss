@@ -40,8 +40,12 @@ or directly in your css, e.g. .realme_popup {width: 450px}
 
 <div class="realme_widget realme_primary_login realme_theme_{$RealMeWidgetTheme}">
     <h2 class="realme_title">Login with RealMe®</h2>
-    <p class="realme_info">To access $SiteConfig.Title, you need a RealMe login. If you’ve created a RealMe login
-    somewhere else, you can use it here too.</p>
+
+    <p class="realme_info">
+        To access $SiteConfig.Title, you need a RealMe login. If you’ve used a RealMe login somewhere else, you can use
+        it here too. If you don’t already have a username and password, just select Login and choose to create one.
+    </p>
+
     <div class="realme_login_lockup">
         <form $FormAttributes>
             <% if $Actions %>
@@ -62,15 +66,14 @@ or directly in your css, e.g. .realme_popup {width: 450px}
         <div class="realme_popup_wrapper realme_arrow_top_left">
             <!-- realme_popup -->
             <div class="realme_popup">
-                <h2 class="realme_popup_title">To login to this service you now need a RealMe login.</h2>
-                <p><b>RealMe</b> is a service from the New Zealand government and New Zealand Post that includes a
-                single login, letting you use one username and password to access a wide range of services online.</p>
-                <p>But there is much more to <b>RealMe</b> than just the convenience of a single login.</p>
-                <h2 class="realme_popup_title">Get Verified</h2>
-                <p><b>RealMe</b> is also your secure online ID. Verify your <b>RealMe</b> login and use it to prove who
-                you are online. This lets you to do lots of useful things over the internet that would normally require
-                 you to turn up in person. <a class="realme_find_out_more" target="_blank" rel="noopener noreferrer"
-                 href="https://www.realme.govt.nz">Find out more <span class="realme_icon_find_out_more"></span></a>
+                <h2 class="realme_popup_title">To log in to this service you need a RealMe login.</h2>
+                <p>This service uses RealMe login to secure and protect your personal information.</p>
+                <p>
+                    <strong>RealMe</strong> login is a service from the New Zealand government that includes a single
+                    login, letting you use one username and password to access a wide range of services online.
+                </p>
+                <p>
+                    Find out more at <a class="realme_find_out_more" target="_blank" rel="noopener noreferrer" href="https://www.realme.govt.nz">www.realme.govt.nz</a>.
                 </p>
                 <span class="arrow">
                     <span class="front"></span>
@@ -79,5 +82,4 @@ or directly in your css, e.g. .realme_popup {width: 450px}
         </div>
         <!-- /realme_popup_wrapper -->
     </div>
-    <a class="realme_create_account" href="https://www.account.realme.govt.nz/account/" target="_blank" rel="noopener noreferrer">Create a RealMe login <span class="realme_icon_link"></span></a>
 </div>
