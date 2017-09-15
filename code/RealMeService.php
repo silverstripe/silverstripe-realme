@@ -860,6 +860,23 @@ class RealMeService extends Object implements TemplateGlobalProvider
     }
 
     /**
+     * @return string the required NameIDFormat to be included in metadata XML, based on the requested integration type
+     */
+    public function getNameIdFormat()
+    {
+        switch ($this->config()->integration_type) {
+            case self::TYPE_ASSERT:
+                return 'urn:oasis:names:tc:SAML:2.0:nameid-format:transient';
+                break;
+
+            case self::TYPE_LOGIN:
+            default:
+                return 'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent';
+                break;
+        }
+    }
+
+    /**
      * @param string $cfgName The static configuration value to get. This should be an array
      * @param string $env The environment to return the value for. Must be one of the RealMe environment names
      * @param string $integrationType The integration type (login or assert), if necessary, to determine return var

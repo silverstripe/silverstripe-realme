@@ -132,6 +132,7 @@ class RealMeSetupTask extends BuildTask
             array(
                 '{{entityID}}' => $this->service->getSPEntityID(),
                 '{{certificate-data}}' => $this->service->getSPCertContent(),
+                '{{nameidformat}}' => $this->service->getNameIdFormat(),
                 '{{acs-url}}' => $this->service->getAssertionConsumerServiceUrlForEnvironment($forEnv),
                 '{{organisation-name}}' => $this->service->getMetadataOrganisationName(),
                 '{{organisation-display-name}}' => $this->service->getMetadataOrganisationDisplayName(),

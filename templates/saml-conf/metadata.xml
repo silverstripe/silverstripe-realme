@@ -22,6 +22,7 @@
                 </ds:X509Data>
             </ds:KeyInfo>
         </KeyDescriptor>
+        <NameIDFormat>{{nameidformat}}</NameIDFormat>
         <AssertionConsumerService
                 Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
                 Location="{{acs-url}}"
