@@ -89,7 +89,11 @@ class RealMeSecurityExtension extends Extension
                 // If more session vars are set here, they must be cleared in realmeLogout()
                 Session::set('RealMe.SessionData', serialize($authData));
                 Session::set('RealMe.OriginalResponse', $_POST['SAMLResponse']);
-                return $this->owner->redirect($this->service->getBackURL());
+
+                // If a redirect has not already been set, then redirect to the default BackURL
+                if (!$this->owner->redirectedTo()) {
+                    return $this->owner->redirect($this->service->getBackURL());
+                }
             } else {
 
                 if (is_string($this->service->getLastError())) {
