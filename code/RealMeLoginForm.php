@@ -33,6 +33,8 @@ class RealMeLoginForm extends LoginForm
         'redirectToRealMe'
     );
 
+    protected static $action_button_name = 'redirectToRealMe';
+
     /**
      * @var string The authentication class tied to this login form
      */
@@ -66,7 +68,7 @@ class RealMeLoginForm extends LoginForm
         }
 
         $actions = new FieldList(array(
-            FormAction::create('redirectToRealMe', _t('RealMeLoginForm.LOGINBUTTON', 'LoginAction'))
+            FormAction::create(self::$action_button_name, _t('RealMeLoginForm.LOGINBUTTON', 'LoginAction'))
                 ->setUseButtonTag(true)
                 ->setButtonContent($loginButtonContent)
                 ->setAttribute('class', 'realme_button')
