@@ -1,6 +1,12 @@
 <?php
 class RealMeMiniLoginForm extends RealMeLoginForm
 {
+    /**
+     * @var string The position at which the 'What's RealMe?' popup appears on hover. Can be either 'left' or 'right'.
+     * @see self::setMiniLoginFormPopupPosition()
+     */
+    private $popupPosition = 'left';
+
     public function __construct($controller, $name)
     {
         parent::__construct($controller, $name);
@@ -23,5 +29,25 @@ class RealMeMiniLoginForm extends RealMeLoginForm
 
         $queryString = sprintf('?AuthenticationMethod=%s&SecurityID=%s&%s=%s', $authMethod, $token, $actionName, $actionValue);
         return Controller::join_links($this->FormAction(), $queryString);
+    }
+
+    public function getMiniLoginFormPopupPosition()
+    {
+        return sprintf('realme_arrow_top_%s', $this->popupPosition);
+    }
+
+    /**
+     * The mini login form can either have the popup appear below and to the left or right. When creating the form, call
+     * $form->setMiniLoginFormPopupPosition(), with the first arg being either 'left' or 'right'. This is actually the
+     * 'arrow' position, so it's the opposite of what you expect (in other words, if you set it to 'left', the box will
+     * extend out to the right under the mini login form.
+     */
+    public function setMiniLoginFormPopupPosition($dir)
+    {
+        if (!in_array($dir, [ 'left', 'right' ])) {
+            $dir = 'left';
+        }
+
+        $this->popupPosition = $dir;
     }
 }
