@@ -42,6 +42,8 @@ RealMeService:
   metadata_contact_support_company: "SilverStripe"
   metadata_contact_support_firstnames: "Jane"
   metadata_contact_support_surname: "Smith"
+RealMeLoginForm:
+  display_service_name: "this website"
 ---
 Name: realmetest
 Only:
@@ -62,6 +64,9 @@ RealMeService:
   realme_env: 'prod'
 ---
 ```
+
+`display_service_name` should fit within this sentence: "To access [service name], you need a RealMe login". If not 
+specified, it will fall back to your website title as specified in SiteConfig.
 
 The value you set for `realme_env` must be one of 'mts', 'ite' or 'prod'.
 

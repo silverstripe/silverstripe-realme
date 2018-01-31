@@ -27,6 +27,12 @@ class RealMeLoginForm extends LoginForm
     private static $widget_theme;
 
     /**
+     * @config
+     * @var string The service name to display in the login box ("To access [service name], you need a RealMe login.")
+     */
+    private static $display_service_name = null;
+
+    /**
      * @var array
      */
     private static $allowed_actions = array(
@@ -155,6 +161,19 @@ class RealMeLoginForm extends LoginForm
         }
 
         return 'default';
+    }
+
+    /**
+     * Gets the service name based on either a config value, or falling back to the $Title specified in SiteConfig
+     * @return string
+     */
+    public function getDisplayServiceName()
+    {
+        if ($this->config()->display_service_name) {
+            return $this->config()->display_service_name;
+        } else {
+            return SiteConfig::current_site_config()->Title;
+        }
     }
 
     public function forTemplate()

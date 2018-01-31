@@ -42,7 +42,7 @@ or directly in your css, e.g. .realme_popup {width: 450px}
     <h2 class="realme_title">Login with RealMe®</h2>
 
     <p class="realme_info">
-        To access $SiteConfig.Title, you need a RealMe login. If you’ve used a RealMe login somewhere else, you can use
+        To access $DisplayServiceName, you need a RealMe login. If you’ve used a RealMe login somewhere else, you can use
         it here too. If you don’t already have a username and password, just select Login and choose to create one.
     </p>
 
