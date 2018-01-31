@@ -43,7 +43,9 @@ RealMeService:
   metadata_contact_support_firstnames: "Jane"
   metadata_contact_support_surname: "Smith"
 RealMeLoginForm:
-  display_service_name: "this website"
+  service_name_1: "this website"
+  service_name_2: "this website"
+  service_name_3: "this website"
 ---
 Name: realmetest
 Only:
@@ -65,16 +67,21 @@ RealMeService:
 ---
 ```
 
-`display_service_name` should fit within this sentence: "To access [service name], you need a RealMe login". If not 
-specified, it will fall back to your website title as specified in SiteConfig.
-
 The value you set for `realme_env` must be one of 'mts', 'ite' or 'prod'.
 
 The value you set for `integration_type` must be one of 'login' or 'assert'.
 
 The values you set for `sp_entity_ids` should conform to the RealMe standard for entity IDs. In summary, the
 domain should be relevant to the agency, the first part of the path should be the privacy realm name, and
-the second part of the path should be the service name. 
+the second part of the path should be the service name.
+ 
+The values for `service_name_1`, `service_name_2` and `service_name_3` should fit in these sentences:
+
+* `service_name_1`: "To access the [online service], you need a RealMe login."
+* `service_name_2`: "To log in to [this service] you need a RealMe login."
+* `service_name_3`: "[This service] uses RealMe login to secure and protect your personal information."
+
+Note: None of these are required for the assert form, as they are not used (it only uses organisation name, which is pulled from the `metadata_organisation_name` config value instead.
 
 #### Note: the service name cannot be more than 10 characters in length, or the validation will fail.
 

@@ -28,9 +28,21 @@ class RealMeLoginForm extends LoginForm
 
     /**
      * @config
-     * @var string The service name to display in the login box ("To access [service name], you need a RealMe login.")
+     * @var string The service name to display in the login box ("To access the [online service], you need a RealMe login.")
      */
-    private static $display_service_name = null;
+    private static $service_name_1 = null;
+
+    /**
+     * @config
+     * @var string The service name to display in the What's RealMe popup header ("To log in to [this service] you need a RealMe login.")
+     */
+    private static $service_name_2 = null;
+
+    /**
+     * @config
+     * @var string The service name to display in the What's RealMe popup text ("[This service] uses RealMe login.")
+     */
+    private static $service_name_3 = null;
 
     /**
      * @var array
@@ -165,15 +177,31 @@ class RealMeLoginForm extends LoginForm
 
     /**
      * Gets the service name based on either a config value, or falling back to the $Title specified in SiteConfig
+     * @param string $name The service name to get from config
      * @return string
      */
-    public function getDisplayServiceName()
+    private function getServiceName($name = 'service_name_1')
     {
-        if ($this->config()->display_service_name) {
-            return $this->config()->display_service_name;
+        if ($this->config()->$name) {
+            return $this->config()->$name;
         } else {
             return SiteConfig::current_site_config()->Title;
         }
+    }
+
+    public function getServiceName1()
+    {
+        return $this->getServiceName('service_name_1');
+    }
+
+    public function getServiceName2()
+    {
+        return $this->getServiceName('service_name_2');
+    }
+
+    public function getServiceName3()
+    {
+        return $this->getServiceName('service_name_3');
     }
 
     public function forTemplate()

@@ -42,7 +42,7 @@ or directly in your css, e.g. .realme_popup {width: 450px}
     <h2 class="realme_title">Login with RealMe®</h2>
 
     <p class="realme_info">
-        To access $DisplayServiceName, you need a RealMe login. If you’ve used a RealMe login somewhere else, you can use
+        To access the $ServiceName1, you need a RealMe login. If you’ve used a RealMe login somewhere else, you can use
         it here too. If you don’t already have a username and password, just select Login and choose to create one.
     </p>
 
@@ -66,14 +66,14 @@ or directly in your css, e.g. .realme_popup {width: 450px}
         <div class="realme_popup_wrapper realme_arrow_top_left">
             <!-- realme_popup -->
             <div class="realme_popup">
-                <h2 class="realme_popup_title">To log in to this service you need a RealMe login.</h2>
-                <p>This service uses RealMe login to secure and protect your personal information.</p>
+                <h2 class="realme_popup_title">To log in to $ServiceName2 you need a RealMe login.</h2>
+                <p>$ServiceName3 uses RealMe login to secure and protect your personal information.</p>
                 <p>
                     <strong>RealMe</strong> login is a service from the New Zealand government that includes a single
                     login, letting you use one username and password to access a wide range of services online.
                 </p>
                 <p>
-                    Find out more at <a class="realme_find_out_more" target="_blank" rel="noopener noreferrer" href="https://www.realme.govt.nz">www.realme.govt.nz</a>.
+                    Find out more at www.realme.govt.nz.
                 </p>
                 <span class="arrow">
                     <span class="front"></span>

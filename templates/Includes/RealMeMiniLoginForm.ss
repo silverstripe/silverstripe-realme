@@ -5,8 +5,8 @@
 
         <div class='realme_popup_wrapper $MiniLoginFormPopupPosition'>
             <div class='realme_popup' style='width:420px;'>
-                <h2 class='realme_popup_title'>To log in to $SiteConfig.Title you need a RealMe login.</h2>
-                <p>$SiteConfig.Title uses RealMe login to secure and protect your personal information. Find out more at www.realme.govt.nz.</p>
+                <h2 class='realme_popup_title'>To access the $ServiceName1 you need a RealMe login.</h2>
+                <p>$ServiceName3 uses RealMe login to secure and protect your personal information. Find out more at www.realme.govt.nz.</p>
                 <span class='front'></span>
                 </span>
             </div>
