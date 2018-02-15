@@ -198,11 +198,13 @@ RealMeService:
 
 and add the extension to your projects `_config.php`
 
-```php 
-Member::add_extension('RealMeMemberExtension');
+```yml
+Member:
+  extensions:
+    - RealMeMemberExtension
 ```
 
-Run a `dev/build` and after a valid realme login, a new member will be synced based on the realme FLT. 
+Run a `dev/build` and after a valid RealMe login, a new member will be synced based on the RealMe FLT or FIT. 
 If not found, a new member will be created.
 
 If you wish to also have the realme authenticated member logged in to silverstripe - also include the 

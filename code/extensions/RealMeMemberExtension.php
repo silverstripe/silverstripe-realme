@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class RealmeMemberExtension
+ * Class RealMeMemberExtension
  */
 class RealMeMemberExtension extends DataExtension
 {
