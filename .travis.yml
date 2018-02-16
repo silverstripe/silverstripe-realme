@@ -20,4 +20,6 @@ before_script:
   - composer install
 
 script:
-  - vendor/bin/phpunit realme/tests/
+  - vendor/bin/phpunit --coverage-clover=coverage.clover realme/tests/
+  - wget https://scrutinizer-ci.com/ocular.phar
+  - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
