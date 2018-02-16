@@ -94,13 +94,24 @@ class RealMeServiceTest extends SapphireTest
         $this->assertSame('urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength::OTP:Mobile:SMS', $securityData['requestedAuthnContext'][0]);
     }
 
+    public function setUpOnce()
+    {
+        parent::setUpOnce();
+
+        if(defined('REALME_CERT_DIR') || defined('REALME_SIGNING_CERT_FILENAME')) {
+            die('You must not have REALME_CERT_DIR or REALME_SIGNING_CERT_FILENAME defined for the tests to run');
+        }
+
+        define('REALME_CERT_DIR', BASE_PATH . '/realme/tests/certs');
+        define('REALME_SIGNING_CERT_FILENAME', 'standard_cert.pem');
+    }
+
     public function setUp()
     {
         parent::setUp();
         $this->service = Injector::inst()->get('RealMeService');
 
         // Configure for login integration and mts by default
-
         Config::inst()->update('RealMeService', 'sp_entity_ids', ['mts' => 'https://example.com/realm/service']);
         Config::inst()->update('RealMeService', 'metadata_assertion_service_domains', ['mts' => 'https://example.com']);
         Config::inst()->update('RealMeService', 'authn_contexts', ['mts' => 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:LowStrength']);
