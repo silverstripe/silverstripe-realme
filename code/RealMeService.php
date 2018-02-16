@@ -98,6 +98,11 @@ class RealMeService extends Object implements TemplateGlobalProvider
         self::ENV_PROD => null
     );
 
+    /**
+     * @config
+     * @var array Stores the default identity provider (IdP) entity IDs. These can be customised if you're using an
+     * intermediary IdP instead of connecting to RealMe directly.
+     */
     private static $idp_entity_ids = array(
         self::ENV_MTS => array(
             self::TYPE_LOGIN  => 'https://mts.realme.govt.nz/saml2',
@@ -333,11 +338,28 @@ class RealMeService extends Object implements TemplateGlobalProvider
     }
 
     /**
-     * @return bool|null true if the user is correctly authenticated, false if there was an error with login
+     * Enforce login via RealMe. This can be used in controllers to force users to be authenticated via RealMe (not
+     * necessarily logged in as a {@link Member}), in the form of:
+     * <code>
+     * Session::set('RealMeBackURL', '/path/to/the/controller/method');
+     * if($service->enforceLogin()) {
+     *     // User has a valid RealMe account, $service->getAuthData() will return you their details
+     * } else {
+     *     // Something went wrong processing their details, show an error
+     * }
+     * </code>
      *
-     * NB: If the user is not authenticated, they will be redirected to RealMe to login, so a boolean false return here
-     * indicates that there was a failure during the authentication process (perhaps a communication issue). You can
-     * check getLastError() to see if a human-readable error message exists for display.
+     * In cases where people are *not* authenticated with RealMe, this method will redirect them directly to RealMe.
+     *
+     * However, generally you want this to be an explicit process, so you should look at instead using the standard
+     * {@link RealMeAuthenticator}.
+     *
+     * A return value of bool false indicates that there was a failure during the authentication process (perhaps a
+     * communication issue, or a failure to decode the response correctly. You should handle this like you would any
+     * other unexpected authentication error. You can use {@link getLastError()} to see if a human-readable error
+     * message exists for display to the user.
+     *
+     * @return bool|null true if the user is correctly authenticated, false if there was an error with login
      */
     public function enforceLogin()
     {
