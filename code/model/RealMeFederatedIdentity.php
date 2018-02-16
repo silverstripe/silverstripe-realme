@@ -29,6 +29,67 @@ class RealMeFederatedIdentity extends ViewableData
     private $nameId;
 
     /**
+     * @var string The given first name(s) of the federated identity returned by RealMe.
+     */
+    public $FirstName;
+
+    /**
+     * @var string The given middle name(s) of the federated identity returned by RealMe.
+     */
+    public $MiddleName;
+
+    /**
+     * @var string The given last name of the federated identity returned by RealMe.
+     */
+    public $LastName;
+
+    /**
+     * @var string The gender of the federated identity returned by RealMe. Will be one of 'M', 'F', possibly 'U' or 'O'
+     * (messaging specs are unclear).
+     */
+    public $Gender;
+
+    /**
+     * @var DOMNodeList Undocumented in RealMe messaging spec, generally describes the quality of birth info based
+     * presumably on the source.
+     */
+    public $BirthInfoQuality;
+
+    /**
+     * @var string The birth year of the federated identity returned by RealMe, e.g. 1993, 1954, 2015.
+     * Probably better to use {@link getDateOfBirth()} which will return an {@link SS_Datetime} object.
+     */
+    public $BirthYear;
+
+    /**
+     * @var string The birth month of the federated identity returned by RealMe, e.g. 05 (May).
+     * Probably better to use {@link getDateOfBirth()} which will return an {@link SS_Datetime} object.
+     */
+    public $BirthMonth;
+
+    /**
+     * @var string The birth day of the federated identity returned by RealMe, e.g. 05 (5th day of the month).
+     * Probably better to use {@link getDateOfBirth()} which will return an {@link SS_Datetime} object.
+     */
+    public $BirthDay;
+
+    /**
+     * @var string Undocumented in RealMe messaging spec, generally describes the quality of birthplace info based
+     * presumably on the source.
+     */
+    public $BirthPlaceQuality;
+
+    /**
+     * @var string The country of birth for the given federated identity returned by RealMe.
+     */
+    public $BirthPlaceCountry;
+
+    /**
+     * @var string The birthplace 'locality' of the federated identity returned by RealMe, e.g. 'Wellington', 'Unknown'
+     */
+    public $BirthPlaceLocality;
+
+    /**
      * Constructor that sets the expected federated identity details based on a provided DOMDocument. The expected XML
      * structure for the DOMDocument is the following:
      *
