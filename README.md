@@ -85,7 +85,7 @@ class RealMeTestController extends Controller {
 		if($this->service->enforceLogin()) {
 			$userData = $this->service->getUserData();
 
-			printf("Congratulations, you're authenticated with a FLT of '%s'!", $userData->UserFlt);
+			printf("Congratulations, you're authenticated with a unique ID of '%s'!", $userData->SPNameID);
 		} else {
 			echo "There was an error while attempting to authenticate you.";
 		}
