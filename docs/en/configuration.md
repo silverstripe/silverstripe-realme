@@ -135,9 +135,8 @@ MIIECT...
 -----END CERTIFICATE-----
 ```
 
-Once in place, and ensuring the `REALME_SIGNING_CERT_FILENAME` and `REALME_MUTUAL_CERT_FILENAME` consts are
-defined correctly, you can run the setup task which will validate all provided details, create the
-configuration files required, and provide you with the XML you need to provide to RealMe.
+Once in place, and ensuring the `REALME_SIGNING_CERT_FILENAME` const is defined correctly, you can run the setup task 
+which will validate the configuration and provide you with the XML metadata that you need to provide to RealMe.
 
 If you are developing locally, note that the module enforces your environment to be configured for https.
 If you don't have this setup by default, [ngrok](https://ngrok.com/download) is a nice, easy to use tool
