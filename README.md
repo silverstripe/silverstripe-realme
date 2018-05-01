@@ -39,18 +39,35 @@ instructions - one for use on CWP, and one for generic use.
 
 ## Installation
 
-See the [Installation section](docs/en/installation.md) for full details.
+The module is best installed via Composer, by adding the below to your composer.json. For now, we need to specify a 
+custom version of the excellent onelogin/php-saml module to fix some XMLDSig validation errors with the RealMe XML 
+responses, hence the custom `repositories` section.
+
+```
+{
+    "require": {
+        "silverstripe/realme": "^2.0",
+        "onelogin/php-saml": "dev-fixes/realme-dsig-validation as 2.11.0"
+    },
+    
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/madmatt/php-saml.git"
+        }
+    ]
+}
+```
+
+Once installation is completed, configuration is required before this module will work - see below.
 
 ## Configuration of RealMe for your application
 
 RealMe provide two testing environments and a production environment for you to integrate with. Access to these
-environments is strictly controlled, and you must [contact the RealMe team](https://www.realme.govt.nz/realme-business/)
-to gain access to the documentation required for these environments.
+environments is strictly controlled, and more information on these can be found on the [RealMe Developers site](https://developers.realme.govt.nz/how-to-integrate/).
 
 See [configuration.md](docs/en/configuration.md) for environment and YML configuration required before the module can be
-setup.
-
-The configuration instructions above also steps you through setting up all three environments.
+used.
 
 ## Providing RealMe login buttons
 
@@ -95,7 +112,3 @@ class RealMeTestController extends Controller {
 ## Appreciation
 
 * Sincere thanks to Jackson (@jakxnz) for his work reviewing and updating pull requests.
-
-## Known issues
-The RelayState must be less than 80 bytes
-
