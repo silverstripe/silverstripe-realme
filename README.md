@@ -21,10 +21,13 @@ intended to purely provide an authentication mechanism that can be extended by c
 extension would be to create standard SilverStripe `Member` records linked to a unique RealMe identifier, but that's
 not currently built in.
 
-## Work in progress
-This module is a work in progress. It is generally considered stable, but should have a decent knowledge of RealMe or at
-least standard SAML conventions in order to debug issues. Support is provided via the GitHub Issues for this module. If
-you encounter any issues, please [open a new issue here](https://github.com/silverstripe/silverstripe-realme/issues).
+## Releases
+There are multiple releases of this module. The current stable version is the 2.x line. This is a stable module that
+provides `logon` (authentication) and `assert` (identity assertion) capability. The older 0.9.x line is considered end
+of life and should not be used for new integrations.
+
+Support is provided via the GitHub Issues for this module. If you encounter any issues, please
+[open a new issue here](https://github.com/silverstripe/silverstripe-realme/issues).
 
 ## Requirements
 This module doesn't have any specific requirements beyond those required by
