@@ -18,15 +18,12 @@
     "require": {
         "composer/installers": "*",
         "silverstripe/framework": "~3.1",
-        "madmatt/simplesamlphp": "dev-ss-master"
+        "onelogin/php-saml": "~2.10"
     },
     "require-dev": {
-        "hafriedlander/silverstripe-phockito": "*"
+        "phpunit/phpunit": "~3.7"
     },
     "support": {
         "issues": "https://gitlab.cwp.govt.nz/silverstripe/realme/issues"
-    },
-    "autoload": {
-        "files": [ "bootstrap.php" ]
     }
 }

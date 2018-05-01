@@ -108,7 +108,7 @@ class RealMeSetupTaskTest extends SapphireTest
 
         // Test valid entityIds just in case they're different in this configuration.
         $config = Config::inst();
-        $config->update('RealMeService', 'entity_ids', self::$validEntityIDs);
+        $config->update('RealMeService', 'sp_entity_ids', self::$validEntityIDs);
 
         // validate our list of valid entity IDs;
         $validateEntityId = new ReflectionMethod($realMeSetupTask, 'validateEntityID');
@@ -121,7 +121,7 @@ class RealMeSetupTaskTest extends SapphireTest
         // TEST entityId missing.
         $entityIdList = self::$validEntityIDs;
         $entityIdList[RealMeService::ENV_MTS] = 'destroy-humans-with-incorrect-entity-ids';
-        $config->update('RealMeService', 'entity_ids', $entityIdList);
+        $config->update('RealMeService', 'sp_entity_ids', $entityIdList);
         $validateEntityId->invoke($realMeSetupTask);
         $this->assertCount(1, $errors->getValue($realMeSetupTask), 'validate entity id should fail for an invalid url');
 
@@ -132,7 +132,7 @@ class RealMeSetupTaskTest extends SapphireTest
         // TEST entityId localhost.
         $entityIdList = self::$validEntityIDs;
         $entityIdList[RealMeService::ENV_MTS] = 'https://localhost/';
-        $config->update('RealMeService', 'entity_ids', $entityIdList);
+        $config->update('RealMeService', 'sp_entity_ids', $entityIdList);
         $validateEntityId->invoke($realMeSetupTask);
         $this->assertCount(1, $errors->getValue($realMeSetupTask), 'validate entity id should fail for localhost');
 
@@ -142,7 +142,7 @@ class RealMeSetupTaskTest extends SapphireTest
         // TEST entityId not http
         $entityIdList = self::$validEntityIDs;
         $entityIdList[RealMeService::ENV_MTS] = 'http://dev.realme-integration.govt.nz/p-realm/s-name';
-        $config->update('RealMeService', 'entity_ids', $entityIdList);
+        $config->update('RealMeService', 'sp_entity_ids', $entityIdList);
         $validateEntityId->invoke($realMeSetupTask);
         $this->assertCount(1, $errors->getValue($realMeSetupTask), 'validate entity id should fail for http');
 
@@ -152,7 +152,7 @@ class RealMeSetupTaskTest extends SapphireTest
         // TEST privacy realm /service name  missing
         $entityIdList = self::$validEntityIDs;
         $entityIdList[RealMeService::ENV_MTS] = 'https://dev.realme-integration.govt.nz/';
-        $config->update('RealMeService', 'entity_ids', $entityIdList);
+        $config->update('RealMeService', 'sp_entity_ids', $entityIdList);
         $validateEntityId->invoke($realMeSetupTask);
         $this->assertCount(2,
             $errors->getValue($realMeSetupTask),
@@ -166,7 +166,7 @@ class RealMeSetupTaskTest extends SapphireTest
         // "https://www.domain.govt.nz/<privacy-realm>/<service-name>"
         $entityIdList = self::$validEntityIDs;
         $entityIdList[RealMeService::ENV_MTS] = 'https://dev.realme-integration.govt.nz/s-name/privacy-realm-is-too-big';
-        $config->update('RealMeService', 'entity_ids', $entityIdList);
+        $config->update('RealMeService', 'sp_entity_ids', $entityIdList);
         $validateEntityId->invoke($realMeSetupTask);
         $this->assertCount(1, $errors->getValue($realMeSetupTask), 'validate entity id should fail for privacy-realm-is-too-big');
 
@@ -176,7 +176,7 @@ class RealMeSetupTaskTest extends SapphireTest
         // "https://www.domain.govt.nz/<privacy-realm>/<service-name>"
         $entityIdList = self::$validEntityIDs;
         $entityIdList[RealMeService::ENV_MTS] = 'https://dev.realme-integration.govt.nz/s-name';
-        $config->update('RealMeService', 'entity_ids', $entityIdList);
+        $config->update('RealMeService', 'sp_entity_ids', $entityIdList);
         $validateEntityId->invoke($realMeSetupTask);
         $this->assertCount(1, $errors->getValue($realMeSetupTask), 'validate entity id should fail if privacy realm is missing');
 
@@ -223,71 +223,6 @@ class RealMeSetupTaskTest extends SapphireTest
     }
 
     /**
-     * Check the consumer assertion url is being validated from config correctly.
-     * - ensure it's present
-     * - ensure it's https
-     * - ensure it's a valid URL
-     * - ensure it's not localhost.
-     */
-    public function testValidateConsumerAssertionURL()
-    {
-        $realMeService = new RealMeService();
-        $realMeSetupTask = new RealMeSetupTask();
-
-        $errors = new ReflectionProperty($realMeSetupTask, 'errors');
-        $errors->setAccessible(true);
-
-        $service = new ReflectionProperty($realMeSetupTask, 'service');
-        $service->setAccessible(true);
-        $service->setValue($realMeSetupTask, $realMeService);
-
-        // Make sure there's no errors to begin.
-        $this->assertCount(0, $errors->getValue($realMeSetupTask));
-
-        // Test valid entityIds just in case they're different in this configuration.
-        $config = Config::inst();
-        $config->update('RealMeService', 'metadata_assertion_service_domains', self::$metadata_assertion_urls);
-
-        // validate our list of valid entity IDs;
-        $validateAuthNContext = new ReflectionMethod($realMeSetupTask, 'validateConsumerAssertionURL');
-        $validateAuthNContext->setAccessible(true);
-        $validateAuthNContext->invoke($realMeSetupTask, RealMeService::ENV_MTS);
-        $this->assertCount(0, $errors->getValue($realMeSetupTask));
-
-        // Test an invalid metadata assertion URL.
-        $metadataAssertionUrls = self::$metadata_assertion_urls;
-        $metadataAssertionUrls[RealMeService::ENV_MTS] = 'invalid-url';
-        $config->update('RealMeService', 'metadata_assertion_service_domains', $metadataAssertionUrls);
-
-        $validateAuthNContext->invoke($realMeSetupTask, RealMeService::ENV_MTS);
-        $this->assertCount(1, $errors->getValue($realMeSetupTask), "The validation should fail for an invalid URL");
-
-        // Make sure there's no errors to begin.
-        $errors->setValue($realMeSetupTask, array());
-        $this->assertCount(0, $errors->getValue($realMeSetupTask));
-
-        // Test should fail for non HTTPs
-        $metadataAssertionUrls = self::$metadata_assertion_urls;
-        $metadataAssertionUrls[RealMeService::ENV_MTS] = 'http://my-broken-url.govt.nz';
-        $config->update('RealMeService', 'metadata_assertion_service_domains', $metadataAssertionUrls);
-
-        $validateAuthNContext->invoke($realMeSetupTask, RealMeService::ENV_MTS);
-        $this->assertCount(1, $errors->getValue($realMeSetupTask), "The validation should fail for non-HTTPs");
-
-        // Make sure there's no errors to begin.
-        $errors->setValue($realMeSetupTask, array());
-        $this->assertCount(0, $errors->getValue($realMeSetupTask));
-
-        // Test should fail for localhost
-        $metadataAssertionUrls = self::$metadata_assertion_urls;
-        $metadataAssertionUrls[RealMeService::ENV_MTS] = 'https://localhost';
-        $config->update('RealMeService', 'metadata_assertion_service_domains', $metadataAssertionUrls);
-
-        $validateAuthNContext->invoke($realMeSetupTask, RealMeService::ENV_MTS);
-        $this->assertCount(1, $errors->getValue($realMeSetupTask), "The validation should fail for non-HTTPs");
-    }
-
-    /**
      * Ensure that setting the RealMeSetupTask template_config_dir config value
      * can adjust the path that the task looks in for its templates.
      * - ensure the default works
@@ -305,14 +240,14 @@ class RealMeSetupTaskTest extends SapphireTest
 
         $config->update('RealMeSetupTask', 'template_config_dir', '');
         $this->assertEquals(
-            BASE_PATH . DIRECTORY_SEPARATOR . REALME_MODULE_PATH . '/templates/simplesaml-configuration',
+            BASE_PATH . DIRECTORY_SEPARATOR . REALME_MODULE_PATH . '/templates/saml-conf',
             $getConfigurationTemplateDirMethod->invoke($realMeSetupTask),
             'Using no configuration for template_config_dir should use the default template directory.'
         );
 
         $config->update('RealMeSetupTask', 'template_config_dir', 'xyzzy');
         $this->assertEquals(
-            BASE_PATH . DIRECTORY_SEPARATOR . REALME_MODULE_PATH . '/templates/simplesaml-configuration',
+            BASE_PATH . DIRECTORY_SEPARATOR . REALME_MODULE_PATH . '/templates/saml-conf',
             $getConfigurationTemplateDirMethod->invoke($realMeSetupTask),
             'Configuring a directory that does not exist should use the default template directory.'
         );

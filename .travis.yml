@@ -5,22 +5,10 @@ sudo: false
 language: php
 
 php:
-  - 5.3
-  - 5.4
-  - 5.5
   - 5.6
 
 env:
-  - DB=MYSQL CORE_RELEASE=3.2
-
-matrix:
-  include:
-    - php: 5.6
-      env: DB=MYSQL CORE_RELEASE=3
-    - php: 5.6
-      env: DB=MYSQL CORE_RELEASE=3.1
-    - php: 5.6
-      env: DB=PGSQL CORE_RELEASE=3.2
+  - DB=MYSQL CORE_RELEASE=3.6
 
 before_script:
   - composer self-update || true
@@ -30,4 +18,5 @@ before_script:
   - composer install
 
 script:
-  - vendor/bin/phpunit realme/tests/
+  - vendor/bin/phpunit --coverage-clover=coverage.clover realme/tests/
+  - bash <(curl -s https://codecov.io/bash) -f coverage.clover -R realme/

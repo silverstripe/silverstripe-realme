@@ -27,11 +27,31 @@ class RealMeLoginForm extends LoginForm
     private static $widget_theme;
 
     /**
+     * @config
+     * @var string The service name to display in the login box ("To access the [online service], you need a RealMe login.")
+     */
+    private static $service_name_1 = null;
+
+    /**
+     * @config
+     * @var string The service name to display in the What's RealMe popup header ("To log in to [this service] you need a RealMe login.")
+     */
+    private static $service_name_2 = null;
+
+    /**
+     * @config
+     * @var string The service name to display in the What's RealMe popup text ("[This service] uses RealMe login.")
+     */
+    private static $service_name_3 = null;
+
+    /**
      * @var array
      */
     private static $allowed_actions = array(
         'redirectToRealMe'
     );
+
+    protected static $action_button_name = 'redirectToRealMe';
 
     /**
      * @var string The authentication class tied to this login form
@@ -46,16 +66,27 @@ class RealMeLoginForm extends LoginForm
      */
     public function __construct($controller, $name)
     {
+        /** @var RealMeService $service */
+        $service = Injector::inst()->get('RealMeService');
+        $integrationType = $service->config()->integration_type;
+
         $fields = new FieldList(array(
             new HiddenField('AuthenticationMethod', null, $this->authenticator_class)
         ));
 
-        $loginButtonContent = ArrayData::create(array(
-            'Label' => _t('RealMeLoginForm.LOGINBUTTON', 'Login or register with RealMe')
-        ))->renderWith('RealMeLoginButton');
+        if($integrationType === RealMeService::TYPE_ASSERT) {
+            $loginButtonContent = ArrayData::create(array(
+                'Label' => _t('RealMeLoginForm.ASSERTLOGINBUTTON', 'Share your details with {orgname}', '', ['orgname' => $service->config()->metadata_organisation_display_name])
+            ))->renderWith('RealMeLoginButton');
+        } else {
+            // Login button
+            $loginButtonContent = ArrayData::create(array(
+                'Label' => _t('RealMeLoginForm.LOGINBUTTON', 'Login')
+            ))->renderWith('RealMeLoginButton');
+        }
 
         $actions = new FieldList(array(
-            FormAction::create('redirectToRealMe', _t('RealMeLoginForm.LOGINBUTTON', 'LoginAction'))
+            FormAction::create(self::$action_button_name, _t('RealMeLoginForm.LOGINBUTTON', 'LoginAction'))
                 ->setUseButtonTag(true)
                 ->setButtonContent($loginButtonContent)
                 ->setAttribute('class', 'realme_button')
@@ -64,8 +95,8 @@ class RealMeLoginForm extends LoginForm
         // Taken from MemberLoginForm
         if (isset($_REQUEST['BackURL'])) {
             $backURL = $_REQUEST['BackURL'];
-        } elseif (Session::get('BackURL')) {
-            $backURL = Session::get('BackURL');
+        } elseif (Session::get('RealMeBackURL')) {
+            $backURL = Session::get('RealMeBackURL');
         }
 
         if (isset($backURL)) {
@@ -96,7 +127,7 @@ class RealMeLoginForm extends LoginForm
      *
      * @param array $data
      * @param Form $form
-     * @return SS_HTTPResponse|void If successfully processed, returns void (SimpleSAMLphp redirects to RealMe)
+     * @return SS_HTTPResponse If successfully processed, returns void (SimpleSAMLphp redirects to RealMe)
      * @throws SS_HTTPResponse_Exception
      */
     public function redirectToRealMe($data, Form $form)
@@ -142,5 +173,71 @@ class RealMeLoginForm extends LoginForm
         }
 
         return 'default';
+    }
+
+    /**
+     * Gets the service name based on either a config value, or falling back to the $Title specified in SiteConfig
+     * @param string $name The service name to get from config
+     * @return string
+     */
+    private function getServiceName($name = 'service_name_1')
+    {
+        if ($this->config()->$name) {
+            return $this->config()->$name;
+        } else {
+            return SiteConfig::current_site_config()->Title;
+        }
+    }
+
+    public function getServiceName1()
+    {
+        return $this->getServiceName('service_name_1');
+    }
+
+    public function getServiceName2()
+    {
+        return $this->getServiceName('service_name_2');
+    }
+
+    public function getServiceName3()
+    {
+        return $this->getServiceName('service_name_3');
+    }
+
+    public function forTemplate()
+    {
+        /** @var RealMeService $service */
+        $service = Injector::inst()->get('RealMeService');
+        $integrationType = $service->config()->integration_type;
+
+        if($integrationType === RealMeService::TYPE_ASSERT) {
+            $html = $this->renderWith([
+                'RealMeAssertForm'
+            ]);
+
+            // Now that we've rendered, clear message
+            $this->clearMessage();
+
+            return $html;
+        } else {
+            return parent::forTemplate();
+        }
+    }
+
+    /**
+     * Returns the last error message that the RealMe service provided, if any
+     * @return string|null
+     */
+    public function RealMeLastError()
+    {
+        $message = Session::get('RealMe.LastErrorMessage');
+        Session::clear('RealMe.LastErrorMessage');
+
+        return $message;
+    }
+
+    public function HasRealMeLastError()
+    {
+        return Session::get('RealMe.LastErrorMessage') !== null;
     }
 }

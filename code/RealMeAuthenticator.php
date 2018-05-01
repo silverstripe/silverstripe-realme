@@ -25,55 +25,30 @@ class RealMeAuthenticator extends Authenticator
         $cache = SS_Cache::factory('RealMeAuthenticator');
 
         $cacheKey = 'RegisterCheck';
-        if (true === (bool) $cache->load($cacheKey)) {
+        if ($cache->test($cacheKey)) {
             return true;
         }
 
         // check we have config constants present.
-        $configs = array('REALME_CONFIG_DIR', 'REALME_CERT_DIR', 'REALME_LOG_DIR', 'REALME_TEMP_DIR');
-        foreach ($configs as $config) {
-            if (false === defined($config)) {
-                SS_Log::log(
-                    sprintf('RealMe config not set: %s', $config),
-                    SS_Log::ERR
-                );
-                return false;
-            };
+        if (!defined('REALME_CERT_DIR')) {
+            SS_Log::log('RealMe env config REALME_CERT_DIR not set', SS_Log::ERR);
+            return false;
+        };
 
-            $path = rtrim(constant($config), '/');
-            if (false === file_exists($path) || false === is_readable($path)) {
-                SS_Log::log(
-                    sprintf('RealMe config dir missing or not readable: %s', $config),
-                    SS_Log::ERR
-                );
-                return false;
-            }
-        }
-
-        // Check certificates (cert dir must exist at this point).
-        $certificates = array('REALME_SIGNING_CERT_FILENAME', 'REALME_MUTUAL_CERT_FILENAME');
-        foreach ($certificates as $cert) {
-            $path = rtrim(REALME_CERT_DIR, '/') . "/" . constant($cert);
-            if (false === file_exists($path) || false === is_readable($path)) {
-                SS_Log::log(
-                    sprintf('RealMe %s missing: %s', $cert, $path),
-                    SS_Log::ERR
-                );
-                return false;
-            }
-        }
-
-        // if we haven't created this file, or it doesn't exist, then the setup task hasn't run correctly.
-        $authSource = REALME_CONFIG_DIR . '/authsources.php';
-        if (false === file_exists($authSource)) {
-            SS_Log::log(
-                sprintf('RealMe Setup task not complete. missing auth source: %s', $authSource),
-                SS_Log::ERR
-            );
+        $path = rtrim(constant('REALME_CERT_DIR'), '/');
+        if (!file_exists($path) || !is_readable($path)) {
+            SS_Log::log('RealMe certificate dir (REALME_CERT_DIR) missing or not readable', SS_Log::ERR);
             return false;
         }
 
-        $cache->save('true', $cacheKey);
+        // Check certificates (cert dir must exist at this point).
+        $path = rtrim(REALME_CERT_DIR, '/') . "/" . constant('REALME_SIGNING_CERT_FILENAME');
+        if (!file_exists($path) || !is_readable($path)) {
+            SS_Log::log(sprintf('RealMe %s missing: %s', constant('REALME_SIGNING_CERT_FILENAME'), $path), SS_Log::ERR);
+            return false;
+        }
+
+        $cache->save('1', $cacheKey);
         return true;
     }
 

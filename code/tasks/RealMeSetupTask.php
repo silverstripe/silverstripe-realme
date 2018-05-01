@@ -9,9 +9,6 @@
  * - Check to ensure that the task is being run from the cmdline (not in the browser, it's too sensitive)
  * - Check to ensure that the task hasn't already been run, and if it has, fail unless `force=1` is passed to the script
  * - Validate all required values have been added in the appropriate place, and provide appropriate errors if not
- * - Create config.php file for simpleSAMLphp to consume, and write it in the appropriate place
- * - Create authsources.php file for simpleSAMLphp to consume, and write it to the appropriate place
- * - Create saml20-idp-remote.php file for simpleSAMLphp to consume, and write it to the appropriate place
  * - Output metadata XML that must be submitted to RealMe in order to integrate with ITE and Production environments
  */
 class RealMeSetupTask extends BuildTask
@@ -48,19 +45,10 @@ class RealMeSetupTask extends BuildTask
             }
 
             // Validate all required values exist
-            $forceRun = ($request->getVar('force') == 1);
             $forEnv = $request->getVar('forEnv');
 
             // Throws an exception if there was a problem with the config.
-            $this->validateInputs($forceRun, $forEnv);
-
-            $this->createConfigReadmeFromTemplate();
-
-            $this->createConfigFromTemplate();
-
-            $this->createAuthSourcesFromTemplate();
-
-            $this->createMetadataFromTemplate();
+            $this->validateInputs($forEnv);
 
             $this->outputMetadataXmlContent($forEnv);
 
@@ -74,28 +62,17 @@ class RealMeSetupTask extends BuildTask
      * Validate all inputs to this setup script. Ensures that all required values are available, where-ever they need to
      * be loaded from (environment variables, Config API, or directly passed to this script via the cmd-line)
      *
-     * @param bool           $forceRun Whether or not to force the setup (therefore skip checks around existing files)
-     * @param string         $forEnv   The environment that we want to output content for (mts, ite, or prod)
+     * @param string $forEnv The environment that we want to output content for (mts, ite, or prod)
      *
      * @throws Exception if there were errors with the request or setup format.
      */
-    private function validateInputs($forceRun, $forEnv)
+    private function validateInputs($forEnv)
     {
-
-        // Ensure we haven't already run before, or if we have, that force=1 is passed
-        $this->validateRunOnce($forceRun);
-
         // Ensure that 'forEnv=' is specified on the cli, and ensure that it matches a RealMe environment
         $this->validateRealMeEnvironments($forEnv);
 
-        // Ensure we have a config directory and that it's writeable by the web server
-        $this->validateSimpleSamlConfig();
-
         // Ensure we have the necessary directory structures, and their visibility
         $this->validateDirectoryStructure();
-
-        // Make sure we can create salts and passwords using the required libraries
-        $this->validateCryptographicLibraries();
 
         // Ensure we have the certificates in the correct places.
         $this->validateCertificates();
@@ -104,10 +81,7 @@ class RealMeSetupTask extends BuildTask
         $this->validateEntityID();
 
         // Make sure we have an authncontext for each environment.
-        $this->validateAuthnContext();
-
-        // Ensure the consumer URL is correct
-        $this->validateConsumerAssertionURL($forEnv);
+        $this->validateAuthNContext();
 
         // Ensure data required for metadata XML output exists
         $this->validateMetadata();
@@ -128,142 +102,6 @@ class RealMeSetupTask extends BuildTask
         }
 
         $this->message(_t('RealMeSetupTask.VALIDATION_SUCCESS'));
-    }
-
-    private function createConfigReadmeFromTemplate()
-    {
-        // Create configuration files
-        $this->message(sprintf(
-            'Creating README file in %s from template dir %s',
-            $this->service->getSimpleSamlConfigDir(),
-            $this->getConfigurationTemplateDir()
-        ));
-
-        $configDir = $this->getConfigurationTemplateDir();
-        $templateFile = Controller::join_links($configDir, 'README.md');
-
-        if (false === $this->isReadable($templateFile)) {
-            throw new Exception(sprintf("Can't read README.md file at %s", $templateFile));
-        }
-
-        $this->writeConfigFile($templateFile, $this->getSimpleSAMLConfigReadmeFilePath());
-    }
-
-    /**
-     * Create primary configuration file and place in SimpleSAMLphp configuration directory
-     */
-    private function createConfigFromTemplate()
-    {
-        $this->message(sprintf(
-            'Creating config file in %s/config/ from config in template dir %s',
-            $this->service->getSimpleSamlConfigDir(),
-            $this->getConfigurationTemplateDir()
-        ));
-
-        $configDir = $this->getConfigurationTemplateDir();
-        $templateFile = Controller::join_links($configDir, 'config.php');
-
-        if (false === $this->isReadable($templateFile)) {
-            throw new Exception(sprintf("Can't read config.php file at %s", $templateFile));
-        }
-
-        $this->writeConfigFile(
-            $templateFile,
-            $this->getSimpleSAMLConfigFilePath(),
-            array(
-                '{{baseurlpath}}' => $this->service->getSimpleSamlBaseUrlPath(),
-                '{{certdir}}' => $this->service->getCertDir(),
-                '{{loggingdir}}' => $this->service->getLoggingDir(),
-                '{{tempdir}}' => $this->service->getTempDir(),
-                '{{metadatadir}}' => $this->service->getSimpleSamlMetadataDir(),
-                '{{adminpassword}}' => $this->service->findOrMakeSimpleSAMLPassword(),
-                '{{secretsalt}}' => $this->service->generateSimpleSAMLSalt(),
-            )
-        );
-    }
-
-    /**
-     * Create authentication sources configuration file and place in SimpleSAMLphp configuration directory
-     */
-    private function createAuthSourcesFromTemplate()
-    {
-        $this->message(sprintf(
-            'Creating authsources file in %s/config/ from config in template dir %s',
-            $this->service->getSimpleSamlConfigDir(),
-            $this->getConfigurationTemplateDir()
-        ));
-
-        $configDir = $this->getConfigurationTemplateDir();
-
-        $templateFile = Controller::join_links($configDir, 'authsources.php');
-
-        if (false === $this->isReadable($templateFile)) {
-            throw new Exception(sprintf("Can't read authsources.php file at %s", $templateFile));
-        }
-
-        /**
-         * @todo Determine what to do with multiple certificates.
-         *
-         * This currently uses the same signing and mutual certificate paths and password for all 3 environments. This
-         * means that you can't test e.g. connectivity with ITE on the production server environment. However, the
-         * alternative is that all certificates and passwords must be present on all servers, which is sub-optimal.
-         *
-         * See realme/templates/simplesaml-configuration/authsources.php
-         */
-        $this->writeConfigFile(
-            $templateFile,
-            $this->getSimpleSAMLAuthSourcesFilePath(),
-            array(
-                '{{mts-entityID}}' => $this->service->getEntityIDForEnvironment('mts'),
-                '{{mts-authncontext}}' => $this->service->getAuthnContextForEnvironment('mts'),
-                '{{mts-privatepemfile-signing}}' => $this->service->getSigningCertPath(),
-                '{{mts-privatepemfile-mutual}}' => $this->service->getMutualCertPath(),
-                '{{mts-privatepemfile-signing-password}}' => $this->service->getSigningCertPassword(),
-                '{{mts-privatepemfile-mutual-password}}' => $this->service->getMutualCertPassword(),
-                '{{mts-backchannel-proxyhost}}' => $this->service->getProxyHostForEnvironment('mts'),
-                '{{mts-backchannel-proxyport}}' => $this->service->getProxyPortForEnvironment('mts'),
-                '{{ite-entityID}}' => $this->service->getEntityIDForEnvironment('ite'),
-                '{{ite-authncontext}}' => $this->service->getAuthnContextForEnvironment('ite'),
-                '{{ite-privatepemfile-signing}}' => $this->service->getSigningCertPath(),
-                '{{ite-privatepemfile-mutual}}' => $this->service->getMutualCertPath(),
-                '{{ite-privatepemfile-signing-password}}' => $this->service->getSigningCertPassword(),
-                '{{ite-privatepemfile-mutual-password}}' => $this->service->getMutualCertPassword(),
-                '{{ite-backchannel-proxyhost}}' => $this->service->getProxyHostForEnvironment('ite'),
-                '{{ite-backchannel-proxyport}}' => $this->service->getProxyPortForEnvironment('ite'),
-                '{{prod-entityID}}' => $this->service->getEntityIDForEnvironment('prod'),
-                '{{prod-authncontext}}' => $this->service->getAuthnContextForEnvironment('prod'),
-                '{{prod-privatepemfile-signing}}' => $this->service->getSigningCertPath(),
-                '{{prod-privatepemfile-mutual}}' => $this->service->getMutualCertPath(),
-                '{{prod-privatepemfile-signing-password}}' => $this->service->getSigningCertPassword(),
-                '{{prod-privatepemfile-mutual-password}}' => $this->service->getMutualCertPassword(),
-                '{{prod-backchannel-proxyhost}}' => $this->service->getProxyHostForEnvironment('prod'),
-                '{{prod-backchannel-proxyport}}' => $this->service->getProxyPortForEnvironment('prod'),
-            )
-        );
-    }
-
-    /**
-     * Create metadata configuration file and place in SimpleSAMLphp configuration directory
-     */
-    private function createMetadataFromTemplate()
-    {
-        $this->message(sprintf(
-            'Creating saml20-idp-remote file in %s/metadata/ from config in template dir %s',
-            $this->service->getSimpleSamlConfigDir(),
-            $this->getConfigurationTemplateDir())
-        );
-
-        $configDir = $this->getConfigurationTemplateDir();
-        $templateFile = Controller::join_links($configDir, 'saml20-idp-remote.php');
-
-        if (false === $this->isReadable($templateFile)) {
-            throw new Exception(sprintf("Can't read saml20-idp-remote.php file at %s", $templateFile));
-        }
-
-        $this->writeConfigFile(
-            $templateFile,
-            $this->getSimpleSAMLMetadataFilePath()
-        );
     }
 
     /**
@@ -292,9 +130,10 @@ class RealMeSetupTask extends BuildTask
         $message = $this->replaceTemplateContents(
             $templateFile,
             array(
-                '{{entityID}}' => $this->service->getEntityIDForEnvironment($forEnv),
-                '{{certificate-data}}' => $this->service->getSigningCertContent(),
-                '{{assertion-service-url}}' => $this->service->getAssertionConsumerServiceUrlForEnvironment($forEnv),
+                '{{entityID}}' => $this->service->getSPEntityID(),
+                '{{certificate-data}}' => $this->service->getSPCertContent(),
+                '{{nameidformat}}' => $this->service->getNameIdFormat(),
+                '{{acs-url}}' => $this->service->getAssertionConsumerServiceUrlForEnvironment($forEnv),
                 '{{organisation-name}}' => $this->service->getMetadataOrganisationName(),
                 '{{organisation-display-name}}' => $this->service->getMetadataOrganisationDisplayName(),
                 '{{organisation-url}}' => $this->service->getMetadataOrganisationUrl(),
@@ -305,31 +144,6 @@ class RealMeSetupTask extends BuildTask
         );
 
         $this->message($message);
-    }
-
-    /**
-     * Writes configuration from a template file with {{variables}} to its final location for SimpleSAMLphp
-     *
-     * @param string $templatePath The path to the template file
-     * @param string $newFilePath The path where the new file will be written
-     * @param array|null $replacements An array of '{{variable}}' => 'value' replacements
-     */
-    private function writeConfigFile($templatePath, $newFilePath, $replacements = null)
-    {
-        $configText = $this->replaceTemplateContents($templatePath, $replacements);
-
-        // If the parent folder of $newFilePath doesn't already exist, then create it
-        // Specifically only look one level higher, we already validate that everything else exists and can be written
-        $fileParentDir = dirname($newFilePath);
-        if (false === is_dir($fileParentDir)) {
-            mkdir($fileParentDir, 0744);
-        }
-
-        if (false === file_put_contents($newFilePath, $configText)) {
-            throw new Exception(
-                sprintf("Could not write template file '%s' to location '%s'", $templatePath, $newFilePath)
-            );
-        }
     }
 
     /**
@@ -351,46 +165,6 @@ class RealMeSetupTask extends BuildTask
     }
 
     /**
-     * @return string The path to the README file we create to help identify this configuration directory
-     */
-    private function getSimpleSAMLConfigReadmeFilePath()
-    {
-        return sprintf('%s/README.md', $this->service->getSimpleSamlConfigDir());
-    }
-
-    /**
-     * @return string The path to the main SimpleSAMLphp configuration file, once written
-     */
-    private function getSimpleSAMLConfigFilePath()
-    {
-        return sprintf('%s/config.php', $this->service->getSimpleSamlConfigDir());
-    }
-
-    /**
-     * @return string The path to the authentication sources configuration file, once written
-     */
-    private function getSimpleSAMLAuthSourcesFilePath()
-    {
-        return sprintf('%s/authsources.php', $this->service->getSimpleSamlConfigDir());
-    }
-
-    /**
-     * @return string The path to the metadata configuration file, once written
-     */
-    private function getSimpleSAMLMetadataFilePath()
-    {
-        return sprintf('%s/metadata/saml20-idp-remote.php', $this->service->getSimpleSamlConfigDir());
-    }
-
-    /**
-     * @return string The path from the server root to the physical location where SimpleSAMLphp is installed
-     */
-    private function getSimpleSAMLVendorPath()
-    {
-        return sprintf('%s/vendor/madmatt/simplesamlphp', BASE_PATH);
-    }
-
-    /**
      * @return string The full path to RealMe configuration
      */
     private function getConfigurationTemplateDir()
@@ -402,7 +176,7 @@ class RealMeSetupTask extends BuildTask
             return $path;
         }
 
-        return Controller::join_links(BASE_PATH, REALME_MODULE_PATH . '/templates/simplesaml-configuration');
+        return Controller::join_links(BASE_PATH, REALME_MODULE_PATH . '/templates/saml-conf');
     }
 
     /**
@@ -427,17 +201,6 @@ class RealMeSetupTask extends BuildTask
     }
 
     /**
-     * Thin wrapper around is_writeable(), used mainly so we can test this class completely
-     *
-     * @param string $filename The filename or directory to test
-     * @return bool true if the file/dir is writeable, false if not
-     */
-    private function isWriteable($filename)
-    {
-        return is_writeable($filename);
-    }
-
-    /**
      * The entity ID will pass validation, but raise an exception if the format of the service name and privacy realm
      * are in the incorrect format.
      * The service name and privacy realm need to be under 10 chars eg.
@@ -447,68 +210,63 @@ class RealMeSetupTask extends BuildTask
      */
     private function validateEntityID()
     {
-        foreach ($this->service->getAllowedRealMeEnvironments() as $env) {
-            $entityId = $this->service->getEntityIDForEnvironment($env);
+        $entityId = $this->service->getSPEntityID();
 
-            if (true === is_null($entityId)) {
-                $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_NO_ENTITYID', '', '', array('env' => $env));
-            }
+        if (is_null($entityId)) {
+            $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_NO_ENTITYID', '', '', array('env' => $env));
+        }
 
-            // make sure the entityID is a valid URL
-            $entityId = filter_var($entityId, FILTER_VALIDATE_URL);
-            if (false === $entityId) {
-                $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_ENTITYID', '', '',
-                    array(
-                        'env' => $env,
-                        'entityId' => $entityId
-                    )
-                );
+        // make sure the entityID is a valid URL
+        $entityId = filter_var($entityId, FILTER_VALIDATE_URL);
+        if ($entityId === false) {
+            $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_ENTITYID', '', '',
+                array(
+                    'entityId' => $entityId
+                )
+            );
 
-                // invalid entity id, no point continuing.
-                return;
-            }
+            // invalid entity id, no point continuing.
+            return;
+        }
 
-            // check it's not localhost and HTTPS. and make sure we have a host / scheme
-            $urlParts = parse_url($entityId);
-            if ('localhost' === $urlParts['host'] || 'http' === $urlParts['scheme']) {
-                $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_ENTITYID', '', '',
-                    array(
-                        'env' => $env,
-                        'entityId' => $entityId
-                    )
-                );
-                // if there's this much wrong, we want them to fix it first.
-                return;
-            }
+        // check it's not localhost and HTTPS. and make sure we have a host / scheme
+        $urlParts = parse_url($entityId);
+        if ($urlParts['host'] === 'localhost' || $urlParts['scheme'] === 'http') {
+            $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_ENTITYID', '', '',
+                array(
+                    'entityId' => $entityId
+                )
+            );
 
-            $path = ltrim($urlParts['path']);
-            $urlParts = preg_split("/\\//", $path);
+            // if there's this much wrong, we want them to fix it first.
+            return;
+        }
+
+        $path = ltrim($urlParts['path']);
+        $urlParts = preg_split("/\\//", $path);
 
 
-            // "https://www.domain.govt.nz/<privacy-realm>/<service-name>"
-            // Validate Service Name
-            $serviceName = array_pop($urlParts);
-            if (mb_strlen($serviceName) > 10 || 0 === mb_strlen($serviceName)) {
-                $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_ENTITYID_SERVICE_NAME', '', '',
-                    array(
-                        'env' => $env,
-                        'serviceName' => $serviceName,
-                        'entityId' => $entityId
-                    )
-                );
-            }
+        // A valid Entity ID is in the form of "https://www.domain.govt.nz/<privacy-realm>/<service-name>"
+        // Validate Service Name
+        $serviceName = array_pop($urlParts);
+        if (mb_strlen($serviceName) > 20 || 0 === mb_strlen($serviceName)) {
+            $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_ENTITYID_SERVICE_NAME', '', '',
+                array(
+                    'serviceName' => $serviceName,
+                    'entityId' => $entityId
+                )
+            );
+        }
 
-            // Validate Privacy Realm
-            $privacyRealm = array_pop($urlParts);
-            if (null === $privacyRealm || 0 === mb_strlen($privacyRealm)) {
-                $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_ENTITYID_PRIVACY_REALM', '', '',
-                    array(
-                        'env' => $env,
-                        'privacyRealm' => $privacyRealm,
-                        'entityId' => $entityId
-                    )
-                );
-            }
+        // Validate Privacy Realm
+        $privacyRealm = array_pop($urlParts);
+        if (null === $privacyRealm || 0 === mb_strlen($privacyRealm)) {
+            $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_ENTITYID_PRIVACY_REALM', '', '',
+                array(
+                    'privacyRealm' => $privacyRealm,
+                    'entityId' => $entityId
+                )
+            );
         }
     }
 
@@ -521,34 +279,12 @@ class RealMeSetupTask extends BuildTask
     {
         foreach ($this->service->getAllowedRealMeEnvironments() as $env) {
             $context = $this->service->getAuthnContextForEnvironment($env);
-            if (true === is_null($context)) {
+            if (is_null($context)) {
                 $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_NO_AUTHNCONTEXT', '', '', array('env' => $env));
             }
 
-            if (false === in_array($context, $this->service->getAllowedAuthNContextList())) {
+            if (!in_array($context, $this->service->getAllowedAuthNContextList())) {
                 $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_INVALID_AUTHNCONTEXT', '', '', array('env' => $env));
-            }
-        }
-    }
-
-    /**
-     * Validate that this script has only been run once. It must be deliberate to overwrite the configuration settings
-     * as this could potentially change the privacy realms and the associated FLT. You will loose context and the
-     * matching of users to FLTs if this is the case.
-     *
-     * @param $forceRun boolean
-     */
-    private function validateRunOnce($forceRun)
-    {
-        $existingFiles = array(
-            $this->getSimpleSAMLConfigFilePath(),
-            $this->getSimpleSAMLAuthSourcesFilePath(),
-            $this->getSimpleSAMLMetadataFilePath()
-        );
-
-        foreach ($existingFiles as $filePath) {
-            if (true === file_exists($filePath) && false === $forceRun) {
-                $this->errors[] = _t('RealMeSetupTask.ERR_ALREADY_RUN', '', '', array('path' => $filePath));
             }
         }
     }
@@ -556,7 +292,7 @@ class RealMeSetupTask extends BuildTask
     /**
      * Ensure's the environment we're building the setup for exists.
      *
-     * @param $forEnv string
+     * @param string $forEnv The environment that we're going to configure with this run.
      */
     private function validateRealMeEnvironments($forEnv)
     {
@@ -587,67 +323,18 @@ class RealMeSetupTask extends BuildTask
     }
 
     /**
-     * Validates the SimpleSaml Config directories and ensures this script can write to them. Note: it's important that
-     * this script is run by the web user as this will be the user accessing the files, and writing to the log.
-     *
-     * @return array
-     */
-    private function validateSimpleSamlConfig()
-    {
-        if (true === is_null($this->service->getSimpleSamlConfigDir())) {
-            $this->errors[] = _t('RealMeSetupTask.ERR_SIMPLE_SAML_CONFIG_DIR_MISSING');
-        } elseif (false === $this->isWriteable($this->service->getSimpleSamlConfigDir())) {
-            $this->errors[] = _t(
-                'RealMeSetupTask.ERR_SIMPLE_SAML_CONFIG_DIR_NOT_WRITEABLE',
-                '',
-                '',
-                array('dir' => $this->service->getSimpleSamlConfigDir())
-            );
-        }
-
-        if (true === is_null($this->service->getSimpleSamlBaseUrlPath())) {
-            $this->errors[] = _t('RealMeSetupTask.ERR_BASE_DIR_MISSING');
-        }
-    }
-
-    /**
      * Ensures that the directory structure is correct and the necessary directories are writable.
      */
     private function validateDirectoryStructure()
     {
-        if (true === is_null($this->service->getCertDir())) {
+        if (is_null($this->service->getCertDir())) {
             $this->errors[] = _t('RealMeSetupTask.ERR_CERT_DIR_MISSING');
-        } elseif (false === $this->isReadable($this->service->getCertDir())) {
+        } elseif (!$this->isReadable($this->service->getCertDir())) {
             $this->errors[] = _t(
                 'RealMeSetupTask.ERR_CERT_DIR_NOT_READABLE',
                 '',
                 '',
                 array('dir' => $this->service->getCertDir())
-            );
-        }
-
-        if (true === is_null($this->service->getLoggingDir())) {
-            $this->errors[] = _t('RealMeSetupTask.ERR_LOG_DIR_MISSING');
-        } elseif (false === $this->isWriteable($this->service->getLoggingDir())) {
-            $this->errors[] = _t(
-                'RealMeSetupTask.ERR_LOG_DIR_NOT_WRITEABLE',
-                '',
-                '',
-                array('dir' => $this->service->getLoggingDir())
-            );
-        }
-
-        if (true === is_null($this->service->getTempDir())) {
-            $this->errors[] = _t('RealMeSetupTask.ERR_TEMP_DIR_MISSING');
-        } elseif (
-            false === $this->isWriteable($this->service->getTempDir())
-            && false === $this->isWriteable(dirname($this->service->getTempDir()))
-        ) {
-            $this->errors[] = _t(
-                'RealMeSetupTask.ERR_TEMP_DIR_NOT_WRITEABLE',
-                '',
-                '',
-                array('dir' => $this->service->getTempDir())
             );
         }
     }
@@ -657,20 +344,20 @@ class RealMeSetupTask extends BuildTask
      */
     private function validateMetadata()
     {
-        if (true === is_null($this->service->getMetadataOrganisationName())) {
+        if (is_null($this->service->getMetadataOrganisationName())) {
             $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_NO_ORGANISATION_NAME');
         }
 
-        if (true === is_null($this->service->getMetadataOrganisationDisplayName())) {
+        if (is_null($this->service->getMetadataOrganisationDisplayName())) {
             $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_NO_ORGANISATION_DISPLAY_NAME');
         }
 
-        if (true === is_null($this->service->getMetadataOrganisationUrl())) {
+        if (is_null($this->service->getMetadataOrganisationUrl())) {
             $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_NO_ORGANISATION_URL');
         }
 
         $contact = $this->service->getMetadataContactSupport();
-        if (true === is_null($contact['company']) || true === is_null($contact['firstNames']) || is_null($contact['surname'])) {
+        if (is_null($contact['company']) || is_null($contact['firstNames']) || is_null($contact['surname'])) {
             $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_NO_SUPPORT_CONTACT');
         }
     }
@@ -681,7 +368,7 @@ class RealMeSetupTask extends BuildTask
     private function validateCertificates()
     {
         $signingCertFile = $this->service->getSigningCertPath();
-        if (true === is_null($signingCertFile) || false === $this->isReadable($signingCertFile)) {
+        if (is_null($signingCertFile) || !$this->isReadable($signingCertFile)) {
             $this->errors[] = _t(
                 'RealMeSetupTask.ERR_CERT_NO_SIGNING_CERT',
                 '',
@@ -690,7 +377,7 @@ class RealMeSetupTask extends BuildTask
                     'const' => 'REALME_SIGNING_CERT_FILENAME'
                 )
             );
-        } elseif (true === is_null($this->service->getSigningCertContent())) {
+        } elseif (is_null($this->service->getSPCertContent())) {
             // Signing cert exists, but doesn't include BEGIN/END CERTIFICATE lines, or doesn't contain the cert
             $this->errors[] = _t(
                 'RealMeSetupTask.ERR_CERT_SIGNING_CERT_CONTENT',
@@ -698,55 +385,6 @@ class RealMeSetupTask extends BuildTask
                 '',
                 array('file' => $this->service->getSigningCertPath())
             );
-        }
-
-        $mutualCertFile = $this->service->getMutualCertPath();
-        if (true === is_null($mutualCertFile) || false === $this->isReadable($mutualCertFile)) {
-            $this->errors[] = _t(
-                'RealMeSetupTask.ERR_CERT_NO_MUTUAL_CERT',
-                '',
-                '',
-                array(
-                    'const' => 'REALME_MUTUAL_CERT_FILENAME'
-                )
-            );
-        }
-    }
-
-    /**
-     * Ensures the server has the correct cryptographic libraries installed by trying to generate salts and passwords
-     * using these libraries
-     */
-    private function validateCryptographicLibraries()
-    {
-        if (true === is_null($this->service->findOrMakeSimpleSAMLPassword())) {
-            $this->errors[] = _t('RealMeSetupTask.ERR_SIMPLE_SAML_NO_ADMIN_PASS');
-        }
-
-        if (true === is_null($this->service->generateSimpleSAMLSalt())) {
-            $this->errors[] = _t('RealMeSetupTask.ERR_SIMPLE_SAML_NO_SALT');
-        }
-    }
-
-    /**
-     * Ensure the consumerAssertionUrl is correct for this environment
-     *
-     * @param $forEnv
-     */
-    private function validateConsumerAssertionURL($forEnv)
-    {
-        // Ensure the assertion consumer service location exists
-        $consumerAssertionUrl = $this->service->getAssertionConsumerServiceUrlForEnvironment($forEnv);
-        if (null === $consumerAssertionUrl) {
-            $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_ASSERTION_SERVICE_URL', '', '', array('env' => $forEnv));
-
-            // no point in validating an invalid/missing url.
-            return;
-        }
-
-        $urlParts = parse_url($consumerAssertionUrl);
-        if ('localhost' === $urlParts['host'] ||  'http' === $urlParts['scheme']) {
-            $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_ASSERTION_SERVICE_URL', '', '', array('env' => $forEnv));
         }
     }
 }

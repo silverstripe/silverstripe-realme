@@ -4,4 +4,4 @@ RealMeLoginForm:
   include_jquery: false
   include_javascript: true
   include_css: true
-  widget_theme: light
+  widget_theme: default
