@@ -7,19 +7,13 @@ silverstripe-realme
 
 <!-- [![Version](http://img.shields.io/packagist/v/silverstripe/realme.svg?style=flat-square)](https://packagist.org/packages/silverstripe/realme) -->
 
-Adds support to SilverStripe for authentication via [RealMe](https://www.realme.govt.nz/).
+Adds support to SilverStripe for authentication and identity assertion via [RealMe](https://www.realme.govt.nz/).
 
 This module provides the foundation to support a quick integration for a SilverStripe application with RealMe as an
 identity provider. This module requires extensive setup prior to being utilised effectively.
 
-If integration with RealMe is wanted, it is best to get in touch with the RealMe team as early as possible. There are a
-number of documents mentioned in this documentation that can only be found by accessing the RealMe Shared Workspace.
-This can be accomplished by [getting in touch with the RealMe team](https://www.realme.govt.nz/realme-business/).
-
-**Note:** Currently this module does not integrate with the `Member` functionality of SilverStripe. It is initially
-intended to purely provide an authentication mechanism that can be extended by customers that require it. One such
-extension would be to create standard SilverStripe `Member` records linked to a unique RealMe identifier, but that's
-not currently built in.
+If integration with RealMe is wanted, it is best to get in touch with the RealMe team as early as possible. This can be
+accomplished by [getting in touch with the RealMe team](https://www.realme.govt.nz/realme-business/).
 
 ## Releases
 There are multiple releases of this module. The current stable version is the 2.x line. This is a stable module that
