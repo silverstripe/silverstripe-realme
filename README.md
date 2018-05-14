@@ -36,8 +36,8 @@ instructions - one for use on CWP, and one for generic use.
 
 ## Installation
 
-The module is best installed via Composer, by adding the below to your composer.json. For now, we need to specify a 
-custom version of the excellent onelogin/php-saml module to fix some XMLDSig validation errors with the RealMe XML 
+The module is best installed via Composer, by adding the below to your composer.json. For now, we need to specify a
+custom version of the excellent onelogin/php-saml module to fix some XMLDSig validation errors with the RealMe XML
 responses, hence the custom `repositories` section.
 
 ```
@@ -46,7 +46,7 @@ responses, hence the custom `repositories` section.
         "silverstripe/realme": "^2.0",
         "onelogin/php-saml": "dev-fixes/realme-dsig-validation as 2.11.0"
     },
-    
+
     "repositories": [
         {
             "type": "vcs",
@@ -79,7 +79,7 @@ See the [templates documentation](docs/en/templates.md) for more information on 
 
 The `RealMeService` service object allows you to inject authentication where-ever it is required. For example, let's
 take a simple Controller that ensures that all users have a valid RealMe 'FLT' (a unique string that identifies a RealMe
-account, but is not their username.
+user, but is not their username):
 
 ```php
 class RealMeTestController extends Controller {
