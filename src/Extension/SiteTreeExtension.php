@@ -1,8 +1,16 @@
 <?php
-class RealMeSiteTreeExtension extends DataExtension
+
+namespace SilverStripe\RealMe\Extension;
+
+use SilverStripe\RealMe\RealMeService;
+use SilverStripe\Security\Member;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\ORM\DataExtension;
+
+class SiteTreeExtension extends DataExtension
 {
     private static $dependencies = array(
-        'service' => '%$RealMeService'
+        'service' => '%$' . RealMeService::class
     );
 
     /**
@@ -48,7 +56,7 @@ class RealMeSiteTreeExtension extends DataExtension
 
             case 'OnlyTheseUsers':
                 if ($member && is_numeric($member)) {
-                    $member = DataObject::get_by_id('Member', $member);
+                    $member = DataObject::get_by_id(Member::class, $member);
 
                     /** @var Member $member */
                     if ($member && $member->inGroups($this->owner->ViewerGroups())) {

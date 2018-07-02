@@ -1,13 +1,25 @@
 <?php
 
-class RealMeLoginForm extends LoginForm
-{
-    /**
-     * @config
-     * @var bool true if you want the RealMe login form to include jQuery, false if you're including it yourself
-     */
-    private static $include_jquery;
+namespace SilverStripe\RealMe\Authenticator;
 
+use SilverStripe\Control\Controller;
+use SilverStripe\Control\HTTPResponse;
+use SilverStripe\Control\HTTPResponse_Exception;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\Form;
+use SilverStripe\Forms\FormAction;
+use SilverStripe\Forms\HiddenField;
+use SilverStripe\RealMe\Authenticator;
+use SilverStripe\RealMe\RealMeService;
+use SilverStripe\Security\LoginForm as BaseLoginForm;
+use SilverStripe\Security\Security;
+use SilverStripe\SiteConfig\SiteConfig;
+use SilverStripe\View\ArrayData;
+use SilverStripe\View\Requirements;
+
+class LoginForm extends BaseLoginForm
+{
     /**
      * @config
      * @var bool true if you want the RealMe login form JS to be included, false if you're including it yourself
@@ -28,13 +40,15 @@ class RealMeLoginForm extends LoginForm
 
     /**
      * @config
-     * @var string The service name to display in the login box ("To access the [online service], you need a RealMe login.")
+     * @var string The service name to display in the login box ("To access the [online service], you need a RealMe
+     * login.")
      */
     private static $service_name_1 = null;
 
     /**
      * @config
-     * @var string The service name to display in the What's RealMe popup header ("To log in to [this service] you need a RealMe login.")
+     * @var string The service name to display in the What's RealMe popup header ("To log in to [this service] you need
+     * a RealMe login.")
      */
     private static $service_name_2 = null;
 
@@ -56,7 +70,7 @@ class RealMeLoginForm extends LoginForm
     /**
      * @var string The authentication class tied to this login form
      */
-    protected $authenticator_class = 'RealMeAuthenticator';
+    protected $authenticator_class = MemberAuthenticator::class;
 
     /**
      * Returns an instance of this class
@@ -66,60 +80,17 @@ class RealMeLoginForm extends LoginForm
      */
     public function __construct($controller, $name)
     {
-        /** @var RealMeService $service */
-        $service = Injector::inst()->get('RealMeService');
-        $integrationType = $service->config()->integration_type;
-
-        $fields = new FieldList(array(
-            new HiddenField('AuthenticationMethod', null, $this->authenticator_class)
-        ));
-
-        if($integrationType === RealMeService::TYPE_ASSERT) {
-            $loginButtonContent = ArrayData::create(array(
-                'Label' => _t('RealMeLoginForm.ASSERTLOGINBUTTON', 'Share your details with {orgname}', '', ['orgname' => $service->config()->metadata_organisation_display_name])
-            ))->renderWith('RealMeLoginButton');
-        } else {
-            // Login button
-            $loginButtonContent = ArrayData::create(array(
-                'Label' => _t('RealMeLoginForm.LOGINBUTTON', 'Login')
-            ))->renderWith('RealMeLoginButton');
-        }
-
-        $actions = new FieldList(array(
-            FormAction::create(self::$action_button_name, _t('RealMeLoginForm.LOGINBUTTON', 'LoginAction'))
-                ->setUseButtonTag(true)
-                ->setButtonContent($loginButtonContent)
-                ->setAttribute('class', 'realme_button')
-        ));
-
-        // Taken from MemberLoginForm
-        if (isset($_REQUEST['BackURL'])) {
-            $backURL = $_REQUEST['BackURL'];
-        } elseif (Session::get('RealMeBackURL')) {
-            $backURL = Session::get('RealMeBackURL');
-        }
-
-        if (isset($backURL)) {
-            // Ensure that $backURL isn't redirecting us back to login form or a RealMe authentication page
-            if (strpos($backURL, 'Security/login') === false && strpos($backURL, 'Security/realme') === false) {
-                $fields->push(new HiddenField('BackURL', 'BackURL', $backURL));
-            }
-        }
-
-        // optionally include requirements {@see /realme/_config/config.yml}
-        if ($this->config()->include_jquery) {
-            Requirements::javascript(THIRDPARTY_DIR . "/jquery/jquery.js");
-        }
+        $this->setController($controller);
 
         if ($this->config()->include_javascript) {
-            Requirements::javascript(REALME_MODULE_PATH . "/javascript/realme.js");
+            Requirements::javascript('silverstripe/realme:client/javascript/realme.js');
         }
 
         if ($this->config()->include_css) {
-            Requirements::css(REALME_MODULE_PATH . "/css/realme.css");
+            Requirements::css('silverstripe/realme:client/css/realme.css');
         }
 
-        parent::__construct($controller, $name, $fields, $actions);
+        parent::__construct($controller, $name, $this->getFormFields(), $this->getFormActions());
     }
 
     /**
@@ -127,13 +98,14 @@ class RealMeLoginForm extends LoginForm
      *
      * @param array $data
      * @param Form $form
-     * @return SS_HTTPResponse If successfully processed, returns void (SimpleSAMLphp redirects to RealMe)
-     * @throws SS_HTTPResponse_Exception
+     * @return HTTPResponse If successfully processed, returns void (SimpleSAMLphp redirects to RealMe)
+     * @throws HTTPResponse_Exception
+     * @throws \OneLogin_Saml2_Error
      */
     public function redirectToRealMe($data, Form $form)
     {
         /** @var RealMeService $service */
-        $service = Injector::inst()->get('RealMeService');
+        $service = Injector::inst()->get(RealMeService::class);
 
         // If there's no service, ensure we throw a predictable error
         if (null === $service) {
@@ -207,12 +179,12 @@ class RealMeLoginForm extends LoginForm
     public function forTemplate()
     {
         /** @var RealMeService $service */
-        $service = Injector::inst()->get('RealMeService');
+        $service = Injector::inst()->get(RealMeService::class);
         $integrationType = $service->config()->integration_type;
 
-        if($integrationType === RealMeService::TYPE_ASSERT) {
+        if ($integrationType === RealMeService::TYPE_ASSERT) {
             $html = $this->renderWith([
-                'RealMeAssertForm'
+                self::class . '/RealMeAssertForm'
             ]);
 
             // Now that we've rendered, clear message
@@ -230,14 +202,75 @@ class RealMeLoginForm extends LoginForm
      */
     public function RealMeLastError()
     {
-        $message = Session::get('RealMe.LastErrorMessage');
-        Session::clear('RealMe.LastErrorMessage');
+        $session = $this->getRequest()->getSession();
+
+        $message = $session->get('RealMe.LastErrorMessage');
+        $session->clear('RealMe.LastErrorMessage');
 
         return $message;
     }
 
     public function HasRealMeLastError()
     {
-        return Session::get('RealMe.LastErrorMessage') !== null;
+        return $this->getRequest()->getSession()->get('RealMe.LastErrorMessage') !== null;
+    }
+
+    /**
+     * Return the title of the form for use in the frontend
+     * For tabs with multiple login methods, for example.
+     * This replaces the old `get_name` method
+     * @return string
+     */
+    public function getAuthenticatorName()
+    {
+        return 'RealMe Login';
+    }
+
+    /**
+     * Required FieldList creation on a LoginForm
+     *
+     * @return FieldList
+     */
+    protected function getFormFields()
+    {
+        return new FieldList(array(
+            new HiddenField('AuthenticationMethod', null, $this->authenticator_class)
+        ));
+    }
+
+    /**
+     * Required FieldList creation for the login actions on this LoginForm
+     *
+     * @return FieldList
+     */
+    protected function getFormActions()
+    {
+        /** @var RealMeService $service */
+        $service = Injector::inst()->get(RealMeService::class);
+
+        $integrationType = $service->config()->integration_type;
+
+        if ($integrationType === RealMeService::TYPE_ASSERT) {
+            $loginButtonContent = ArrayData::create(array(
+                'Label' => _t(
+                    'RealMeLoginForm.ASSERTLOGINBUTTON',
+                    'Share your details with {orgname}',
+                    '',
+                    ['orgname' => $service->config()->metadata_organisation_display_name]
+                )
+            ))->renderWith(self::class . '/RealMeLoginButton');
+        } else {
+            // Login button
+            $loginButtonContent = ArrayData::create(array(
+                'Label' => _t('RealMeLoginForm.LOGINBUTTON', 'Login')
+            ))->renderWith(self::class . '/RealMeLoginButton');
+        }
+
+        return new FieldList(array(
+            FormAction::create(self::$action_button_name, _t('RealMeLoginForm.LOGINBUTTON', 'LoginAction'))
+                ->setUseButtonTag(true)
+                ->setButtonContent($loginButtonContent)
+                ->setAttribute('class', 'realme_button')
+        ));
     }
 }

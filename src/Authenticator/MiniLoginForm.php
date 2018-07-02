@@ -1,5 +1,11 @@
 <?php
-class RealMeMiniLoginForm extends RealMeLoginForm
+
+namespace SilverStripe\RealMe\Authenticator;
+
+use SilverStripe\Control\Controller;
+use SilverStripe\RealMe\Authenticator\LoginForm;
+
+class MiniLoginForm extends LoginForm
 {
     /**
      * @var string The position at which the 'What's RealMe?' popup appears on hover. Can be either 'left' or 'right'.

@@ -1,0 +1,14 @@
+mappings:
+  RealMeMemberExtension: SilverStripe\RealMe\Extension\MemberExtension
+  RealMeSecurityExtension: SilverStripe\RealMe\Extension\SecurityExtension
+  RealMeSiteTreeExtension: SilverStripe\RealMe\Extension\SiteTreeExtension
+  RealMeService: SilverStripe\RealMe\RealMeService
+  RealMeLoginForm: SilverStripe\RealMe\MemberAuthenticator\LoginForm
+  RealMeSetupTask: SilverStripe\RealMe\Task\SetupTask
+  RealMeFederatedIdentity: SilverStripe\RealMe\Model\FederatedIdentity
+  RealMeUser: SilverStripe\RealMe\Model\User
+  RealMeAuthenticator: SilverStripe\RealMe\Authenticator
+  RealMeException: SilverStripe\RealMe\Exception
+  RealMeMiniLoginForm: SilverStripe\RealMe\MemberAuthenticator\MiniLoginForm
+  RealMeServiceTest: SilverStripe\RealMe\Tests\RealMeServiceTest
+  RealMeSetupTaskTest: SilverStripe\RealMe\Tests\RealMeSetupTaskTest

@@ -1,0 +1,8 @@
+---
+Name: realmecache
+---
+SilverStripe\Core\Injector\Injector:
+  Psr\SimpleCache\CacheInterface.realMeAuthenticator:
+    factory: SilverStripe\Core\Cache\CacheFactory
+    constructor:
+      namespace: realMeAuthenticator

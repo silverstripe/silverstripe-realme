@@ -1,6 +1,36 @@
 <?php
-class RealMeService extends Object implements TemplateGlobalProvider
+
+namespace SilverStripe\RealMe;
+
+use DOMDocument;
+use DOMNodeList;
+use Exception;
+use InvalidArgumentException;
+use OneLogin_Saml2_Auth;
+use OneLogin_Saml2_Error;
+use OneLogin_Saml2_Response;
+use OneLogin_Saml2_Utils;
+use Psr\Log\LoggerInterface;
+use SilverStripe\Control\Controller;
+use SilverStripe\Control\Director;
+use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Control\Session;
+use SilverStripe\Core\Config\Configurable;
+use SilverStripe\Core\Convert;
+use SilverStripe\Core\Environment;
+use SilverStripe\Core\Injector\Injectable;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\RealMe\Exception as RealMeException;
+use SilverStripe\RealMe\Model\FederatedIdentity;
+use SilverStripe\RealMe\Model\User;
+use SilverStripe\Security\Member;
+use SilverStripe\View\TemplateGlobalProvider;
+
+class RealMeService implements TemplateGlobalProvider
 {
+    use Configurable, Injectable;
+
     /**
      * Current RealMe supported environments.
      */
@@ -47,7 +77,7 @@ class RealMeService extends Object implements TemplateGlobalProvider
     private static $sync_with_local_member_database = false;
 
     /**
-     * @var RealMeUser|null User data returned by RealMe. Provided by {@link self::ensureLogin()}.
+     * @var User|null User data returned by RealMe. Provided by {@link self::ensureLogin()}.
      *
      * Data within this ArrayData is as follows:
      * - NameID:       ArrayData   Includes the UserFlt and associated formatting information
@@ -286,7 +316,8 @@ class RealMeService extends Object implements TemplateGlobalProvider
      * auth.
      * Note: Does not check authenticity or expiry of this data
      *
-     * @return RealMeUser
+     * @param HTTPRequest $request
+     * @return User
      */
     public static function user_data()
     {
@@ -294,16 +325,17 @@ class RealMeService extends Object implements TemplateGlobalProvider
             return static::$user_data;
         }
 
-        $sessionData = Session::get('RealMe.SessionData');
+        $request = Injector::inst()->get(HTTPRequest::class);
+        $sessionData = $request->getSession()->get('RealMe.SessionData');
 
         // Exit point
-        if(is_null($sessionData)) {
+        if (is_null($sessionData)) {
             return null;
         }
 
         // Unserialise stored data
         $user = unserialize($sessionData);
-        if($user == false || !$user instanceof RealMeUser) {
+        if ($user == false || !$user instanceof User) {
             return null;
         }
 
@@ -311,30 +343,24 @@ class RealMeService extends Object implements TemplateGlobalProvider
         return static::$user_data;
     }
 
+    public function getUserData()
+    {
+        return static::user_data();
+    }
+
     /**
      * Calls available user data and checks for validity
      *
-     * @return RealMeUser
+     * @return User
      */
     public static function current_realme_user()
     {
         $user = self::user_data();
-        if($user && !$user->isValid()) {
+        if ($user && !$user->isValid()) {
             return null;
         }
 
         return $user;
-    }
-
-    /**
-     * A helpful static method that follows silverstripe naming for
-     * Member::currentUser();
-     *
-     * @return RealMeUser
-     */
-    public static function currentRealMeUser()
-    {
-        return self::current_realme_user();
     }
 
     /**
@@ -359,26 +385,35 @@ class RealMeService extends Object implements TemplateGlobalProvider
      * other unexpected authentication error. You can use {@link getLastError()} to see if a human-readable error
      * message exists for display to the user.
      *
+     * @param HTTPRequest $request
      * @return bool|null true if the user is correctly authenticated, false if there was an error with login
+     * @throws OneLogin_Saml2_Error
      */
-    public function enforceLogin()
+    public function enforceLogin(HTTPRequest $request, $backUrl = null)
     {
         // First, check to see if we have an existing authenticated session
-        if($this->isAuthenticated()) {
+        if ($this->isAuthenticated()) {
             return true;
+        }
+
+        $session = $request->getSession();
+
+        if ($backUrl) {
+            $session->set('RealMeBackURL', $this->validSiteURL($backUrl));
         }
 
         // If not, attempt to retrieve authentication data from OneLogin (in case this is called during SAML assertion)
         try {
-            if(!Session::get("RealMeErrorBackURL")){
-                Session::set("RealMeErrorBackURL", Controller::curr()->Link("Login"));
+            if (!$session->get("RealMeErrorBackURL")) {
+                $session->set("RealMeErrorBackURL", Controller::curr()->Link("Login"));
             }
 
-            $this->getAuth()->processResponse();
+            $auth = $this->getAuth();
+            $auth->processResponse();
 
             // if there were any errors from the SAML request, process and translate them.
-            $errors = $this->getAuth()->getErrors();
-            if(is_array($errors) && !empty($errors)) {
+            $errors = $auth->getErrors();
+            if (is_array($errors) && !empty($errors)) {
                 $this->processSamlErrors($errors);
                 return false;
             }
@@ -386,7 +421,7 @@ class RealMeService extends Object implements TemplateGlobalProvider
             $authData = $this->getAuthData();
 
             // If no data is found, then force login
-            if(is_null($authData)) {
+            if (is_null($authData)) {
                 throw new RealMeException('No SAML data, enforcing login', RealMeException::NOT_AUTHENTICATED);
             }
 
@@ -395,16 +430,15 @@ class RealMeService extends Object implements TemplateGlobalProvider
 
             // Sync with local member
             $this->syncWithLocalMemberDatabase();
-
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             Member::singleton()->extend("onRealMeLoginFailure", $e);
 
             // No auth data or failed to decrypt, enforce login again
-            $this->getAuth()->login(Director::absoluteBaseURL());
+            $auth->login(Director::absoluteBaseURL());
             die;
         }
 
-        return $this->getAuth()->isAuthenticated();
+        return $auth->isAuthenticated();
     }
 
     /**
@@ -412,45 +446,43 @@ class RealMeService extends Object implements TemplateGlobalProvider
      *
      * @param $errors
      */
-    private function processSamlErrors(array $errors){
+    private function processSamlErrors(array $errors)
+    {
         $translatedMessage = null;
 
         // The error message returned by onelogin/php-saml is the top-level error, but we want the actual error
         $request = Controller::curr()->getRequest();
-        if($request->isPOST() && $request->postVar("SAMLResponse")) {
-
+        if ($request->isPOST() && $request->postVar("SAMLResponse")) {
             $response = new OneLogin_Saml2_Response($this->getAuth()->getSettings(), $request->postVar("SAMLResponse"));
             $internalError = OneLogin_Saml2_Utils::query($response->document, "/samlp:Response/samlp:Status/samlp:StatusCode/samlp:StatusCode/@Value");
 
-            if($internalError instanceof DOMNodeList && $internalError->length > 0) {
+            if ($internalError instanceof DOMNodeList && $internalError->length > 0) {
                 $internalErrorCode = $internalError->item(0)->textContent;
                 $translatedMessage = $this->findErrorMessageForCode($internalErrorCode);
             }
         }
 
         // If we found a message to display, then let's redirect to the form and display it
-        if($translatedMessage) {
+        if ($translatedMessage) {
             $this->lastError = $translatedMessage;
         }
 
-        SS_Log::log(
-            sprintf(
-                'onelogin/php-saml error messages: %s (%s)',
-                join(', ', $errors),
-                $this->getAuth()->getLastErrorReason()
-            ),
-            SS_Log::ERR
-        );
+        Injector::inst()->get(LoggerInterface::class)->info(sprintf(
+            'onelogin/php-saml error messages: %s (%s)',
+            join(', ', $errors),
+            $this->getAuth()->getLastErrorReason()
+        ));
     }
 
     /**
      * Checks data stored in Session to see if the user is authenticated.
+     * @param HTTPRequest $request
      * @return bool true if the user is authenticated via RealMe and we can trust ->getUserData()
      */
     public function isAuthenticated()
     {
         $user = $this->getUserData();
-        return $user instanceof RealMeUser && $user->isAuthenticated();
+        return $user instanceof User && $user->isAuthenticated();
     }
 
     /**
@@ -458,7 +490,7 @@ class RealMeService extends Object implements TemplateGlobalProvider
      *
      * @throws OneLogin_Saml2_Error Passes on the SAML error if it's not indicating a lack of SAML response data
      * @throws RealMeException If identity information exists but couldn't be decoded, or doesn't exist
-     * @return RealMeUser|null
+     * @return User|null
      */
     public function getAuthData()
     {
@@ -467,7 +499,7 @@ class RealMeService extends Object implements TemplateGlobalProvider
             // Process response and capture details
             $auth = $this->getAuth();
 
-            if(!$auth->isAuthenticated()) {
+            if (!$auth->isAuthenticated()) {
                 throw new RealMeException(
                     'OneLogin SAML library did not successfully authenticate, but did not return a specific error',
                     RealMeException::NOT_AUTHENTICATED
@@ -475,12 +507,12 @@ class RealMeService extends Object implements TemplateGlobalProvider
             }
 
             $spNameId = $auth->getNameId();
-            if(!is_string($spNameId)) {
+            if (!is_string($spNameId)) {
                 throw new RealMeException('Invalid/Missing NameID in SAML response', RealMeException::MISSING_NAMEID);
             }
 
             $sessionIndex = $auth->getSessionIndex();
-            if(!is_string($sessionIndex)) {
+            if (!is_string($sessionIndex)) {
                 throw new RealMeException(
                     'Invalid/Missing SessionIndex value in SAML response',
                     RealMeException::MISSING_SESSION_INDEX
@@ -488,7 +520,7 @@ class RealMeService extends Object implements TemplateGlobalProvider
             }
 
             $attributes = $auth->getAttributes();
-            if(!is_array($attributes)) {
+            if (!is_array($attributes)) {
                 throw new RealMeException(
                     'Invalid/Missing attributes array in SAML response',
                     RealMeException::MISSING_ATTRIBUTES
@@ -498,23 +530,23 @@ class RealMeService extends Object implements TemplateGlobalProvider
             $federatedIdentity = $this->retrieveFederatedIdentity($auth);
 
             // We will have either a FLT or FIT, depending on integration type
-            if($this->config()->integration_type == self::TYPE_ASSERT) {
+            if ($this->config()->integration_type == self::TYPE_ASSERT) {
                 $userTag = $this->retrieveFederatedIdentityTag($auth);
             } else {
                 $userTag = $this->retrieveFederatedLogonTag($auth);
             }
 
-            return new RealMeUser([
+            return new User([
                 'SPNameID' => $spNameId,
                 'UserFederatedTag' => $userTag,
                 'SessionIndex' => $sessionIndex,
                 'Attributes' => $attributes,
-                'FederatedIdentity' => $federatedIdentity
+                'FederatedIdentity' => $federatedIdentity,
             ]);
-        } catch(OneLogin_Saml2_Error $e) {
+        } catch (OneLogin_Saml2_Error $e) {
             // If the Exception code indicates there wasn't a response, we ignore it as it simply means the visitor
             // isn't authenticated yet. Otherwise, we re-throw the Exception
-            if($e->getCode() === OneLogin_Saml2_Error::SAML_RESPONSE_NOT_FOUND) {
+            if ($e->getCode() === OneLogin_Saml2_Error::SAML_RESPONSE_NOT_FOUND) {
                 return null;
             } else {
                 throw $e;
@@ -526,15 +558,16 @@ class RealMeService extends Object implements TemplateGlobalProvider
      * Clear the RealMe credentials from Session, called during Security->logout() overrides
      * @return void
      */
-    public function clearLogin()
+    public function clearLogin(HTTPRequest $request)
     {
         $this->config()->__set('user_data', null);
+        $session = $request->getSession();
 
-        Session::set("RealMeBackURL", null);
-        Session::set("RealMeErrorBackURL", null);
-        Session::set("RealMe.SessionData", null);
-        Session::set("RealMe.OriginalResponse", null);
-        Session::set("RealMe.LastErrorMessage", null);
+        $session->set("RealMeBackURL", null);
+        $session->set("RealMeErrorBackURL", null);
+        $session->set("RealMe.SessionData", null);
+        $session->set("RealMe.OriginalResponse", null);
+        $session->set("RealMe.LastErrorMessage", null);
     }
 
     public function getLastError()
@@ -543,37 +576,29 @@ class RealMeService extends Object implements TemplateGlobalProvider
     }
 
     /**
-     * Helper method, alias for RealMeService::user_data()
-     *
-     * @return RealMeUser
-     */
-    public function getUserData()
-    {
-        return self::user_data();
-    }
-
-    /**
      * @return string A BackURL as specified originally when accessing /Security/login, for use after authentication
      */
-    public function getBackURL()
+    public function getBackURL(HTTPRequest $request)
     {
         $url = null;
+        $session = $request->getSession();
 
-        if(Session::get('RealMeBackURL')) {
-            $url = Session::get('RealMeBackURL');
-            Session::clear('RealMeBackURL'); // Ensure we don't redirect back to the same error twice
+        if ($session->get('RealMeBackURL')) {
+            $url = $session->get('RealMeBackURL');
+            $session->clear('RealMeBackURL'); // Ensure we don't redirect back to the same error twice
         }
 
         return $this->validSiteURL($url);
     }
 
-    public function getErrorBackURL()
+    public function getErrorBackURL(HTTPRequest $request)
     {
         $url = null;
+        $session = $request->getSession();
 
-        if(Session::get('RealMeErrorBackURL')) {
-            $url = Session::get('RealMeErrorBackURL');
-            Session::clear('RealMeErrorBackURL'); // Ensure we don't redirect back to the same error twice
+        if ($session->get('RealMeErrorBackURL')) {
+            $url = $session->get('RealMeErrorBackURL');
+            $session->clear('RealMeErrorBackURL'); // Ensure we don't redirect back to the same error twice
         }
 
         return $this->validSiteURL($url);
@@ -581,7 +606,7 @@ class RealMeService extends Object implements TemplateGlobalProvider
 
     private function validSiteURL($url = null)
     {
-        if(isset($url) && Director::is_site_url($url)) {
+        if (isset($url) && Director::is_site_url($url)) {
             $url = Director::absoluteURL($url);
         } else {
             // Spoofing attack or no back URL set, redirect to homepage instead of spoofing url
@@ -603,8 +628,8 @@ class RealMeService extends Object implements TemplateGlobalProvider
         // Trim prepended seprator to avoid absolute path
         $path = ltrim(ltrim($subdir, '/'), '\\');
 
-        if(defined('REALME_CERT_DIR')) {
-            $path = REALME_CERT_DIR . '/' . $path; // Duplicate slashes will be handled by realpath()
+        if ($certDir = Environment::getEnv('REALME_CERT_DIR')) {
+            $path = $certDir . '/' . $path; // Duplicate slashes will be handled by realpath()
         }
 
         return realpath($path);
@@ -681,13 +706,13 @@ class RealMeService extends Object implements TemplateGlobalProvider
             $certificateContents = file_get_contents($certPath);
 
             // If the file does not contain any header information and the content type is certificate, just return it
-            if($contentType == 'certificate' && !preg_match('/-----BEGIN/', $certificateContents)) {
+            if ($contentType == 'certificate' && !preg_match('/-----BEGIN/', $certificateContents)) {
                 $text = $certificateContents;
             } else {
                 // Otherwise, inspect the file and match based on the full contents
-                if($contentType == 'certificate') {
+                if ($contentType == 'certificate') {
                     $pattern = '/-----BEGIN CERTIFICATE-----[\r\n]*([^-]*)[\r\n]*-----END CERTIFICATE-----/';
-                } elseif($contentType == 'key') {
+                } elseif ($contentType == 'key') {
                     $pattern = '/-----BEGIN [A-Z ]*PRIVATE KEY-----\n([^-]*)\n-----END [A-Z ]*PRIVATE KEY-----/';
                 } else {
                     throw new InvalidArgumentException('Argument contentType must be either "certificate" or "key"');
@@ -705,7 +730,6 @@ class RealMeService extends Object implements TemplateGlobalProvider
                     $text = trim($matches[1]);
                 }
             }
-
         }
 
         return $text;
@@ -726,8 +750,8 @@ class RealMeService extends Object implements TemplateGlobalProvider
             return null;
         }
 
-        // Returns https://domain.govt.nz/Security/realme/acs
-        return Controller::join_links($domain, 'Security/realme/acs');
+        // Returns https://domain.govt.nz/Security/login/RealMe/acs
+        return Controller::join_links($domain, 'Security/login/RealMe/acs');
     }
 
     /**
@@ -827,11 +851,14 @@ class RealMeService extends Object implements TemplateGlobalProvider
      */
     public function getAuth()
     {
-        if(isset($this->auth)) return $this->auth;
+        if (isset($this->auth)) {
+            return $this->auth;
+        }
 
         // If we're behind a trusted proxy, force onelogin to use the HTTP_X_FORWARDED_FOR headers to determine
         // protocol, host and port
-        if(TRUSTED_PROXY) {
+        // @todo address this issue
+        if (false) { // if TRUSTED_PROXY
             OneLogin_Saml2_Utils::setProxyVars(true);
         }
 
@@ -919,9 +946,9 @@ class RealMeService extends Object implements TemplateGlobalProvider
 
         // If $integrationType is specified, then $value should be an array, with the array key being the integration
         // type and array value being the returned variable
-        if(!is_null($integrationType) && is_array($value) && isset($value[$integrationType])) {
+        if (!is_null($integrationType) && is_array($value) && isset($value[$integrationType])) {
             $value = $value[$integrationType];
-        } elseif(!is_null($integrationType)) {
+        } elseif (!is_null($integrationType)) {
             // Otherwise, we are expecting an integration type, but the value is not specified that way, error out
             throw new InvalidArgumentException(
                 sprintf(
@@ -933,7 +960,7 @@ class RealMeService extends Object implements TemplateGlobalProvider
             );
         }
 
-        if(is_null($value)) {
+        if (is_null($value)) {
             throw new InvalidArgumentException(sprintf('Config value %s[%s] not set', $cfgName, $env));
         }
 
@@ -951,8 +978,8 @@ class RealMeService extends Object implements TemplateGlobalProvider
 
         if (in_array($certName, array('SIGNING', 'MUTUAL'))) {
             $constName = sprintf('REALME_%s_CERT_FILENAME', strtoupper($certName));
-            if (defined($constName)) {
-                $certPath = $this->getCertDir(constant($constName));
+            if ($filename = Environment::getEnv($constName)) {
+                $certPath = $this->getCertDir($filename);
             }
         }
 
@@ -991,7 +1018,7 @@ class RealMeService extends Object implements TemplateGlobalProvider
         $fit = null;
         $attributes = $auth->getAttributes();
 
-        if(isset($attributes['urn:nzl:govt:ict:stds:authn:attribute:igovt:IVS:FIT'])) {
+        if (isset($attributes['urn:nzl:govt:ict:stds:authn:attribute:igovt:IVS:FIT'])) {
             $fit = $attributes['urn:nzl:govt:ict:stds:authn:attribute:igovt:IVS:FIT'][0];
         }
 
@@ -1000,7 +1027,7 @@ class RealMeService extends Object implements TemplateGlobalProvider
 
     /**
      * @param OneLogin_Saml2_Auth $auth
-     * @return RealMeFederatedIdentity|null
+     * @return FederatedIdentity|null
      * @throws RealMeException
      */
     private function retrieveFederatedIdentity(OneLogin_Saml2_Auth $auth)
@@ -1010,7 +1037,7 @@ class RealMeService extends Object implements TemplateGlobalProvider
         $nameId = $auth->getNameId();
 
         // If identity information exists, retrieve the FIT (Federated Identity Tag) and identity data
-        if(isset($attributes['urn:nzl:govt:ict:stds:authn:safeb64:attribute:igovt:IVS:Assertion:Identity'])) {
+        if (isset($attributes['urn:nzl:govt:ict:stds:authn:safeb64:attribute:igovt:IVS:Assertion:Identity'])) {
             // Identity information is encoded using 'Base 64 Encoding with URL and Filename Safe Alphabet'
             // For more info, review RFC3548, section 4 (https://tools.ietf.org/html/rfc3548#page-6)
             // Note: This is different to PHP's standard base64_decode() function, therefore we need to swap chars
@@ -1020,7 +1047,7 @@ class RealMeService extends Object implements TemplateGlobalProvider
 
             $identity = $attributes['urn:nzl:govt:ict:stds:authn:safeb64:attribute:igovt:IVS:Assertion:Identity'];
 
-            if(!is_array($identity) || !isset($identity[0])) {
+            if (!is_array($identity) || !isset($identity[0])) {
                 throw new RealMeException(
                     'Invalid identity response received from RealMe',
                     RealMeException::INVALID_IDENTITY_VALUE
@@ -1031,7 +1058,7 @@ class RealMeService extends Object implements TemplateGlobalProvider
             $identity = strtr($identity[0], '-_', '+/');
             $identity = base64_decode($identity, true);
 
-            if(is_bool($identity) && !$identity) {
+            if (is_bool($identity) && !$identity) {
                 // Strict base64_decode fails, either the identity didn't exist or was mangled during transmission
                 throw new RealMeException(
                     'Failed to parse safe base64 encoded identity',
@@ -1040,8 +1067,8 @@ class RealMeService extends Object implements TemplateGlobalProvider
             }
 
             $identityDoc = new DOMDocument();
-            if($identityDoc->loadXML($identity)) {
-                $federatedIdentity = new RealMeFederatedIdentity($identityDoc, $nameId);
+            if ($identityDoc->loadXML($identity)) {
+                $federatedIdentity = new FederatedIdentity($identityDoc, $nameId);
             }
         }
 
@@ -1053,21 +1080,9 @@ class RealMeService extends Object implements TemplateGlobalProvider
      * RealMeService.sync_with_local_member_database === true, then either create or update a local {@link Member}
      * object to include details provided by RealMe.
      */
-    private function syncWithLocalMemberDatabase() {
-        if($this->config()->sync_with_local_member_database === true) {
-            $member = DataObject::get_one("Member",
-                sprintf("RealmeSPNameID = '%s'", Convert::raw2sql($this->getAuthData()->SPNameID))
-            );
+    private function syncWithLocalMemberDatabase()
+    {
 
-            if(!$member){
-                $member = Member::create(["RealmeSPNameID" => $this->getAuthData()->SPNameID]);
-                $member->write();
-            }
-
-            if($this->config()->login_member_after_authentication){
-                $member->logIn();
-            }
-        }
     }
 
     /**
@@ -1075,13 +1090,14 @@ class RealMeService extends Object implements TemplateGlobalProvider
      *
      * @return string|null The human-readable error message, or null if one can't be found
      */
-    private function findErrorMessageForCode($errorCode) {
+    private function findErrorMessageForCode($errorCode)
+    {
         $message = null;
         $messageOverrides = $this->config()->realme_error_message_overrides;
 
-        switch($errorCode) {
+        switch ($errorCode) {
             case self::ERR_AUTHN_FAILED:
-                $message = _t('RealMeService.ERROR_AUTHNFAILED');
+                $message = _t('RealMeService.ERROR_AUTHNFAILED', 'You have chosen to leave RealMe.');
                 break;
 
             case self::ERR_TIMEOUT:
@@ -1126,7 +1142,7 @@ class RealMeService extends Object implements TemplateGlobalProvider
         }
 
         // Allow message overrides if they exist
-        if(array_key_exists($errorCode, $messageOverrides) && !is_null($messageOverrides[$errorCode])) {
+        if (array_key_exists($errorCode, $messageOverrides) && !is_null($messageOverrides[$errorCode])) {
             $message = $messageOverrides[$errorCode];
         }
 

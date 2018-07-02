@@ -20,5 +20,5 @@ the requirement to go to `Security/login`, so is only useful when it is the only
 login to a website.
 
 Further documentation on using these templates can be found in the template files themselves:
-[RealMeLoginForm.ss](../../templates/Includes/RealMeLoginForm.ss) and
-[RealMeLoginForm_secondary.ss](../../templates/Includes/RealMeLoginForm_secondary.ss).
+[RealMeLoginForm.ss](../../templates/SilverStripe/RealMe/RealMeLoginForm.ss) and
+[RealMeLoginForm_secondary.ss](../../templates/SilverStripe/RealMe/RealMeLoginForm_secondary.ss).

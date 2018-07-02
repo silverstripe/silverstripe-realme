@@ -49,7 +49,7 @@ or directly in your css, e.g. .realme_popup {width: 450px}
     <div class="realme_login_lockup">
         <form $FormAttributes>
             <% if $Actions %>
-                <img src="{$BaseHref}realme/images/RealMe-logo@2x.png" alt="RealMe" width="42" height="42">
+                <img src="$resourceURL('silverstripe/realme:client/images/RealMe-logo@2x.png')" alt="RealMe" width="42" height="42">
                 <div class="realme_btn_margin">
                 <% loop $Actions %>
                     $Field
@@ -62,7 +62,7 @@ or directly in your css, e.g. .realme_popup {width: 450px}
         </form>
     </div>
     <div class="realme_popup_position">
-        <a class="js_toggle_popup whats_realme" href="https://www.realme.govt.nz">What’s RealMe?</a>
+        <a class="js_toggle_popup whats_realme" href="https://www.realme.govt.nz" target="_blank" rel="noopener noreferrer">What’s RealMe?</a>
         <div class="realme_popup_wrapper realme_arrow_top_left">
             <!-- realme_popup -->
             <div class="realme_popup">

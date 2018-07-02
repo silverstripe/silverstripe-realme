@@ -1,5 +1,10 @@
 <?php
-class RealMeException extends Exception
+
+namespace SilverStripe\RealMe;
+
+use Exception as BaseException;
+
+class Exception extends BaseException
 {
     const INVALID_IDENTITY_VALUE = 0;
     const FAILED_PARSING_IDENTITY = 1;
@@ -9,4 +14,5 @@ class RealMeException extends Exception
     const MISSING_ATTRIBUTES = 5;
     const MISSING_AUTHN_RESPONSE = 6;
     const NOT_AUTHENTICATED = 7;
+    const MISSING_MEMBER_EXTENSION = 8;
 }
