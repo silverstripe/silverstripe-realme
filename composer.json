@@ -33,6 +33,16 @@
             "client/images"
         ]
     },
+    "autoload": {
+        "psr-4": {
+            "SilverStripe\\RealMe\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SilverStripe\\RealMe\\Tests\\": "tests/"
+        }
+    },
     "support": {
         "issues": "https://github.com/silverstripe/realme/issues"
     }
