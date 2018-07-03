@@ -842,21 +842,30 @@ class RealMeService implements TemplateGlobalProvider
      *
      * @return OneLogin_Saml2_Auth
      */
-    public function getAuth()
+    public function getAuth(HTTPRequest $request = null)
     {
         if (isset($this->auth)) {
             return $this->auth;
         }
 
-        /** @var HTTPRequest $request */
-        $request = Injector::inst()->get(HTTPRequest::class);
+        if (!$request) {
+            $request = Injector::inst()->get(HTTPRequest::class);
+        }
 
         // Ensure onelogin is using the correct host, protocol and port incase a proxy is involved
         OneLogin_Saml2_Utils::setSelfHost($request->getHeader('Host'));
         OneLogin_Saml2_Utils::setSelfProtocol($request->getScheme());
-        OneLogin_Saml2_Utils::setSelfPort(
-            isset($_SERVER["HTTP_X_FORWARDED_PORT"]) ? $_SERVER["HTTP_X_FORWARDED_PORT"] : $_SERVER["SERVER_PORT"]
-        );
+
+        $port = null;
+        if (isset($_SERVER['HTTP_X_FORWARDED_PORT'])) {
+            $port = $_SERVER['HTTP_X_FORWARDED_PORT'];
+        } elseif (isset($_SERVER['SERVER_PORT'])) {
+            $port = $_SERVER['SERVER_PORT'];
+        }
+
+        if ($port) {
+            OneLogin_Saml2_Utils::setSelfPort($port);
+        }
 
         $settings = [
             'strict' => true,

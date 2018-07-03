@@ -48,7 +48,7 @@ class RealMeSetupTaskTest extends SapphireTest
     {
         // Setup our objects for testing through reflection
         $realMeService = new RealMeService();
-        $realMeSetupTask = new SetupTask();
+        $realMeSetupTask = new RealMeSetupTask();
 
         $errors = new ReflectionProperty($realMeSetupTask, 'errors');
         $errors->setAccessible(true);
@@ -211,7 +211,7 @@ class RealMeSetupTaskTest extends SapphireTest
     public function testValidateAuthNContext()
     {
         $realMeService = new RealMeService();
-        $realMeSetupTask = new SetupTask();
+        $realMeSetupTask = new RealMeSetupTask();
 
         $errors = new ReflectionProperty($realMeSetupTask, 'errors');
         $errors->setAccessible(true);
@@ -254,28 +254,28 @@ class RealMeSetupTaskTest extends SapphireTest
      */
     public function testConfigurationTemplateDir()
     {
-        $realMeSetupTask = new SetupTask();
+        $realMeSetupTask = new RealMeSetupTask();
 
-        $getConfigurationTemplateDirMethod = new ReflectionMethod(SetupTask::class, 'getConfigurationTemplateDir');
+        $getConfigurationTemplateDirMethod = new ReflectionMethod(RealMeSetupTask::class, 'getConfigurationTemplateDir');
         $getConfigurationTemplateDirMethod->setAccessible(true);
 
         $config = Config::inst();
 
-        $config->update(SetupTask::class, 'template_config_dir', '');
+        $config->update(RealMeSetupTask::class, 'template_config_dir', '');
         $this->assertEquals(
             BASE_PATH . DIRECTORY_SEPARATOR . REALME_MODULE_PATH . '/templates/saml-conf',
             $getConfigurationTemplateDirMethod->invoke($realMeSetupTask),
             'Using no configuration for template_config_dir should use the default template directory.'
         );
 
-        $config->update(SetupTask::class, 'template_config_dir', 'xyzzy');
+        $config->update(RealMeSetupTask::class, 'template_config_dir', 'xyzzy');
         $this->assertEquals(
             BASE_PATH . DIRECTORY_SEPARATOR . REALME_MODULE_PATH . '/templates/saml-conf',
             $getConfigurationTemplateDirMethod->invoke($realMeSetupTask),
             'Configuring a directory that does not exist should use the default template directory.'
         );
 
-        $config->update(SetupTask::class, 'template_config_dir', REALME_MODULE_PATH);
+        $config->update(RealMeSetupTask::class, 'template_config_dir', REALME_MODULE_PATH);
         $this->assertEquals(
             BASE_PATH . DIRECTORY_SEPARATOR . REALME_MODULE_PATH, // doesn't contain templates, but does exist
             $getConfigurationTemplateDirMethod->invoke($realMeSetupTask),
