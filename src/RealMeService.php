@@ -25,6 +25,7 @@ use SilverStripe\RealMe\Exception as RealMeException;
 use SilverStripe\RealMe\Model\FederatedIdentity;
 use SilverStripe\RealMe\Model\User;
 use SilverStripe\Security\Member;
+use SilverStripe\Security\Security;
 use SilverStripe\View\TemplateGlobalProvider;
 
 class RealMeService implements TemplateGlobalProvider
@@ -335,6 +336,7 @@ class RealMeService implements TemplateGlobalProvider
 
         // Unserialise stored data
         $user = unserialize($sessionData);
+
         if ($user == false || !$user instanceof User) {
             return null;
         }
@@ -427,9 +429,6 @@ class RealMeService implements TemplateGlobalProvider
 
             // call a success method as we've successfully logged in (if it exists)
             Member::singleton()->extend('onRealMeLoginSuccess', $authData);
-
-            // Sync with local member
-            $this->syncWithLocalMemberDatabase();
         } catch (Exception $e) {
             Member::singleton()->extend("onRealMeLoginFailure", $e);
 
@@ -476,7 +475,6 @@ class RealMeService implements TemplateGlobalProvider
 
     /**
      * Checks data stored in Session to see if the user is authenticated.
-     * @param HTTPRequest $request
      * @return bool true if the user is authenticated via RealMe and we can trust ->getUserData()
      */
     public function isAuthenticated()
@@ -536,7 +534,7 @@ class RealMeService implements TemplateGlobalProvider
                 $userTag = $this->retrieveFederatedLogonTag($auth);
             }
 
-            return new User([
+            return User::create([
                 'SPNameID' => $spNameId,
                 'UserFederatedTag' => $userTag,
                 'SessionIndex' => $sessionIndex,
@@ -556,6 +554,8 @@ class RealMeService implements TemplateGlobalProvider
 
     /**
      * Clear the RealMe credentials from Session, called during Security->logout() overrides
+     *
+     * @param HTTPRequest $request
      * @return void
      */
     public function clearLogin(HTTPRequest $request)
@@ -667,19 +667,6 @@ class RealMeService implements TemplateGlobalProvider
         return $this->getCertDir($name);
     }
 
-    /**
-     * Returns the password (if any) necessary to decrypt the signing cert specified by self::getSigningCertPath(). If
-     * no password is set, then this method returns null. MTS certificates require a password, however generally the
-     * certificates used for ITE and production don't need one.
-     *
-     * @return string|null Either the password, or null if there is no password.
-     * @deprecated 3.0
-     */
-    public function getSigningCertPassword()
-    {
-        return (defined('REALME_SIGNING_CERT_PASSWORD') ? REALME_SIGNING_CERT_PASSWORD : null);
-    }
-
     public function getSPCertContent($contentType = 'certificate')
     {
         return $this->getCertificateContents($this->getSigningCertPath(), $contentType);
@@ -751,7 +738,7 @@ class RealMeService implements TemplateGlobalProvider
         }
 
         // Returns https://domain.govt.nz/Security/login/RealMe/acs
-        return Controller::join_links($domain, 'Security/login/RealMe/acs');
+        return Controller::join_links($domain, Security::config()->get('login_url'), 'RealMe/acs');
     }
 
     /**
@@ -855,12 +842,15 @@ class RealMeService implements TemplateGlobalProvider
             return $this->auth;
         }
 
-        // If we're behind a trusted proxy, force onelogin to use the HTTP_X_FORWARDED_FOR headers to determine
-        // protocol, host and port
-        // @todo address this issue
-        if (false) { // if TRUSTED_PROXY
-            OneLogin_Saml2_Utils::setProxyVars(true);
-        }
+        /** @var HTTPRequest $request */
+        $request = Injector::inst()->get(HTTPRequest::class);
+
+        // Ensure onelogin is using the correct host, protocol and port incase a proxy is involved
+        OneLogin_Saml2_Utils::setSelfHost($request->getHeader('Host'));
+        OneLogin_Saml2_Utils::setSelfProtocol($request->getScheme());
+        OneLogin_Saml2_Utils::setSelfPort(
+            isset($_SERVER["HTTP_X_FORWARDED_PORT"]) ? $_SERVER["HTTP_X_FORWARDED_PORT"] : $_SERVER["SERVER_PORT"]
+        );
 
         $settings = [
             'strict' => true,
@@ -1073,16 +1063,6 @@ class RealMeService implements TemplateGlobalProvider
         }
 
         return $federatedIdentity;
-    }
-
-    /**
-     * Called by {@link enforceLogin()} when visitor has been authenticated. If the config value
-     * RealMeService.sync_with_local_member_database === true, then either create or update a local {@link Member}
-     * object to include details provided by RealMe.
-     */
-    private function syncWithLocalMemberDatabase()
-    {
-
     }
 
     /**

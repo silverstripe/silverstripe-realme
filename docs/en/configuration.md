@@ -2,13 +2,12 @@
 
 ## Configuration
 
-The following values need to be defined in your `_ss_environment.php` file for **all** environments. See the [SilverStripe documentation on environment management](https://docs.silverstripe.org/en/3.1/getting_started/environment_management/) for more information.
+The following values need to be defined in your `.env` file for **all** environments. See the [SilverStripe documentation on environment management](https://docs.silverstripe.org/en/3.1/getting_started/environment_management/) for more information.
 
 | **Environment Const**          | **Example**                     | **Notes**                                                                                                                                                                       |
 | ------------------------------ | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `REALME_CERT_DIR`              | /sites/realme-dev/secure/certs  | Directory where all certificates will reside. All certificates should be placed here. Needs to be readable (but ideally not writeable) by the web server user.                  |
 | `REALME_SIGNING_CERT_FILENAME` | mts_saml_sp.pem                 | Name of the SAML secure signing certificate for the required environment. For MTS, this is provided by RealMe, and is available on the RealMe developers site.                  |
-| `REALME_SIGNING_CERT_PASSWORD` | password                        | Only required if your SAML secure signing certificate (`REALME_SIGNING_CERT_FILENAME`) requires a password to use. Do not define this unless it's required. This is deprecated. |
 
 In addition to these, YML configuration is required to specify some values that should be consistently applied across 
 environments. These are noted below.
@@ -19,10 +18,12 @@ appropriate values set. Examples are given below, but should be evaluated for yo
 Note that the below configuration assumes that you are using the `SS_ENVIRONMENT_TYPE` const correctly on your 
 development, staging/test and production environments. 
 
-```---
+```yaml
+
+---
 Name: realmedev
 ---
-RealMeService:
+SilverStripe\RealMe\RealMeService:
   realme_env: 'mts'
   integration_type: 'login'
   sp_entity_ids:
@@ -43,10 +44,12 @@ RealMeService:
   metadata_contact_support_company: "Your Company"
   metadata_contact_support_firstnames: "Your"
   metadata_contact_support_surname: "Name"
-RealMeLoginForm:
+  
+SilverStripe\RealMe\Authenticator\LoginForm:
   service_name_1: "this website"
   service_name_2: "this website"
   service_name_3: "this website"
+  
 ---
 Name: realmetest
 Only:
@@ -54,8 +57,9 @@ Only:
 After:
   - 'realmedev'
 ---
-RealMeService:
+SilverStripe\RealMe\RealMeService:
   realme_env: 'ite'
+  
 ---
 Name: realmeprod
 Only:
@@ -63,9 +67,9 @@ Only:
 After:
   - 'realmedev'
 ---
-RealMeService:
+SilverStripe\RealMe\RealMeService:
   realme_env: 'prod'
----
+  
 ```
 
 The value you set for `realme_env` must be one of 'mts', 'ite' or 'prod'.
@@ -174,11 +178,12 @@ sync with the database via the following configuration in realme.yml. You can al
 `login_member_after_authentication` which will automatically login a user (as a SilverStripe `Member` object) after 
 successful RealMe authentication.
  
-```yml
-Member:
+```yaml
+SilverStripe\Security\Member:
   extensions:
     - RealMeMemberExtension
-RealMeService:
+    
+SilverStripe\RealMe\RealMeService:
   sync_with_local_member_database: true
   login_member_after_authentication: true
 ```

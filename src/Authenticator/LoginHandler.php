@@ -7,6 +7,7 @@ use Psr\Log\LoggerInterface;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\RequestHandler;
+use SilverStripe\Core\Convert;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\RealMe\Exception as RealMeException;
 use SilverStripe\RealMe\Extension\MemberExtension;
@@ -100,7 +101,7 @@ class LoginHandler extends RequestHandler
 
                 // If more session vars are set here, they must be cleared in realmeLogout()
                 $session->set('RealMe.SessionData', serialize($authData));
-                $session->set('RealMe.OriginalResponse', $_POST['SAMLResponse']);
+                $session->set('RealMe.OriginalResponse', $request->postVar('SAMLResponse'));
 
                 if (RealMeService::config()->get('sync_with_local_member_database') === true) {
                     if (!Member::has_extension(MemberExtension::class)) {

@@ -14,11 +14,11 @@ for complete details.
 
 Along with the standard large-form login forms, there is also a 'mini' login form, suitable
 for use in the header and footer of websites. This can be included by adding a method to your
-normal Page_Controller that returns a `new RealMeMiniLoginForm($this, __FUNCTION__);`. This
+normal Page_Controller that returns a `new SilverStripe\RealMe\Authenticator\MiniLoginForm($this, __FUNCTION__);`. This
 form uses `GET` rather than `POST`, so is an extension of the normal login form. This bypasses
 the requirement to go to `Security/login`, so is only useful when it is the only method of
 login to a website.
 
 Further documentation on using these templates can be found in the template files themselves:
-[RealMeLoginForm.ss](../../templates/SilverStripe/RealMe/RealMeLoginForm.ss) and
-[RealMeLoginForm_secondary.ss](../../templates/SilverStripe/RealMe/RealMeLoginForm_secondary.ss).
+[RealMeLoginForm.ss](../../templates/SilverStripe/RealMe/Authenticator/RealMeLoginForm.ss) and
+[RealMeLoginForm_secondary.ss](../../templates/SilverStripe/RealMe/Authenticator/RealMeLoginForm_secondary.ss).

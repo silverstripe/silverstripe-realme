@@ -7,6 +7,7 @@ use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\CacheInterface;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Environment;
+use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\ORM\ValidationResult;
 use SilverStripe\RealMe\Authenticator\LoginHandler as RealMeLoginHandler;
@@ -21,6 +22,8 @@ use SilverStripe\Security\MemberAuthenticator\LogoutHandler;
  */
 class Authenticator implements AuthenticatorInterface
 {
+    use Injectable;
+
     private static $dependencies = [
         'service' => '%$' . RealMeService::class,
     ];
@@ -74,11 +77,6 @@ class Authenticator implements AuthenticatorInterface
 
         $cache->save('1', $cacheKey);
         return true;
-    }
-
-    public static function get_name()
-    {
-        return _t('RealMeAuthenticator.TITLE', 'RealMe Account');
     }
 
     /**

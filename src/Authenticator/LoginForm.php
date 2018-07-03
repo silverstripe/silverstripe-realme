@@ -223,7 +223,7 @@ class LoginForm extends BaseLoginForm
      */
     public function getAuthenticatorName()
     {
-        return 'RealMe Login';
+        return _t(__CLASS__ . '.AUTHENTICATOR_NAME', 'RealMe Login');
     }
 
     /**
@@ -233,8 +233,8 @@ class LoginForm extends BaseLoginForm
      */
     protected function getFormFields()
     {
-        return new FieldList(array(
-            new HiddenField('AuthenticationMethod', null, $this->authenticator_class)
+        return FieldList::create(array(
+            HiddenField::create('AuthenticationMethod', null, $this->authenticator_class)
         ));
     }
 
@@ -266,7 +266,7 @@ class LoginForm extends BaseLoginForm
             ))->renderWith(self::class . '/RealMeLoginButton');
         }
 
-        return new FieldList(array(
+        return FieldList::create(array(
             FormAction::create(self::$action_button_name, _t('RealMeLoginForm.LOGINBUTTON', 'LoginAction'))
                 ->setUseButtonTag(true)
                 ->setButtonContent($loginButtonContent)

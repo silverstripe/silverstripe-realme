@@ -69,7 +69,7 @@ class User extends ArrayData
         if (!$member) {
             $memberAttributes = [];
 
-            if (RealMeService::config()->get('integration_type') === 'assert') {
+            if (RealMeService::config()->get('integration_type') === RealMeService::TYPE_ASSERT) {
                 $memberAttributes = [
                     'FirstName' => $this->getFederatedIdentity()->getField('FirstName'),
                     'Surname' => $this->getFederatedIdentity()->getField('LastName'),

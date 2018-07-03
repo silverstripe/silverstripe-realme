@@ -21,9 +21,13 @@ use SilverStripe\Dev\BuildTask;
  * - Validate all required values have been added in the appropriate place, and provide appropriate errors if not
  * - Output metadata XML that must be submitted to RealMe in order to integrate with ITE and Production environments
  */
-class SetupTask extends BuildTask
+class RealMeSetupTask extends BuildTask
 {
     private static $segment = 'RealMeSetupTask';
+
+    private static $dependencies = [
+        'Service' => '%$' . RealMeService::class,
+    ];
 
     protected $title = "RealMe Setup Task";
 
@@ -49,8 +53,6 @@ class SetupTask extends BuildTask
     public function run($request)
     {
         try {
-            $this->service = Injector::inst()->get(RealMeService::class);
-
             // Ensure we are running on the command-line, and not running in a browser
             if (false === Director::is_cli()) {
                 throw new Exception(_t(
@@ -77,6 +79,16 @@ class SetupTask extends BuildTask
         } catch (Exception $e) {
             $this->message($e->getMessage() . PHP_EOL);
         }
+    }
+
+    /**
+     * @param RealMeService $service
+     */
+    public function setService($service)
+    {
+        $this->service = $service;
+
+        return $this;
     }
 
     /**
