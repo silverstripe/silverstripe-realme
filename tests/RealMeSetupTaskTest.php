@@ -7,7 +7,7 @@ use ReflectionProperty;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\RealMe\RealMeService;
-use SilverStripe\RealMe\Task\SetupTask;
+use SilverStripe\RealMe\Task\RealMeSetupTask;
 
 /**
  * Class RealMeSetupTaskTest
@@ -103,7 +103,7 @@ class RealMeSetupTaskTest extends SapphireTest
     public function testValidateEntityID()
     {
         $realMeService = new RealMeService();
-        $realMeSetupTask = new SetupTask();
+        $realMeSetupTask = new RealMeSetupTask();
 
         $errors = new ReflectionProperty($realMeSetupTask, 'errors');
         $errors->setAccessible(true);
@@ -163,7 +163,8 @@ class RealMeSetupTaskTest extends SapphireTest
         $entityIdList[RealMeService::ENV_MTS] = 'https://dev.realme-integration.govt.nz/';
         $config->update(RealMeService::class, 'sp_entity_ids', $entityIdList);
         $validateEntityId->invoke($realMeSetupTask);
-        $this->assertCount(2,
+        $this->assertCount(
+            2,
             $errors->getValue($realMeSetupTask),
             'validate entity id should fail for missing service name and privacy realm'
         );
@@ -174,10 +175,15 @@ class RealMeSetupTaskTest extends SapphireTest
         // TEST privacy realm
         // "https://www.domain.govt.nz/<privacy-realm>/<service-name>"
         $entityIdList = self::$validEntityIDs;
-        $entityIdList[RealMeService::ENV_MTS] = 'https://dev.realme-integration.govt.nz/s-name/privacy-realm-is-too-big';
+        $entityIdList[RealMeService::ENV_MTS] =
+            'https://dev.realme-integration.govt.nz/s-name/privacy-realm-is-too-big';
         $config->update(RealMeService::class, 'sp_entity_ids', $entityIdList);
         $validateEntityId->invoke($realMeSetupTask);
-        $this->assertCount(1, $errors->getValue($realMeSetupTask), 'validate entity id should fail for privacy-realm-is-too-big');
+        $this->assertCount(
+            1,
+            $errors->getValue($realMeSetupTask),
+            'validate entity id should fail for privacy-realm-is-too-big'
+        );
 
         $errors->setValue($realMeSetupTask, array());
         $this->assertCount(0, $errors->getValue($realMeSetupTask));
@@ -187,7 +193,11 @@ class RealMeSetupTaskTest extends SapphireTest
         $entityIdList[RealMeService::ENV_MTS] = 'https://dev.realme-integration.govt.nz/s-name';
         $config->update(RealMeService::class, 'sp_entity_ids', $entityIdList);
         $validateEntityId->invoke($realMeSetupTask);
-        $this->assertCount(1, $errors->getValue($realMeSetupTask), 'validate entity id should fail if privacy realm is missing');
+        $this->assertCount(
+            1,
+            $errors->getValue($realMeSetupTask),
+            'validate entity id should fail if privacy realm is missing'
+        );
 
         $errors->setValue($realMeSetupTask, array());
         $this->assertCount(0, $errors->getValue($realMeSetupTask));
@@ -228,7 +238,11 @@ class RealMeSetupTaskTest extends SapphireTest
         $config->update(RealMeService::class, 'authn_contexts', $invalidAuthNContextList);
 
         $validateAuthNContext->invoke($realMeSetupTask);
-        $this->assertCount(1, $errors->getValue($realMeSetupTask), "The authncontext validation should fail if invalid.");
+        $this->assertCount(
+            1,
+            $errors->getValue($realMeSetupTask),
+            "The authncontext validation should fail if invalid."
+        );
     }
 
     /**

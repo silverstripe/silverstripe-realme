@@ -48,10 +48,12 @@ class RealMeService implements TemplateGlobalProvider
     /**
      * the valid AuthN context values for each supported RealMe environment.
      */
-    const AUTHN_LOW_STRENGTH    = 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:LowStrength';
-    const AUTHN_MOD_STRENTH     = 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength';
-    const AUTHN_MOD_MOBILE_SMS  = 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength::OTP:Mobile:SMS';
-    const AUTHN_MOD_TOKEN_SID   = 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength::OTP:Token:SID';
+    const AUTHN_LOW_STRENGTH = 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:LowStrength';
+    const AUTHN_MOD_STRENTH = 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength';
+    const AUTHN_MOD_MOBILE_SMS =
+        'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength::OTP:Mobile:SMS';
+    const AUTHN_MOD_TOKEN_SID =
+        'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength::OTP:Token:SID';
 
     /**
      * Realme SAML2 error status constants
@@ -322,7 +324,7 @@ class RealMeService implements TemplateGlobalProvider
      */
     public static function user_data()
     {
-        if(!is_null(static::$user_data)){
+        if (!is_null(static::$user_data)) {
             return static::$user_data;
         }
 
@@ -453,7 +455,10 @@ class RealMeService implements TemplateGlobalProvider
         $request = Controller::curr()->getRequest();
         if ($request->isPOST() && $request->postVar("SAMLResponse")) {
             $response = new OneLogin_Saml2_Response($this->getAuth()->getSettings(), $request->postVar("SAMLResponse"));
-            $internalError = OneLogin_Saml2_Utils::query($response->document, "/samlp:Response/samlp:Status/samlp:StatusCode/samlp:StatusCode/@Value");
+            $internalError = OneLogin_Saml2_Utils::query(
+                $response->document,
+                "/samlp:Response/samlp:Status/samlp:StatusCode/samlp:StatusCode/@Value"
+            );
 
             if ($internalError instanceof DOMNodeList && $internalError->length > 0) {
                 $internalErrorCode = $internalError->item(0)->textContent;
@@ -769,7 +774,8 @@ class RealMeService implements TemplateGlobalProvider
     }
 
     /**
-     * @return string[] The support contact details to be used in metadata XML output, with null values if they don't exist
+     * @return string[] The support contact details to be used in metadata XML output, with null values if they don't
+     *                  exist
      */
     public function getMetadataContactSupport()
     {

@@ -102,7 +102,12 @@ class FederatedIdentity extends ViewableData
      * structure for the DOMDocument is the following:
      *
      * <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-     * <ns1:Party xmlns:ns1="urn:oasis:names:tc:ciq:xpil:3" xmlns:ns2="urn:oasis:names:tc:ciq:ct:3" xmlns:ns3="urn:oasis:names:tc:ciq:xnl:3" xmlns:ns4="http://www.w3.org/1999/xlink" xmlns:ns5="urn:oasis:names:tc:ciq:xal:3">
+     * <ns1:Party
+     *  xmlns:ns1="urn:oasis:names:tc:ciq:xpil:3"
+     *  xmlns:ns2="urn:oasis:names:tc:ciq:ct:3"
+     *  xmlns:ns3="urn:oasis:names:tc:ciq:xnl:3"
+     *  xmlns:ns4="http://www.w3.org/1999/xlink"
+     *  xmlns:ns5="urn:oasis:names:tc:ciq:xal:3">
      *     <ns1:PartyName>
      *         <ns3:PersonName>
      *             <ns3:NameElement ns3:ElementType="FirstName">Edmund</ns3:NameElement>
@@ -142,9 +147,18 @@ class FederatedIdentity extends ViewableData
         $xpath->registerNamespace('addr', 'urn:oasis:names:tc:ciq:xal:3');
 
         // Name elements
-        $this->FirstName = $this->getNodeValue($xpath, "/p:Party/p:PartyName/n:PersonName/n:NameElement[@n:ElementType='FirstName']");
-        $this->MiddleName = $this->getNodeValue($xpath, "/p:Party/p:PartyName/n:PersonName/n:NameElement[@n:ElementType='MiddleName']");
-        $this->LastName = $this->getNodeValue($xpath, "/p:Party/p:PartyName/n:PersonName/n:NameElement[@n:ElementType='LastName']");
+        $this->FirstName = $this->getNodeValue(
+            $xpath,
+            "/p:Party/p:PartyName/n:PersonName/n:NameElement[@n:ElementType='FirstName']"
+        );
+        $this->MiddleName = $this->getNodeValue(
+            $xpath,
+            "/p:Party/p:PartyName/n:PersonName/n:NameElement[@n:ElementType='MiddleName']"
+        );
+        $this->LastName = $this->getNodeValue(
+            $xpath,
+            "/p:Party/p:PartyName/n:PersonName/n:NameElement[@n:ElementType='LastName']"
+        );
 
         // Gender
         $this->Gender = $this->getNamedItemNodeValue($xpath, '/p:Party/p:PersonInfo[@p:Gender]', 'Gender');
@@ -153,14 +167,33 @@ class FederatedIdentity extends ViewableData
         $this->BirthInfoQuality = $xpath->query("/p:Party/p:BirthInfo[@dataQuality:DataQualityType]");
 
         // Birth date
-        $this->BirthYear = $this->getNodeValue($xpath, "/p:Party/p:BirthInfo/p:BirthInfoElement[@p:Type='BirthYear']");
-        $this->BirthMonth = $this->getNodeValue($xpath, "/p:Party/p:BirthInfo/p:BirthInfoElement[@p:Type='BirthMonth']");
-        $this->BirthDay = $this->getNodeValue($xpath, "/p:Party/p:BirthInfo/p:BirthInfoElement[@p:Type='BirthDay']");
+        $this->BirthYear = $this->getNodeValue(
+            $xpath,
+            "/p:Party/p:BirthInfo/p:BirthInfoElement[@p:Type='BirthYear']"
+        );
+        $this->BirthMonth = $this->getNodeValue(
+            $xpath,
+            "/p:Party/p:BirthInfo/p:BirthInfoElement[@p:Type='BirthMonth']"
+        );
+        $this->BirthDay = $this->getNodeValue(
+            $xpath,
+            "/p:Party/p:BirthInfo/p:BirthInfoElement[@p:Type='BirthDay']"
+        );
 
         // Birth place
-        $this->BirthPlaceQuality = $this->getNamedItemNodeValue($xpath, '/p:Party/p:BirthInfo/p:BirthPlaceDetails[@dataQuality:DataQualityType]', 'DataQualityType');
-        $this->BirthPlaceCountry = $this->getNodeValue($xpath, "/p:Party/p:BirthInfo/p:BirthPlaceDetails/addr:Country/addr:NameElement[@addr:NameType='Name']");
-        $this->BirthPlaceLocality = $this->getNodeValue($xpath, "/p:Party/p:BirthInfo/p:BirthPlaceDetails/addr:Locality/addr:NameElement[@addr:NameType='Name']");
+        $this->BirthPlaceQuality = $this->getNamedItemNodeValue(
+            $xpath,
+            '/p:Party/p:BirthInfo/p:BirthPlaceDetails[@dataQuality:DataQualityType]',
+            'DataQualityType'
+        );
+        $this->BirthPlaceCountry = $this->getNodeValue(
+            $xpath,
+            "/p:Party/p:BirthInfo/p:BirthPlaceDetails/addr:Country/addr:NameElement[@addr:NameType='Name']"
+        );
+        $this->BirthPlaceLocality = $this->getNodeValue(
+            $xpath,
+            "/p:Party/p:BirthInfo/p:BirthPlaceDetails/addr:Locality/addr:NameElement[@addr:NameType='Name']"
+        );
     }
 
     public function isValid()

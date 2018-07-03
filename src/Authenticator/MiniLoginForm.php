@@ -33,7 +33,13 @@ class MiniLoginForm extends LoginForm
         $actionName = $action->getName();
         $actionValue = _t('RealMeLoginForm.LOGINBUTTON', 'LoginAction');
 
-        $queryString = sprintf('?AuthenticationMethod=%s&SecurityID=%s&%s=%s', $authMethod, $token, $actionName, $actionValue);
+        $queryString = sprintf(
+            '?AuthenticationMethod=%s&SecurityID=%s&%s=%s',
+            $authMethod,
+            $token,
+            $actionName,
+            $actionValue
+        );
         return Controller::join_links($this->FormAction(), $queryString);
     }
 
