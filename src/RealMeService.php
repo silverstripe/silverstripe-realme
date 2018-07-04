@@ -14,13 +14,10 @@ use Psr\Log\LoggerInterface;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\HTTPRequest;
-use SilverStripe\Control\Session;
 use SilverStripe\Core\Config\Configurable;
-use SilverStripe\Core\Convert;
 use SilverStripe\Core\Environment;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Core\Injector\Injector;
-use SilverStripe\ORM\DataObject;
 use SilverStripe\RealMe\Exception as RealMeException;
 use SilverStripe\RealMe\Model\FederatedIdentity;
 use SilverStripe\RealMe\Model\User;
@@ -1092,16 +1089,16 @@ class RealMeService implements TemplateGlobalProvider
 
         switch ($errorCode) {
             case self::ERR_AUTHN_FAILED:
-                $message = _t('RealMeService.ERROR_AUTHNFAILED', 'You have chosen to leave RealMe.');
+                $message = _t(self::class . '.ERROR_AUTHNFAILED', 'You have chosen to leave RealMe.');
                 break;
 
             case self::ERR_TIMEOUT:
-                $message = _t('RealMeService.ERROR_TIMEOUT', 'Your RealMe session has timed out – please try again.');
+                $message = _t(self::class . '.ERROR_TIMEOUT', 'Your RealMe session has timed out – please try again.');
                 break;
 
             case self::ERR_INTERNAL_ERROR:
                 $message = _t(
-                    'RealMeService.ERROR_INTERNAL',
+                    self::class . '.ERROR_INTERNAL',
                     'RealMe was unable to process your request due to a RealMe internal error. Please try again. ' .
                         'If the problem persists, please contact the RealMe Help Desk. From New Zealand dial ' .
                         '0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply).'
@@ -1110,7 +1107,7 @@ class RealMeService implements TemplateGlobalProvider
 
             case self::ERR_NO_AVAILABLE_IDP:
                 $message = _t(
-                    'RealMeService.ERROR_NOAVAILABLEIDP',
+                    self::class . '.ERROR_NOAVAILABLEIDP',
                     'RealMe reported that the TXT service or the token service is not available. You may try again ' .
                         'later. If the problem persists, please contact the RealMe Help Desk. From New Zealand dial ' .
                         '0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply).'
@@ -1119,7 +1116,7 @@ class RealMeService implements TemplateGlobalProvider
 
             case self::ERR_REQUEST_UNSUPPORTED:
                 $message = _t(
-                    'RealMeService.ERROR_REQUESTUNSUPPORTED',
+                    self::class . '.ERROR_REQUESTUNSUPPORTED',
                     'RealMe reported a serious application error with the message \'Request Unsupported\'. Please try' .
                         ' again later. If the problem persists, please contact the RealMe Help Desk. From New Zealand' .
                         ': 0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply).'
@@ -1128,7 +1125,7 @@ class RealMeService implements TemplateGlobalProvider
 
             case self::ERR_NO_PASSIVE:
                 $message = _t(
-                    'RealMeService.ERROR_NOPASSIVE',
+                    self::class . '.ERROR_NOPASSIVE',
                     'RealMe reported a serious application error with the message \'No Passive\'. Please try again ' .
                         'later. If the problem persists, please contact the RealMe Help Desk. From New Zealand: 0800 ' .
                         '664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply).'
@@ -1137,7 +1134,7 @@ class RealMeService implements TemplateGlobalProvider
 
             case self::ERR_REQUEST_DENIED:
                 $message = _t(
-                    'RealMeService.ERROR_REQUESTDENIED',
+                    self::class . '.ERROR_REQUESTDENIED',
                     'RealMe reported a serious application error with the message \'Request Denied\'. Please try ' .
                         'again later. If the problem persists, please contact the RealMe Help Desk. From New Zealand:' .
                         ' 0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply).'
@@ -1146,7 +1143,7 @@ class RealMeService implements TemplateGlobalProvider
 
             case self::ERR_UNSUPPORTED_BINDING:
                 $message = _t(
-                    'RealMeService.ERROR_UNSUPPORTEDBINDING',
+                    self::class . '.ERROR_UNSUPPORTEDBINDING',
                     'RealMe reported a serious application error with the message \'Unsupported Binding\'. Please ' .
                         'try again later. If the problem persists, please contact the RealMe Help Desk. From New ' .
                         'Zealand: 0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges ' .
@@ -1156,7 +1153,7 @@ class RealMeService implements TemplateGlobalProvider
 
             case self::ERR_UNKNOWN_PRINCIPAL:
                 $message = _t(
-                    'RealMeService.ERROR_UNKNOWNPRINCIPAL',
+                    self::class . '.ERROR_UNKNOWNPRINCIPAL',
                     'You are unable to use RealMe to verify your identity if you do not have a RealMe account. ' .
                         'Visit the RealMe home page for more information and to create an account.'
                 );
@@ -1164,7 +1161,7 @@ class RealMeService implements TemplateGlobalProvider
 
             case self::ERR_NO_AUTHN_CONTEXT:
                 $message = _t(
-                    'RealMeService.ERROR_NOAUTHNCONTEXT',
+                    self::class . '.ERROR_NOAUTHNCONTEXT',
                     'RealMe reported a serious application error with the message \'No AuthN Context\'. Please try ' .
                         'again later. If the problem persists, please contact the RealMe Help Desk. From New Zealand:' .
                         ' 0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply).'
@@ -1173,7 +1170,7 @@ class RealMeService implements TemplateGlobalProvider
 
             default:
                 $message = _t(
-                    'RealMeService.ERROR_GENERAL',
+                    self::class . '.ERROR_GENERAL',
                     'RealMe reported a serious application error. Please try again later. If the problem persists, ' .
                         'please contact the RealMe Help Desk. From New Zealand: 0800 664 774 (toll free), from ' .
                         'overseas dial +64 9 357 4468 (overseas call charges apply).'

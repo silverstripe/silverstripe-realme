@@ -152,7 +152,7 @@ class LoginHandler extends RequestHandler
         return Security::permissionFailure(
             $this,
             _t(
-                'RealMeSecurityExtension.LOGINFAILURE',
+                RealMeService::class . '.LOGINFAILURE',
                 'Unfortunately we\'re not able to log you in through RealMe right now. Please try again shortly.'
             )
         );

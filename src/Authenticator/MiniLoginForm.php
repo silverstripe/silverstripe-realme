@@ -31,7 +31,7 @@ class MiniLoginForm extends LoginForm
         $authMethod = $fields->dataFieldByName('AuthenticationMethod')->Value();
         $token = $fields->dataFieldByName('SecurityID')->Value();
         $actionName = $action->getName();
-        $actionValue = _t('RealMeLoginForm.LOGINBUTTON', 'LoginAction');
+        $actionValue = _t(LoginForm::class . 'LOGINBUTTON', 'LoginAction');
 
         $queryString = sprintf(
             '?AuthenticationMethod=%s&SecurityID=%s&%s=%s',

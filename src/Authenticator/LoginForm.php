@@ -70,7 +70,7 @@ class LoginForm extends BaseLoginForm
     /**
      * @var string The authentication class tied to this login form
      */
-    protected $authenticator_class = MemberAuthenticator::class;
+    protected $authenticator_class = Authenticator::class;
 
     /**
      * Returns an instance of this class
@@ -121,7 +121,7 @@ class LoginForm extends BaseLoginForm
         return Security::permissionFailure(
             $this->controller,
             _t(
-                'RealMeSecurityExtension.LOGINFAILURE',
+                RealMeService::class . '.LOGINFAILURE',
                 'Unfortunately we\'re not able to authenticate you via RealMe right now.'
             )
         );
@@ -223,7 +223,7 @@ class LoginForm extends BaseLoginForm
      */
     public function getAuthenticatorName()
     {
-        return _t(__CLASS__ . '.AUTHENTICATOR_NAME', 'RealMe Login');
+        return _t(self::class . '.AUTHENTICATOR_NAME', 'RealMe Login');
     }
 
     /**
@@ -253,7 +253,7 @@ class LoginForm extends BaseLoginForm
         if ($integrationType === RealMeService::TYPE_ASSERT) {
             $loginButtonContent = ArrayData::create(array(
                 'Label' => _t(
-                    'RealMeLoginForm.ASSERTLOGINBUTTON',
+                    self::class . '.ASSERTLOGINBUTTON',
                     'Share your details with {orgname}',
                     ['orgname' => $service->config()->metadata_organisation_display_name]
                 )
@@ -261,12 +261,12 @@ class LoginForm extends BaseLoginForm
         } else {
             // Login button
             $loginButtonContent = ArrayData::create(array(
-                'Label' => _t('RealMeLoginForm.LOGINBUTTON', 'Login')
+                'Label' => _t(self::class . '.LOGINBUTTON', 'Login')
             ))->renderWith(self::class . '/RealMeLoginButton');
         }
 
         return FieldList::create(array(
-            FormAction::create(self::$action_button_name, _t('RealMeLoginForm.LOGINBUTTON', 'LoginAction'))
+            FormAction::create(self::$action_button_name, _t(self::class . '.LOGINBUTTON', 'LoginAction'))
                 ->setUseButtonTag(true)
                 ->setButtonContent($loginButtonContent)
                 ->setAttribute('class', 'realme_button')
