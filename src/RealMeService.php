@@ -365,6 +365,16 @@ class RealMeService implements TemplateGlobalProvider
     }
 
     /**
+     * A helpful static method that follows SilverStripe naming for Member::currentUser();
+     *
+     * @return User
+     */
+    public static function currentRealMeUser()
+    {
+        return self::current_realme_user();
+    }
+
+    /**
      * Enforce login via RealMe. This can be used in controllers to force users to be authenticated via RealMe (not
      * necessarily logged in as a {@link Member}), in the form of:
      * <code>
@@ -387,6 +397,7 @@ class RealMeService implements TemplateGlobalProvider
      * message exists for display to the user.
      *
      * @param HTTPRequest $request
+     * @param string $backUrl
      * @return bool|null true if the user is correctly authenticated, false if there was an error with login
      * @throws OneLogin_Saml2_Error
      */

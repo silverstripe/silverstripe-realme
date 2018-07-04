@@ -36,11 +36,7 @@
     },
     "autoload": {
         "psr-4": {
-            "SilverStripe\\RealMe\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
+            "SilverStripe\\RealMe\\": "src/",
             "SilverStripe\\RealMe\\Tests\\": "tests/"
         }
     },

@@ -72,9 +72,8 @@ class RealMeSetupTask extends BuildTask
 
             $this->message(PHP_EOL . _t(
                 self::class . '.BUILD_FINISH',
-                'RealMe setup complete. Please copy the XML into a file for upload to the %s environment or DIA ' .
+                'RealMe setup complete. Please copy the XML into a file for upload to the {env} environment or DIA ' .
                 'to complete the integration',
-                '',
                 array('env' => $forEnv)
             ));
         } catch (Exception $e) {
@@ -84,6 +83,7 @@ class RealMeSetupTask extends BuildTask
 
     /**
      * @param RealMeService $service
+     * @return $this
      */
     public function setService($service)
     {
@@ -127,7 +127,6 @@ class RealMeSetupTask extends BuildTask
             throw new Exception(_t(
                 self::class . '.ERR_VALIDATION',
                 'There were {numissues} issue(s) found during validation that must be fixed prior to setup: {issues}',
-                '',
                 array(
                     'numissues' => sizeof($this->errors),
                     'issues' => $errorList
@@ -151,9 +150,9 @@ class RealMeSetupTask extends BuildTask
         // Output metadata XML so that it can be sent to RealMe via the agency
         $this->message(_t(
             self::class . '.OUPUT_PREFIX',
-            'Metadata XML is listed below for the \'%s\' RealMe environment, this should be sent to the agency so they '
-                . 'can pass it on to RealMe Operations staff',
-            $forEnv
+            'Metadata XML is listed below for the \'{env}\' RealMe environment, this should be sent to the agency so ' .
+                'they can pass it on to RealMe Operations staff',
+            ['env' => $forEnv]
         ) . PHP_EOL . PHP_EOL);
 
         $configDir = $this->getConfigurationTemplateDir();
@@ -367,7 +366,7 @@ class RealMeSetupTask extends BuildTask
             $this->errors[] = _t(
                 self::class . '.ERR_ENV_NOT_SPECIFIED',
                 'The RealMe environment was not specified on the cli It must be one of: {allowedEnvs} ' .
-                    'e.g. sake dev/tasks/RealMeSetupTask forEnv=mts',
+                    'e.g. vendor/bin/sake dev/tasks/RealMeSetupTask forEnv=mts',
                 array(
                     'allowedEnvs' => join(', ', $allowedEnvs)
                 )
