@@ -255,7 +255,6 @@ class LoginForm extends BaseLoginForm
                 'Label' => _t(
                     'RealMeLoginForm.ASSERTLOGINBUTTON',
                     'Share your details with {orgname}',
-                    '',
                     ['orgname' => $service->config()->metadata_organisation_display_name]
                 )
             ))->renderWith(self::class . '/RealMeLoginButton');

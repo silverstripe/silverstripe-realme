@@ -1096,43 +1096,88 @@ class RealMeService implements TemplateGlobalProvider
                 break;
 
             case self::ERR_TIMEOUT:
-                $message = _t('RealMeService.ERROR_TIMEOUT');
+                $message = _t('RealMeService.ERROR_TIMEOUT', 'Your RealMe session has timed out – please try again.');
                 break;
 
             case self::ERR_INTERNAL_ERROR:
-                $message = _t('RealMeService.ERROR_INTERNAL');
+                $message = _t(
+                    'RealMeService.ERROR_INTERNAL',
+                    'RealMe was unable to process your request due to a RealMe internal error. Please try again. ' .
+                        'If the problem persists, please contact the RealMe Help Desk. From New Zealand dial ' .
+                        '0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply).'
+                );
                 break;
 
             case self::ERR_NO_AVAILABLE_IDP:
-                $message = _t('RealMeService.ERROR_NOAVAILABLEIDP');
+                $message = _t(
+                    'RealMeService.ERROR_NOAVAILABLEIDP',
+                    'RealMe reported that the TXT service or the token service is not available. You may try again ' .
+                        'later. If the problem persists, please contact the RealMe Help Desk. From New Zealand dial ' .
+                        '0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply).'
+                );
                 break;
 
             case self::ERR_REQUEST_UNSUPPORTED:
-                $message = _t('RealMeService.ERROR_REQUESTUNSUPPORTED');
+                $message = _t(
+                    'RealMeService.ERROR_REQUESTUNSUPPORTED',
+                    'RealMe reported a serious application error with the message \'Request Unsupported\'. Please try' .
+                        ' again later. If the problem persists, please contact the RealMe Help Desk. From New Zealand' .
+                        ': 0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply).'
+                );
                 break;
 
             case self::ERR_NO_PASSIVE:
-                $message = _t('RealMeService.ERROR_NOPASSIVE');
+                $message = _t(
+                    'RealMeService.ERROR_NOPASSIVE',
+                    'RealMe reported a serious application error with the message \'No Passive\'. Please try again ' .
+                        'later. If the problem persists, please contact the RealMe Help Desk. From New Zealand: 0800 ' .
+                        '664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply).'
+                );
                 break;
 
             case self::ERR_REQUEST_DENIED:
-                $message = _t('RealMeService.ERROR_REQUESTDENIED');
+                $message = _t(
+                    'RealMeService.ERROR_REQUESTDENIED',
+                    'RealMe reported a serious application error with the message \'Request Denied\'. Please try ' .
+                        'again later. If the problem persists, please contact the RealMe Help Desk. From New Zealand:' .
+                        ' 0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply).'
+                );
                 break;
 
             case self::ERR_UNSUPPORTED_BINDING:
-                $message = _t('RealMeService.ERROR_UNSUPPORTEDBINDING');
+                $message = _t(
+                    'RealMeService.ERROR_UNSUPPORTEDBINDING',
+                    'RealMe reported a serious application error with the message \'Unsupported Binding\'. Please ' .
+                        'try again later. If the problem persists, please contact the RealMe Help Desk. From New ' .
+                        'Zealand: 0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges ' .
+                        'apply).'
+                );
                 break;
 
             case self::ERR_UNKNOWN_PRINCIPAL:
-                $message = _t('RealMeService.ERROR_UNKNOWNPRINCIPAL');
+                $message = _t(
+                    'RealMeService.ERROR_UNKNOWNPRINCIPAL',
+                    'You are unable to use RealMe to verify your identity if you do not have a RealMe account. ' .
+                        'Visit the RealMe home page for more information and to create an account.'
+                );
                 break;
 
             case self::ERR_NO_AUTHN_CONTEXT:
-                $message = _t('RealMeService.ERROR_NOAUTHNCONTEXT');
+                $message = _t(
+                    'RealMeService.ERROR_NOAUTHNCONTEXT',
+                    'RealMe reported a serious application error with the message \'No AuthN Context\'. Please try ' .
+                        'again later. If the problem persists, please contact the RealMe Help Desk. From New Zealand:' .
+                        ' 0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply).'
+                );
                 break;
 
             default:
-                $message = _t('RealMeService.ERROR_GENERAL');
+                $message = _t(
+                    'RealMeService.ERROR_GENERAL',
+                    'RealMe reported a serious application error. Please try again later. If the problem persists, ' .
+                        'please contact the RealMe Help Desk. From New Zealand: 0800 664 774 (toll free), from ' .
+                        'overseas dial +64 9 357 4468 (overseas call charges apply).'
+                );
                 break;
         }
 

@@ -256,8 +256,8 @@ class RealMeSetupTask extends BuildTask
         if (is_null($entityId)) {
             $this->errors[] = _t(
                 self::class . '.ERR_CONFIG_NO_ENTITYID',
-                'No entityID specified for environment \'{env}\'. Specify this in your YML configuration, see the' .
-                ' module documentation for more details',
+                'No entityID specified for environment \'{env}\'. Specify this in your YML configuration, see the ' .
+                    'module documentation for more details',
                 array('env' => $forEnv)
             );
         }
@@ -268,8 +268,7 @@ class RealMeSetupTask extends BuildTask
             $this->errors[] = _t(
                 self::class . '.ERR_CONFIG_ENTITYID',
                 'The Entity ID (\'{entityId}\') must be https, not be \'localhost\', and must contain a valid ' .
-                'service name and privacy realm e.g. https://my-realme-integration.govt.nz/p-realm/s-name',
-                '',
+                    'service name and privacy realm e.g. https://my-realme-integration.govt.nz/p-realm/s-name',
                 array(
                     'entityId' => $entityId
                 )
@@ -285,8 +284,7 @@ class RealMeSetupTask extends BuildTask
             $this->errors[] = _t(
                 self::class . '.ERR_CONFIG_ENTITYID',
                 'The Entity ID (\'{entityId}\') must be https, not be \'localhost\', and must contain a valid ' .
-                'service name and privacy realm e.g. https://my-realme-integration.govt.nz/p-realm/s-name',
-                '',
+                    'service name and privacy realm e.g. https://my-realme-integration.govt.nz/p-realm/s-name',
                 array(
                     'entityId' => $entityId
                 )
@@ -307,8 +305,7 @@ class RealMeSetupTask extends BuildTask
             $this->errors[] = _t(
                 self::class . '.ERR_CONFIG_ENTITYID_SERVICE_NAME',
                 'The service name \'{serviceName}\' must be a maximum of 20 characters and not blank for entityID ' .
-                '\'{entityId}\'',
-                '',
+                    '\'{entityId}\'',
                 array(
                     'serviceName' => $serviceName,
                     'entityId' => $entityId
@@ -322,7 +319,6 @@ class RealMeSetupTask extends BuildTask
             $this->errors[] = _t(
                 self::class . '.ERR_CONFIG_ENTITYID_PRIVACY_REALM',
                 'The privacy realm \'{privacyRealm}\' must not be blank for entityID \'{entityId}\'',
-                '',
                 array(
                     'privacyRealm' => $privacyRealm,
                     'entityId' => $entityId
@@ -344,7 +340,7 @@ class RealMeSetupTask extends BuildTask
                 $this->errors[] = _t(
                     self::class . '.ERR_CONFIG_NO_AUTHNCONTEXT',
                     'No AuthnContext specified for environment \'{env}\'. Specify this in your YML configuration, ' .
-                    'see the module documentation for more details',
+                        'see the module documentation for more details',
                     array('env' => $env)
                 );
             }
@@ -398,12 +394,15 @@ class RealMeSetupTask extends BuildTask
     private function validateDirectoryStructure()
     {
         if (is_null($this->service->getCertDir())) {
-            $this->errors[] = _t(self::class . '.ERR_CERT_DIR_MISSING');
+            $this->errors[] = _t(
+                self::class . '.ERR_CERT_DIR_MISSING',
+                'No certificate dir is specified. Define the REALME_CERT_DIR environment variable in your .env file'
+            );
         } elseif (!$this->isReadable($this->service->getCertDir())) {
             $this->errors[] = _t(
                 self::class . '.ERR_CERT_DIR_NOT_READABLE',
-                '',
-                '',
+                'Certificate dir specified (\'{dir}\') must be created and be readable. Ensure permissions are set ' .
+                    'correctly and the directory is absolute',
                 array('dir' => $this->service->getCertDir())
             );
         }
@@ -415,20 +414,37 @@ class RealMeSetupTask extends BuildTask
     private function validateMetadata()
     {
         if (is_null($this->service->getMetadataOrganisationName())) {
-            $this->errors[] = _t(self::class . '.ERR_CONFIG_NO_ORGANISATION_NAME');
+            $this->errors[] = _t(
+                self::class . '.ERR_CONFIG_NO_ORGANISATION_NAME',
+                'No organisation name is specified in YML configuration. Ensure the \'metadata_organisation_name\' ' .
+                    'value is defined in your YML configuration'
+            );
         }
 
         if (is_null($this->service->getMetadataOrganisationDisplayName())) {
-            $this->errors[] = _t(self::class . '.ERR_CONFIG_NO_ORGANISATION_DISPLAY_NAME');
+            $this->errors[] = _t(
+                self::class . '.ERR_CONFIG_NO_ORGANISATION_DISPLAY_NAME',
+                'No organisation display name is specified in YML configuration. Ensure the ' .
+                    '\'metadata_organisation_display_name\' value is defined in your YML configuration'
+            );
         }
 
         if (is_null($this->service->getMetadataOrganisationUrl())) {
-            $this->errors[] = _t(self::class . '.ERR_CONFIG_NO_ORGANISATION_URL');
+            $this->errors[] = _t(
+                self::class . '.ERR_CONFIG_NO_ORGANISATION_URL',
+                'No organisation URL is specified in YML configuration. Ensure the \'metadata_organisation_url\' ' .
+                    'value is defined in your YML configuration'
+            );
         }
 
         $contact = $this->service->getMetadataContactSupport();
         if (is_null($contact['company']) || is_null($contact['firstNames']) || is_null($contact['surname'])) {
-            $this->errors[] = _t(self::class . '.ERR_CONFIG_NO_SUPPORT_CONTACT');
+            $this->errors[] = _t(
+                self::class . '.ERR_CONFIG_NO_SUPPORT_CONTACT',
+                'Support contact detail is missing from YML configuration. Ensure the following values are defined ' .
+                    'in the YML configuration: metadata_contact_support_company, metadata_contact_support_firstnames,' .
+                    ' metadata_contact_support_surname'
+            );
         }
     }
 
@@ -441,8 +457,8 @@ class RealMeSetupTask extends BuildTask
         if (is_null($signingCertFile) || !$this->isReadable($signingCertFile)) {
             $this->errors[] = _t(
                 self::class . '.ERR_CERT_NO_SIGNING_CERT',
-                '',
-                '',
+                'No SAML signing PEM certificate defined, or the file can\'t be read. Define the {const} environment ' .
+                    'variable in your .env file, and ensure the file exists in the certificate directory',
                 array(
                     'const' => 'REALME_SIGNING_CERT_FILENAME'
                 )
@@ -451,8 +467,9 @@ class RealMeSetupTask extends BuildTask
             // Signing cert exists, but doesn't include BEGIN/END CERTIFICATE lines, or doesn't contain the cert
             $this->errors[] = _t(
                 self::class . '.ERR_CERT_SIGNING_CERT_CONTENT',
-                '',
-                '',
+                'The file specified for the signing certificate ({file}) does not contain a valid certificate ' .
+                    '(beginning with -----BEGIN CERTIFICATE-----). Check this file to ensure it contains the ' .
+                    'certificate and private key',
                 array('file' => $this->service->getSigningCertPath())
             );
         }
