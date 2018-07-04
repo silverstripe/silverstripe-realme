@@ -12,7 +12,7 @@ use SilverStripe\RealMe\RealMeService;
 
 class RealMeServiceTest extends SapphireTest
 {
-    private $pathForTempCertificate;
+    private static $pathForTempCertificate;
 
     /**
      * @var RealMeService
@@ -21,7 +21,7 @@ class RealMeServiceTest extends SapphireTest
 
     public function testGetCertificateContents()
     {
-        $this->pathForTempCertificate = TempFolder::getTempFolder(BASE_PATH) . '/tmpcert.pem';
+        self::$pathForTempCertificate = TempFolder::getTempFolder(BASE_PATH) . '/tmpcert.pem';
 
         /**
          * Test standard certificate
@@ -32,7 +32,7 @@ class RealMeServiceTest extends SapphireTest
         // Strip carriage returns
         $contents = str_replace("\r", '', $contents);
 
-        $path = $this->pathForTempCertificate;
+        $path = self::$pathForTempCertificate;
         file_put_contents($path, $contents);
 
         /** @var RealMeService $service */
@@ -52,7 +52,7 @@ class RealMeServiceTest extends SapphireTest
         // Strip carriage returns
         $contents = str_replace("\r", '', $contents);
 
-        $path = $this->pathForTempCertificate;
+        $path = self::$pathForTempCertificate;
         file_put_contents($path, $contents);
 
         /** @var RealMeService $service */
@@ -123,10 +123,12 @@ class RealMeServiceTest extends SapphireTest
         );
     }
 
-    public function setUpOnce()
+    public static function setUpBeforeClass()
     {
-        Environment::putEnv('REALME_CERT_DIR', __DIR__ . '/certs');
-        Environment::putEnv('REALME_SIGNING_CERT_FILENAME', 'standard_cert.pem');
+        Environment::putEnv('REALME_CERT_DIR=' . __DIR__ . '/certs');
+        Environment::putEnv('REALME_SIGNING_CERT_FILENAME=' . 'standard_cert.pem');
+
+        parent::setUpBeforeClass();
     }
 
     protected function setUp()
@@ -135,7 +137,6 @@ class RealMeServiceTest extends SapphireTest
         $this->service = Injector::inst()->create(RealMeService::class);
 
         // Configure for login integration and mts by default
-        Config::modify()->set(RealMeService::class, 'integration_type', 'login');
         Config::modify()->set(RealMeService::class, 'sp_entity_ids', ['mts' => 'https://example.com/realm/service']);
         Config::modify()->set(
             RealMeService::class,
@@ -149,11 +150,13 @@ class RealMeServiceTest extends SapphireTest
         );
     }
 
-    public function tearDownOnce()
+    public static function tearDownAfterClass()
     {
-        // Ensure $this->pathForTempCertificate is unlink'd (otherwise it won't get unlinked if the test fails)
-        if (file_exists($this->pathForTempCertificate)) {
-            unlink($this->pathForTempCertificate);
+        parent::tearDownAfterClass();
+
+        // Ensure self::$pathForTempCertificate is unlink'd (otherwise it won't get unlinked if the test fails)
+        if (file_exists(self::$pathForTempCertificate)) {
+            unlink(self::$pathForTempCertificate);
         }
     }
 }

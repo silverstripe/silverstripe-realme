@@ -5,6 +5,7 @@ namespace SilverStripe\RealMe\Task;
 use Exception;
 
 use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Core\Manifest\ModuleLoader;
 use SilverStripe\RealMe\RealMeService;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\Controller;
@@ -213,7 +214,9 @@ class RealMeSetupTask extends BuildTask
             return $path;
         }
 
-        return Controller::join_links(BASE_PATH, REALME_MODULE_PATH . '/templates/saml-conf');
+        $path = ModuleLoader::inst()->getManifest()->getModule('realme')->getPath();
+
+        return $path . '/templates/saml-conf';
     }
 
     /**
@@ -255,7 +258,6 @@ class RealMeSetupTask extends BuildTask
                 self::class . '.ERR_CONFIG_NO_ENTITYID',
                 'No entityID specified for environment \'{env}\'. Specify this in your YML configuration, see the' .
                 ' module documentation for more details',
-                '',
                 array('env' => $forEnv)
             );
         }
@@ -343,7 +345,6 @@ class RealMeSetupTask extends BuildTask
                     self::class . '.ERR_CONFIG_NO_AUTHNCONTEXT',
                     'No AuthnContext specified for environment \'{env}\'. Specify this in your YML configuration, ' .
                     'see the module documentation for more details',
-                    '',
                     array('env' => $env)
                 );
             }
@@ -352,7 +353,6 @@ class RealMeSetupTask extends BuildTask
                 $this->errors[] = _t(
                     self::class . '.ERR_CONFIG_INVALID_AUTHNCONTEXT',
                     'The AuthnContext specified for environment \'{env}\' is invalid, please check your configuration',
-                    '',
                     array('env' => $env)
                 );
             }
@@ -370,8 +370,8 @@ class RealMeSetupTask extends BuildTask
         if (0 === mb_strlen($forEnv)) {
             $this->errors[] = _t(
                 self::class . '.ERR_ENV_NOT_SPECIFIED',
-                '',
-                '',
+                'The RealMe environment was not specified on the cli It must be one of: {allowedEnvs} ' .
+                    'e.g. sake dev/tasks/RealMeSetupTask forEnv=mts',
                 array(
                     'allowedEnvs' => join(', ', $allowedEnvs)
                 )
@@ -382,8 +382,8 @@ class RealMeSetupTask extends BuildTask
         if (false === in_array($forEnv, $allowedEnvs)) {
             $this->errors[] = _t(
                 self::class . '.ERR_ENV_NOT_ALLOWED',
-                '',
-                '',
+                'The RealMe environment specified on the cli (\'{env}\') is not allowed. ' .
+                    'It must be one of: {allowedEnvs}',
                 array(
                     'env' => $forEnv,
                     'allowedEnvs' => join(', ', $allowedEnvs)

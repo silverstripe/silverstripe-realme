@@ -679,7 +679,7 @@ class RealMeService implements TemplateGlobalProvider
 
     public function getIdPCertContent()
     {
-        return $this->getCertificateContents($this->getIdPCertPath(), 'certificate');
+        return $this->getCertificateContents($this->getIdPCertPath());
     }
 
     /**

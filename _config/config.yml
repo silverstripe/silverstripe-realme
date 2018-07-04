@@ -1,6 +1,6 @@
 name: RealMe
 ---
-RealMeLoginForm:
+SilverStripe\RealMe\Authenticator\LoginForm:
   include_jquery: false
   include_javascript: true
   include_css: true
