@@ -3,17 +3,13 @@
 namespace SilverStripe\RealMe\Authenticator;
 
 use SilverStripe\Control\Controller;
-use SilverStripe\Control\HTTPResponse;
-use SilverStripe\Control\HTTPResponse_Exception;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Forms\FieldList;
-use SilverStripe\Forms\Form;
 use SilverStripe\Forms\FormAction;
 use SilverStripe\Forms\HiddenField;
 use SilverStripe\RealMe\Authenticator;
 use SilverStripe\RealMe\RealMeService;
 use SilverStripe\Security\LoginForm as BaseLoginForm;
-use SilverStripe\Security\Security;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\View\ArrayData;
 use SilverStripe\View\Requirements;
@@ -59,15 +55,6 @@ class LoginForm extends BaseLoginForm
     private static $service_name_3 = null;
 
     /**
-     * @var array
-     */
-    private static $allowed_actions = array(
-        'redirectToRealMe'
-    );
-
-    protected static $action_button_name = 'redirectToRealMe';
-
-    /**
      * @var string The authentication class tied to this login form
      */
     protected $authenticator_class = Authenticator::class;
@@ -91,40 +78,6 @@ class LoginForm extends BaseLoginForm
         }
 
         parent::__construct($controller, $name, $this->getFormFields(), $this->getFormActions());
-    }
-
-    /**
-     * Process login form submission
-     *
-     * @param array $data
-     * @param Form $form
-     * @return HTTPResponse If successfully processed, returns void (SimpleSAMLphp redirects to RealMe)
-     * @throws HTTPResponse_Exception
-     * @throws \OneLogin_Saml2_Error
-     */
-    public function redirectToRealMe($data, Form $form)
-    {
-        /** @var RealMeService $service */
-        $service = Injector::inst()->get(RealMeService::class);
-
-        // If there's no service, ensure we throw a predictable error
-        if (null === $service) {
-            return $this->controller->httpError(500);
-        }
-
-        // This will either redirect to RealMe (via SimpleSAMLphp) or return true/false to indicate logged in state
-        $loggedIn = $service->enforceLogin();
-        if (true === $loggedIn) {
-            return $this->controller->redirect($service->getBackURL());
-        }
-
-        return Security::permissionFailure(
-            $this->controller,
-            _t(
-                RealMeService::class . '.LOGINFAILURE',
-                'Unfortunately we\'re not able to authenticate you via RealMe right now.'
-            )
-        );
     }
 
     /**
@@ -266,7 +219,7 @@ class LoginForm extends BaseLoginForm
         }
 
         return FieldList::create(array(
-            FormAction::create(self::$action_button_name, _t(self::class . '.LOGINBUTTON', 'LoginAction'))
+            FormAction::create('doLogin', _t(self::class . '.LOGINBUTTON', 'Login'))
                 ->setUseButtonTag(true)
                 ->setButtonContent($loginButtonContent)
                 ->setAttribute('class', 'realme_button')

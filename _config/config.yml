@@ -1,7 +1,6 @@
 name: RealMe
 ---
 SilverStripe\RealMe\Authenticator\LoginForm:
-  include_jquery: false
   include_javascript: true
   include_css: true
   widget_theme: default

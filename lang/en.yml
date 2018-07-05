@@ -2,7 +2,7 @@ en:
   SilverStripe\RealMe\Authenticator\LoginForm:
     ASSERTLOGINBUTTON: 'Share your details with {orgname}'
     AUTHENTICATOR_NAME: 'RealMe Login'
-    LOGINBUTTON: LoginAction
+    LOGINBUTTON: Login
   SilverStripe\RealMe\RealMeService:
     ERROR_AUTHNFAILED: 'You have chosen to leave RealMe.'
     ERROR_GENERAL: 'RealMe reported a serious application error. Please try again later. If the problem persists, please contact the RealMe Help Desk. From New Zealand: 0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply).'

@@ -4,6 +4,7 @@ namespace SilverStripe\RealMe\Task;
 
 use Exception;
 
+use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Core\Manifest\ModuleLoader;
 use SilverStripe\RealMe\RealMeService;
@@ -49,7 +50,7 @@ class RealMeSetupTask extends BuildTask
     /**
      * Run this setup task. See class phpdoc for the full description of what this does
      *
-     * @param SS_HTTPRequest $request
+     * @param HTTPRequest $request
      */
     public function run($request)
     {
