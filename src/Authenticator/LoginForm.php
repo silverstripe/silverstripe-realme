@@ -69,6 +69,13 @@ class LoginForm extends BaseLoginForm
     {
         $this->setController($controller);
 
+        $service = Injector::inst()->get(RealMeService::class);
+        $integrationType = $service->config()->integration_type;
+
+        if ($integrationType === RealMeService::TYPE_ASSERT) {
+            $this->template = self::class . '/RealMeAssertForm';
+        }
+
         if ($this->config()->include_javascript) {
             Requirements::javascript('silverstripe/realme:client/javascript/realme.js');
         }
@@ -87,7 +94,7 @@ class LoginForm extends BaseLoginForm
      * on the template which is applied to the element .realme_widget.
      *
      * @see realme/_config/config.yml
-     * @see realme/templates/Includes/RealMeLoginForm.ss
+     * @see realme/templates/Includes/LoginForm.ss
      *
      * @return string
      */
@@ -129,26 +136,6 @@ class LoginForm extends BaseLoginForm
         return $this->getServiceName('service_name_3');
     }
 
-    public function forTemplate()
-    {
-        /** @var RealMeService $service */
-        $service = Injector::inst()->get(RealMeService::class);
-        $integrationType = $service->config()->integration_type;
-
-        if ($integrationType === RealMeService::TYPE_ASSERT) {
-            $html = $this->renderWith([
-                self::class . '/RealMeAssertForm'
-            ]);
-
-            // Now that we've rendered, clear message
-            $this->clearMessage();
-
-            return $html;
-        } else {
-            return parent::forTemplate();
-        }
-    }
-
     /**
      * Returns the last error message that the RealMe service provided, if any
      * @return string|null
@@ -176,7 +163,7 @@ class LoginForm extends BaseLoginForm
      */
     public function getAuthenticatorName()
     {
-        return _t(self::class . '.AUTHENTICATOR_NAME', 'RealMe Login');
+        return _t(self::class . '.AUTHENTICATOR_NAME', 'RealMe Account');
     }
 
     /**

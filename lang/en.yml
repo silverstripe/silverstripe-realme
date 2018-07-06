@@ -1,7 +1,7 @@
 en:
   SilverStripe\RealMe\Authenticator\LoginForm:
     ASSERTLOGINBUTTON: 'Share your details with {orgname}'
-    AUTHENTICATOR_NAME: 'RealMe Login'
+    AUTHENTICATOR_NAME: 'RealMe Account'
     LOGINBUTTON: Login
   SilverStripe\RealMe\RealMeService:
     ERROR_AUTHNFAILED: 'You have chosen to leave RealMe.'
