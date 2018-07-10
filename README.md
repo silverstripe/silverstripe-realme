@@ -59,6 +59,18 @@ responses, hence the custom `repositories` section.
 
 Once installation is completed, configuration is required before this module will work - see below.
 
+#### Using in PHP 7.1
+
+If you are installing this module on PHP 7.1 you may have to supress deprecation notices as this module requires `php-saml` which relies on the deprecated mcrypt library. You can add to your sites `_config.php` file:
+
+```php
+use SilverStripe\Control\Director;
+
+if (Director::isDev()) {
+    error_reporting(E_ALL ^ E_DEPRECATED);
+}
+```
+
 ## Configuration of RealMe for your application
 
 RealMe provide two testing environments and a production environment for you to integrate with. Access to these
@@ -69,8 +81,7 @@ used.
 
 ## Providing RealMe login buttons
 
-By default, the module integrates with the `Authenticator` class in SilverStripe, extending the standard SilverStripe
-login form. If you want to provide your own separate login form just for RealMe, then the built-in templates can help
+By default, the module provides an `Authenticator` class in SilverStripe, adding a new login form. If you want to provide your own separate login form just for RealMe, then the built-in templates can help
 with this. They have been designed to integrate as cleanly as possible with SilverStripe templates, but it is up to you
 whether you use them, or roll your own.
 
@@ -90,7 +101,7 @@ class RealMeTestController extends Controller {
 	public $realMeService;
 
 	private static $dependencies = array(
-		'realMeService' => '%$RealMeService'
+		'realMeService' => '%$SilverStripe/RealMe/RealMeService'
 	);
 
 	public function index() {

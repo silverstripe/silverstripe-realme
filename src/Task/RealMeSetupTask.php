@@ -1,5 +1,17 @@
 <?php
 
+namespace SilverStripe\RealMe\Task;
+
+use Exception;
+
+use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Core\Manifest\ModuleLoader;
+use SilverStripe\RealMe\RealMeService;
+use SilverStripe\Control\Director;
+use SilverStripe\Control\Controller;
+use SilverStripe\Dev\BuildTask;
+
 /**
  * Class RealMeSetupTask
  *
@@ -13,6 +25,12 @@
  */
 class RealMeSetupTask extends BuildTask
 {
+    private static $segment = 'RealMeSetupTask';
+
+    private static $dependencies = [
+        'Service' => '%$' . RealMeService::class,
+    ];
+
     protected $title = "RealMe Setup Task";
 
     protected $description = 'Validates a realme configuration & creates the resources needed to integrate with realme';
@@ -32,16 +50,17 @@ class RealMeSetupTask extends BuildTask
     /**
      * Run this setup task. See class phpdoc for the full description of what this does
      *
-     * @param SS_HTTPRequest $request
+     * @param HTTPRequest $request
      */
     public function run($request)
     {
         try {
-            $this->service = Injector::inst()->get('RealMeService');
-
             // Ensure we are running on the command-line, and not running in a browser
             if (false === Director::is_cli()) {
-                throw new Exception(_t('RealMeSetupTask.ERR_NOT_CLI'));
+                throw new Exception(_t(
+                    self::class . '.ERR_NOT_CLI',
+                    'This task can only be run from the command-line, not in your browser.'
+                ));
             }
 
             // Validate all required values exist
@@ -52,10 +71,26 @@ class RealMeSetupTask extends BuildTask
 
             $this->outputMetadataXmlContent($forEnv);
 
-            $this->message(PHP_EOL . _t('RealMeSetupTask.BUILD_FINISH', '', '', array('env' => $forEnv)));
+            $this->message(PHP_EOL . _t(
+                self::class . '.BUILD_FINISH',
+                'RealMe setup complete. Please copy the XML into a file for upload to the {env} environment or DIA ' .
+                'to complete the integration',
+                array('env' => $forEnv)
+            ));
         } catch (Exception $e) {
             $this->message($e->getMessage() . PHP_EOL);
         }
+    }
+
+    /**
+     * @param RealMeService $service
+     * @return $this
+     */
+    public function setService($service)
+    {
+        $this->service = $service;
+
+        return $this;
     }
 
     /**
@@ -78,7 +113,7 @@ class RealMeSetupTask extends BuildTask
         $this->validateCertificates();
 
         // Ensure the entityID is valid, and the privacy realm and service name are correct
-        $this->validateEntityID();
+        $this->validateEntityID($forEnv);
 
         // Make sure we have an authncontext for each environment.
         $this->validateAuthNContext();
@@ -91,9 +126,8 @@ class RealMeSetupTask extends BuildTask
             $errorList = PHP_EOL . ' - ' . join(PHP_EOL . ' - ', $this->errors);
 
             throw new Exception(_t(
-                'RealMeSetupTask.ERR_VALIDATION',
-                '',
-                '',
+                self::class . '.ERR_VALIDATION',
+                'There were {numissues} issue(s) found during validation that must be fixed prior to setup: {issues}',
                 array(
                     'numissues' => sizeof($this->errors),
                     'issues' => $errorList
@@ -101,7 +135,10 @@ class RealMeSetupTask extends BuildTask
             ));
         }
 
-        $this->message(_t('RealMeSetupTask.VALIDATION_SUCCESS'));
+        $this->message(_t(
+            self::class . '.VALIDATION_SUCCESS',
+            'Validation succeeded, continuing with setup...'
+        ));
     }
 
     /**
@@ -112,11 +149,12 @@ class RealMeSetupTask extends BuildTask
     private function outputMetadataXmlContent($forEnv)
     {
         // Output metadata XML so that it can be sent to RealMe via the agency
-        $this->message(sprintf(
-            "Metadata XML is listed below for the '%s' RealMe environment, this should be sent to the agency so they "
-                . "can pass it on to RealMe Operations staff" . PHP_EOL . PHP_EOL,
-            $forEnv
-        ));
+        $this->message(_t(
+            self::class . '.OUPUT_PREFIX',
+            'Metadata XML is listed below for the \'{env}\' RealMe environment, this should be sent to the agency so ' .
+                'they can pass it on to RealMe Operations staff',
+            ['env' => $forEnv]
+        ) . PHP_EOL . PHP_EOL);
 
         $configDir = $this->getConfigurationTemplateDir();
         $templateFile = Controller::join_links($configDir, 'metadata.xml');
@@ -176,7 +214,9 @@ class RealMeSetupTask extends BuildTask
             return $path;
         }
 
-        return Controller::join_links(BASE_PATH, REALME_MODULE_PATH . '/templates/saml-conf');
+        $path = ModuleLoader::inst()->getManifest()->getModule('realme')->getPath();
+
+        return $path . '/templates/saml-conf';
     }
 
     /**
@@ -206,20 +246,29 @@ class RealMeSetupTask extends BuildTask
      * The service name and privacy realm need to be under 10 chars eg.
      * http://hostname.domain/serviceName/privacyRealm
      *
+     * @param string $forEnv
      * @return void
      */
-    private function validateEntityID()
+    private function validateEntityID($forEnv)
     {
         $entityId = $this->service->getSPEntityID();
 
         if (is_null($entityId)) {
-            $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_NO_ENTITYID', '', '', array('env' => $env));
+            $this->errors[] = _t(
+                self::class . '.ERR_CONFIG_NO_ENTITYID',
+                'No entityID specified for environment \'{env}\'. Specify this in your YML configuration, see the ' .
+                    'module documentation for more details',
+                array('env' => $forEnv)
+            );
         }
 
         // make sure the entityID is a valid URL
         $entityId = filter_var($entityId, FILTER_VALIDATE_URL);
         if ($entityId === false) {
-            $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_ENTITYID', '', '',
+            $this->errors[] = _t(
+                self::class . '.ERR_CONFIG_ENTITYID',
+                'The Entity ID (\'{entityId}\') must be https, not be \'localhost\', and must contain a valid ' .
+                    'service name and privacy realm e.g. https://my-realme-integration.govt.nz/p-realm/s-name',
                 array(
                     'entityId' => $entityId
                 )
@@ -232,7 +281,10 @@ class RealMeSetupTask extends BuildTask
         // check it's not localhost and HTTPS. and make sure we have a host / scheme
         $urlParts = parse_url($entityId);
         if ($urlParts['host'] === 'localhost' || $urlParts['scheme'] === 'http') {
-            $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_ENTITYID', '', '',
+            $this->errors[] = _t(
+                self::class . '.ERR_CONFIG_ENTITYID',
+                'The Entity ID (\'{entityId}\') must be https, not be \'localhost\', and must contain a valid ' .
+                    'service name and privacy realm e.g. https://my-realme-integration.govt.nz/p-realm/s-name',
                 array(
                     'entityId' => $entityId
                 )
@@ -250,7 +302,10 @@ class RealMeSetupTask extends BuildTask
         // Validate Service Name
         $serviceName = array_pop($urlParts);
         if (mb_strlen($serviceName) > 20 || 0 === mb_strlen($serviceName)) {
-            $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_ENTITYID_SERVICE_NAME', '', '',
+            $this->errors[] = _t(
+                self::class . '.ERR_CONFIG_ENTITYID_SERVICE_NAME',
+                'The service name \'{serviceName}\' must be a maximum of 20 characters and not blank for entityID ' .
+                    '\'{entityId}\'',
                 array(
                     'serviceName' => $serviceName,
                     'entityId' => $entityId
@@ -261,7 +316,9 @@ class RealMeSetupTask extends BuildTask
         // Validate Privacy Realm
         $privacyRealm = array_pop($urlParts);
         if (null === $privacyRealm || 0 === mb_strlen($privacyRealm)) {
-            $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_ENTITYID_PRIVACY_REALM', '', '',
+            $this->errors[] = _t(
+                self::class . '.ERR_CONFIG_ENTITYID_PRIVACY_REALM',
+                'The privacy realm \'{privacyRealm}\' must not be blank for entityID \'{entityId}\'',
                 array(
                     'privacyRealm' => $privacyRealm,
                     'entityId' => $entityId
@@ -280,11 +337,20 @@ class RealMeSetupTask extends BuildTask
         foreach ($this->service->getAllowedRealMeEnvironments() as $env) {
             $context = $this->service->getAuthnContextForEnvironment($env);
             if (is_null($context)) {
-                $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_NO_AUTHNCONTEXT', '', '', array('env' => $env));
+                $this->errors[] = _t(
+                    self::class . '.ERR_CONFIG_NO_AUTHNCONTEXT',
+                    'No AuthnContext specified for environment \'{env}\'. Specify this in your YML configuration, ' .
+                        'see the module documentation for more details',
+                    array('env' => $env)
+                );
             }
 
             if (!in_array($context, $this->service->getAllowedAuthNContextList())) {
-                $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_INVALID_AUTHNCONTEXT', '', '', array('env' => $env));
+                $this->errors[] = _t(
+                    self::class . '.ERR_CONFIG_INVALID_AUTHNCONTEXT',
+                    'The AuthnContext specified for environment \'{env}\' is invalid, please check your configuration',
+                    array('env' => $env)
+                );
             }
         }
     }
@@ -299,9 +365,9 @@ class RealMeSetupTask extends BuildTask
         $allowedEnvs = $this->service->getAllowedRealMeEnvironments();
         if (0 === mb_strlen($forEnv)) {
             $this->errors[] = _t(
-                'RealMeSetupTask.ERR_ENV_NOT_SPECIFIED',
-                '',
-                '',
+                self::class . '.ERR_ENV_NOT_SPECIFIED',
+                'The RealMe environment was not specified on the cli It must be one of: {allowedEnvs} ' .
+                    'e.g. vendor/bin/sake dev/tasks/RealMeSetupTask forEnv=mts',
                 array(
                     'allowedEnvs' => join(', ', $allowedEnvs)
                 )
@@ -311,9 +377,9 @@ class RealMeSetupTask extends BuildTask
 
         if (false === in_array($forEnv, $allowedEnvs)) {
             $this->errors[] = _t(
-                'RealMeSetupTask.ERR_ENV_NOT_ALLOWED',
-                '',
-                '',
+                self::class . '.ERR_ENV_NOT_ALLOWED',
+                'The RealMe environment specified on the cli (\'{env}\') is not allowed. ' .
+                    'It must be one of: {allowedEnvs}',
                 array(
                     'env' => $forEnv,
                     'allowedEnvs' => join(', ', $allowedEnvs)
@@ -328,12 +394,15 @@ class RealMeSetupTask extends BuildTask
     private function validateDirectoryStructure()
     {
         if (is_null($this->service->getCertDir())) {
-            $this->errors[] = _t('RealMeSetupTask.ERR_CERT_DIR_MISSING');
+            $this->errors[] = _t(
+                self::class . '.ERR_CERT_DIR_MISSING',
+                'No certificate dir is specified. Define the REALME_CERT_DIR environment variable in your .env file'
+            );
         } elseif (!$this->isReadable($this->service->getCertDir())) {
             $this->errors[] = _t(
-                'RealMeSetupTask.ERR_CERT_DIR_NOT_READABLE',
-                '',
-                '',
+                self::class . '.ERR_CERT_DIR_NOT_READABLE',
+                'Certificate dir specified (\'{dir}\') must be created and be readable. Ensure permissions are set ' .
+                    'correctly and the directory is absolute',
                 array('dir' => $this->service->getCertDir())
             );
         }
@@ -345,20 +414,37 @@ class RealMeSetupTask extends BuildTask
     private function validateMetadata()
     {
         if (is_null($this->service->getMetadataOrganisationName())) {
-            $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_NO_ORGANISATION_NAME');
+            $this->errors[] = _t(
+                self::class . '.ERR_CONFIG_NO_ORGANISATION_NAME',
+                'No organisation name is specified in YML configuration. Ensure the \'metadata_organisation_name\' ' .
+                    'value is defined in your YML configuration'
+            );
         }
 
         if (is_null($this->service->getMetadataOrganisationDisplayName())) {
-            $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_NO_ORGANISATION_DISPLAY_NAME');
+            $this->errors[] = _t(
+                self::class . '.ERR_CONFIG_NO_ORGANISATION_DISPLAY_NAME',
+                'No organisation display name is specified in YML configuration. Ensure the ' .
+                    '\'metadata_organisation_display_name\' value is defined in your YML configuration'
+            );
         }
 
         if (is_null($this->service->getMetadataOrganisationUrl())) {
-            $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_NO_ORGANISATION_URL');
+            $this->errors[] = _t(
+                self::class . '.ERR_CONFIG_NO_ORGANISATION_URL',
+                'No organisation URL is specified in YML configuration. Ensure the \'metadata_organisation_url\' ' .
+                    'value is defined in your YML configuration'
+            );
         }
 
         $contact = $this->service->getMetadataContactSupport();
         if (is_null($contact['company']) || is_null($contact['firstNames']) || is_null($contact['surname'])) {
-            $this->errors[] = _t('RealMeSetupTask.ERR_CONFIG_NO_SUPPORT_CONTACT');
+            $this->errors[] = _t(
+                self::class . '.ERR_CONFIG_NO_SUPPORT_CONTACT',
+                'Support contact detail is missing from YML configuration. Ensure the following values are defined ' .
+                    'in the YML configuration: metadata_contact_support_company, metadata_contact_support_firstnames,' .
+                    ' metadata_contact_support_surname'
+            );
         }
     }
 
@@ -370,9 +456,9 @@ class RealMeSetupTask extends BuildTask
         $signingCertFile = $this->service->getSigningCertPath();
         if (is_null($signingCertFile) || !$this->isReadable($signingCertFile)) {
             $this->errors[] = _t(
-                'RealMeSetupTask.ERR_CERT_NO_SIGNING_CERT',
-                '',
-                '',
+                self::class . '.ERR_CERT_NO_SIGNING_CERT',
+                'No SAML signing PEM certificate defined, or the file can\'t be read. Define the {const} environment ' .
+                    'variable in your .env file, and ensure the file exists in the certificate directory',
                 array(
                     'const' => 'REALME_SIGNING_CERT_FILENAME'
                 )
@@ -380,9 +466,10 @@ class RealMeSetupTask extends BuildTask
         } elseif (is_null($this->service->getSPCertContent())) {
             // Signing cert exists, but doesn't include BEGIN/END CERTIFICATE lines, or doesn't contain the cert
             $this->errors[] = _t(
-                'RealMeSetupTask.ERR_CERT_SIGNING_CERT_CONTENT',
-                '',
-                '',
+                self::class . '.ERR_CERT_SIGNING_CERT_CONTENT',
+                'The file specified for the signing certificate ({file}) does not contain a valid certificate ' .
+                    '(beginning with -----BEGIN CERTIFICATE-----). Check this file to ensure it contains the ' .
+                    'certificate and private key',
                 array('file' => $this->service->getSigningCertPath())
             );
         }

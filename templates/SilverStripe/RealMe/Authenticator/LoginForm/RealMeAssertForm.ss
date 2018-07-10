@@ -45,7 +45,7 @@ or directly in your css, e.g. .realme_popup {width: 450px}
     <div class="realme_login_lockup">
         <form $FormAttributes>
             <% if $Actions %>
-                <img src="{$BaseHref}realme/images/RealMe-logo@2x.png" alt="RealMe" width="42" height="42">
+                <img src="$resourceURL('silverstripe/realme:client/images/RealMe-logo@2x.png')" alt="RealMe" width="42" height="42">
                 <div class="realme_btn_margin">
                     <% loop $Actions %>
                         $Field
@@ -59,9 +59,9 @@ or directly in your css, e.g. .realme_popup {width: 450px}
     </div>
 
     <div class="realme_popup_position">
-        <a class="js_toggle_popup link whats_realme" href="https://www.realme.govt.nz">What’s RealMe?</a>
+        <a class="js_toggle_popup link whats_realme" href="https://www.realme.govt.nz" target="_blank" rel="noopener noreferrer">What’s RealMe?</a>
 
-        <div class="realme_popup_wrapper realme_arrow_top_left">
+        <div class="realme_popup_wrapper realme_arrow_side_left">
             <!-- realme_popup -->
             <div class="realme_popup" style="width:420px;">
                 <h2 class="realme_popup_title">The easy way to prove who you are online</h2>

@@ -368,8 +368,8 @@
 }
 
 .realme_arrow_side_left {
-  top: -1em;
-  left: 100%;
+  top: -26em;
+  left: calc(100% + 25px);
 }
 .realme_arrow_side_left .arrow {
   width: 0;

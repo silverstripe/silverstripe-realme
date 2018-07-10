@@ -1,5 +1,11 @@
 <?php
-class RealMeMiniLoginForm extends RealMeLoginForm
+
+namespace SilverStripe\RealMe\Authenticator;
+
+use SilverStripe\Control\Controller;
+use SilverStripe\RealMe\Authenticator\LoginForm;
+
+class MiniLoginForm extends LoginForm
 {
     /**
      * @var string The position at which the 'What's RealMe?' popup appears on hover. Can be either 'left' or 'right'.
@@ -25,9 +31,15 @@ class RealMeMiniLoginForm extends RealMeLoginForm
         $authMethod = $fields->dataFieldByName('AuthenticationMethod')->Value();
         $token = $fields->dataFieldByName('SecurityID')->Value();
         $actionName = $action->getName();
-        $actionValue = _t('RealMeLoginForm.LOGINBUTTON', 'LoginAction');
+        $actionValue = _t(LoginForm::class . 'LOGINBUTTON', 'LoginAction');
 
-        $queryString = sprintf('?AuthenticationMethod=%s&SecurityID=%s&%s=%s', $authMethod, $token, $actionName, $actionValue);
+        $queryString = sprintf(
+            '?AuthenticationMethod=%s&SecurityID=%s&%s=%s',
+            $authMethod,
+            $token,
+            $actionName,
+            $actionValue
+        );
         return Controller::join_links($this->FormAction(), $queryString);
     }
 

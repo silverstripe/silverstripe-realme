@@ -1,0 +1,8 @@
+---
+Name: realmeauthentication
+---
+SilverStripe\Core\Injector\Injector:
+  SilverStripe\Security\Security:
+    properties:
+      Authenticators:
+        RealMe: %$SilverStripe\RealMe\Authenticator

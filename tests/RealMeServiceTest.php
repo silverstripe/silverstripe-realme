@@ -1,7 +1,18 @@
 <?php
+
+namespace SilverStripe\RealMe\Tests;
+
+use SilverStripe\Control\NullHTTPRequest;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Environment;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Core\TempFolder;
+use SilverStripe\Dev\SapphireTest;
+use SilverStripe\RealMe\RealMeService;
+
 class RealMeServiceTest extends SapphireTest
 {
-    private $pathForTempCertificate;
+    private static $pathForTempCertificate;
 
     /**
      * @var RealMeService
@@ -10,22 +21,22 @@ class RealMeServiceTest extends SapphireTest
 
     public function testGetCertificateContents()
     {
-        $this->pathForTempCertificate = ASSETS_PATH . '/tmpcert.pem';
+        self::$pathForTempCertificate = TempFolder::getTempFolder(BASE_PATH) . '/tmpcert.pem';
 
         /**
          * Test standard certificate
          */
 
-        $contents = file_get_contents(BASE_PATH . '/realme/tests/certs/standard_cert.pem');
+        $contents = file_get_contents(__DIR__ . '/certs/standard_cert.pem');
 
         // Strip carriage returns
         $contents = str_replace("\r", '', $contents);
 
-        $path = $this->pathForTempCertificate;
+        $path = self::$pathForTempCertificate;
         file_put_contents($path, $contents);
 
         /** @var RealMeService $service */
-        $service = Injector::inst()->get('RealMeService');
+        $service = Injector::inst()->get(RealMeService::class);
 
         $this->assertEquals('Redacted private key goes here', $service->getCertificateContents($path, 'key'));
         $this->assertEquals('Redacted certificate goes here', $service->getCertificateContents($path, 'certificate'));
@@ -36,16 +47,16 @@ class RealMeServiceTest extends SapphireTest
          * Test certificate with RSA private key
          */
 
-        $contents = file_get_contents(BASE_PATH . '/realme/tests/certs/rsa_cert.pem');
+        $contents = file_get_contents(__DIR__ . '/certs/rsa_cert.pem');
 
         // Strip carriage returns
         $contents = str_replace("\r", '', $contents);
 
-        $path = $this->pathForTempCertificate;
+        $path = self::$pathForTempCertificate;
         file_put_contents($path, $contents);
 
         /** @var RealMeService $service */
-        $service = Injector::inst()->get('RealMeService');
+        $service = Injector::inst()->get(RealMeService::class);
         $this->assertEquals('Redacted private key goes here', $service->getCertificateContents($path, 'key'));
         $this->assertEquals('Redacted certificate goes here', $service->getCertificateContents($path, 'certificate'));
 
@@ -54,13 +65,13 @@ class RealMeServiceTest extends SapphireTest
 
     public function testGetAuth()
     {
-        $auth = $this->service->getAuth();
+        $auth = $this->service->getAuth(new NullHTTPRequest());
         $this->assertTrue(get_class($auth) === 'OneLogin_Saml2_Auth');
 
         // Service Provider settings
         $spData = $auth->getSettings()->getSPData();
         $this->assertSame('https://example.com/realm/service', $spData['entityId']);
-        $this->assertSame('https://example.com/Security/realme/acs', $spData['assertionConsumerService']['url']);
+        $this->assertSame('https://example.com/Security/login/RealMe/acs', $spData['assertionConsumerService']['url']);
         $this->assertSame('urn:oasis:names:tc:SAML:2.0:nameid-format:persistent', $spData['NameIDFormat']);
 
         // Identity Provider settings
@@ -70,60 +81,82 @@ class RealMeServiceTest extends SapphireTest
 
         // Security settings
         $securityData = $auth->getSettings()->getSecurityData();
-        $this->assertSame('urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:LowStrength', $securityData['requestedAuthnContext'][0]);
+        $this->assertSame(
+            'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:LowStrength',
+            $securityData['requestedAuthnContext'][0]
+        );
     }
 
     public function testGetAuthCustomSPEntityId()
     {
-        Config::inst()->update('RealMeService', 'sp_entity_ids', ['mts' => 'https://example.com/custom-realm/custom-service']);
-        $spData = $this->service->getAuth()->getSettings()->getSPData();
+        Config::modify()->set(
+            RealMeService::class,
+            'sp_entity_ids',
+            ['mts' => 'https://example.com/custom-realm/custom-service']
+        );
+        $spData = $this->service->getAuth(new NullHTTPRequest())->getSettings()->getSPData();
         $this->assertSame('https://example.com/custom-realm/custom-service', $spData['entityId']);
     }
 
     public function testGetAuthCustomIdPEntityId()
     {
-        Config::inst()->update('RealMeService', 'idp_entity_ids', ['mts' => [ 'login' => 'https://example.com/idp-entry']]);
-        $idpData = $this->service->getAuth()->getSettings()->getIdPData();
+        Config::modify()->set(
+            RealMeService::class,
+            'idp_entity_ids',
+            ['mts' => ['login' => 'https://example.com/idp-entry']]
+        );
+        $idpData = $this->service->getAuth(new NullHTTPRequest())->getSettings()->getIdPData();
         $this->assertSame('https://example.com/idp-entry', $idpData['entityId']);
     }
 
     public function testGetAuthCustomAuthnContext()
     {
-        Config::inst()->update('RealMeService', 'authn_contexts', ['mts' => 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength::OTP:Mobile:SMS']);
-        $securityData = $this->service->getAuth()->getSettings()->getSecurityData();
-        $this->assertSame('urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength::OTP:Mobile:SMS', $securityData['requestedAuthnContext'][0]);
+        Config::modify()->set(
+            RealMeService::class,
+            'authn_contexts',
+            ['mts' => 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength::OTP:Mobile:SMS']
+        );
+        $securityData = $this->service->getAuth(new NullHTTPRequest())->getSettings()->getSecurityData();
+        $this->assertSame(
+            'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength::OTP:Mobile:SMS',
+            $securityData['requestedAuthnContext'][0]
+        );
     }
 
-    public function setUpOnce()
+    public static function setUpBeforeClass()
     {
-        parent::setUpOnce();
+        Environment::putEnv('REALME_CERT_DIR=' . __DIR__ . '/certs');
+        Environment::putEnv('REALME_SIGNING_CERT_FILENAME=' . 'standard_cert.pem');
 
-        if(defined('REALME_CERT_DIR') || defined('REALME_SIGNING_CERT_FILENAME')) {
-            die('You must not have REALME_CERT_DIR or REALME_SIGNING_CERT_FILENAME defined for the tests to run');
-        }
-
-        define('REALME_CERT_DIR', BASE_PATH . '/realme/tests/certs');
-        define('REALME_SIGNING_CERT_FILENAME', 'standard_cert.pem');
+        parent::setUpBeforeClass();
     }
 
-    public function setUp()
+    protected function setUp()
     {
         parent::setUp();
-        $this->service = Injector::inst()->get('RealMeService');
+        $this->service = Injector::inst()->create(RealMeService::class);
 
         // Configure for login integration and mts by default
-        Config::inst()->update('RealMeService', 'sp_entity_ids', ['mts' => 'https://example.com/realm/service']);
-        Config::inst()->update('RealMeService', 'metadata_assertion_service_domains', ['mts' => 'https://example.com']);
-        Config::inst()->update('RealMeService', 'authn_contexts', ['mts' => 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:LowStrength']);
+        Config::modify()->set(RealMeService::class, 'sp_entity_ids', ['mts' => 'https://example.com/realm/service']);
+        Config::modify()->set(
+            RealMeService::class,
+            'metadata_assertion_service_domains',
+            ['mts' => 'https://example.com']
+        );
+        Config::modify()->set(
+            RealMeService::class,
+            'authn_contexts',
+            ['mts' => 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:LowStrength']
+        );
     }
 
-    public function tearDownOnce()
+    public static function tearDownAfterClass()
     {
-        parent::tearDownOnce();
+        parent::tearDownAfterClass();
 
-        // Ensure $this->pathForTempCertificate is unlink'd (otherwise it won't get unlinked if the test fails)
-        if(file_exists($this->pathForTempCertificate)) {
-            unlink($this->pathForTempCertificate);
+        // Ensure self::$pathForTempCertificate is unlink'd (otherwise it won't get unlinked if the test fails)
+        if (file_exists(self::$pathForTempCertificate)) {
+            unlink(self::$pathForTempCertificate);
         }
     }
 }

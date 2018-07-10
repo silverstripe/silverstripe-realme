@@ -1,6 +1,6 @@
-SiteTree:
+---
+Name: realmeextensions
+---
+SilverStripe\CMS\Model\SiteTree:
   extensions:
-    - RealMeSiteTreeExtension
-Security:
-  extensions:
-    - RealMeSecurityExtension
+    - SilverStripe\RealMe\Extension\SiteTreeExtension

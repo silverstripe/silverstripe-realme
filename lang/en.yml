@@ -1,48 +1,37 @@
 en:
-  RealMeAuthenticator:
-    TITLE: "RealMe Account"
-    LOGINFAILURE: "Unfortunately we're not able to authenticate you via RealMe right now."
-  RealMeSecurityExtension:
-    LOGINFAILURE: "Unfortunately we're not able to authenticate you via RealMe right now."
-    AUTHERROR: "Sorry, we couldn't verify your RealMe account. Please try again."
-    AUTHN_FAILED: "You have chosen to leave RealMe."
-    TIMEOUT: "Your session has expired due to inactivity."
-    UNKNOWN_PRINCIPAL: "Your RealMe login could not be completed because you are accessing the service for the first time. Please use the first time option."
-    INTERNAL_ERROR: "RealMe was unable to process your request due to a RealMe internal error. Please try again. If the problem persists, please contact RealMe Help Desk on 0800 664 774"
-    NO_AVAILABLE_IDP: "RealMe reported that the TXT service or the RealMe token service is not available. You may try again later. If the problem persists, please contact RealMe Help Desk on 0800 664 774."
-    GENERAL_ERROR: "RealMe reported a serious application error with the message [{errorMsg}]. Please try again later. If the problem persists, please contact RealMe Help Desk on 0800 664 774."
-  RealMeLoginForm:
-    LOGINBUTTON: "Login or Register with RealMe"
-  RealMeSetupTask:
-    ERR_NOT_CLI: "This task can only be run from the command-line, not in your browser."
-    ERR_ALREADY_RUN: "This task has already been run once ({path} already exists). If you want to re-run it, please add force=1 as the third arg"
-    ERR_VALIDATION: "There were {numissues} issue(s) found during validation that must be fixed prior to setup: {issues}"
-    ERR_ENV_NOT_SPECIFIED: "The RealMe environment was not specified on the cli It must be one of: {allowedEnvs} e.g. sake dev/tasks/RealMeSetupTask forEnv=mts"
-    ERR_ENV_NOT_ALLOWED: "The RealMe environment specified on the cli ('{env}') is not allowed. It must be one of: {allowedEnvs}"
-    ERR_BASE_DIR_MISSING: "No base dir is specified. Ensure you haven't set this to a blank line in your YML configuration"
-    ERR_CERT_DIR_MISSING: "No certificate dir is specified. Define the REALME_CERT_DIR const in your _ss_environment.php file"
-    ERR_CERT_DIR_NOT_READABLE: "Certificate dir specified ('{dir}') must be created and be readable. Ensure permissions are set correctly and the directory is absolute"
-    ERR_LOG_DIR_MISSING: "No logging dir is specified. Define the REALME_LOG_DIR const in your _ss_environment.php file"
-    ERR_LOG_DIR_NOT_WRITEABLE: "Logging dir specified ('{dir}') must be created and able to be written to. Ensure permissions are set correctly and the directory is absolute"
-    ERR_TEMP_DIR_MISSING: "No temp dir is specified. Define the REALME_TEMP_DIR const in your _ss_environment.php file"
-    ERR_TEMP_DIR_NOT_WRITEABLE: "Temp dir specified ('{dir}') not writeable, or the parent dir is not writeable. Ensure permissions are set correctly and the directory is absolute"
-    ERR_SIMPLE_SAML_CONFIG_DIR_MISSING: "No RealMe configuration dir (for SimpleSAMLphp) is specified. Define the REALME_CONFIG_DIR const in your _ss_environment.php file"
-    ERR_SIMPLE_SAML_CONFIG_DIR_NOT_WRITEABLE: "RealMe configuration dir specified ('{dir}') must be created and able to be written to. Ensure permissions are set correctly, and the directory is absolute"
-    ERR_SIMPLE_SAML_NO_ADMIN_PASS: "A SimpleSAMLphp admin password couldn't be found or generated. Generate one yourself and store it in your YML configuration. See RealMeService::findOrMakeSimpleSAMLPassword() for more details"
-    ERR_SIMPLE_SAML_NO_SALT: "A salt for SimpleSAMLphp couldn't be found or generated. Generate one yourself and store it in your YML configuration. See RealMeService::generateSimpleSAMLSalt() for more details"
-    ERR_CONFIG_NO_ENTITYID: "No entityID specified for environment '{env}'. Specify this in your YML configuration, see the module documentation for more details"
-    ERR_CONFIG_ENTITYID: "The '{env}' entityId ('{entityId}') must be https, not be 'localhost', and must contain a valid service name and privacy realm e.g. https://my-realme-integration.govt.nz/p-realm/s-name"
-    ERR_CONFIG_ENTITYID_SERVICE_NAME: "The '{env}' service name '{serviceName}' must be under 10 characters and not blank for entityID '{entityId}' "
-    ERR_CONFIG_ENTITYID_PRIVACY_REALM: "The '{env}' privacy realm '{privacyRealm}' must be under 10 characters and not blank for entityID '{entityId}' "
-    ERR_CONFIG_NO_AUTHNCONTEXT: "No AuthnContext specified for environment '{env}'. Specify this in your YML configuration, see the module documentation for more details"
-    ERR_CONFIG_INVALID_AUTHNCONTEXT: "The AuthnContext specified for environment '{env}' is invalid, please check your configuration"
-    ERR_CONFIG_ASSERTION_SERVICE_URL: "The assertion consumer service URL is missing or invalid for environment '{env}'. The metadata_assertion_service_domains list needs to be added in your YML configuration for all RealMe environments, it must be a valid URL, and not localhost"
-    ERR_CONFIG_NO_ORGANISATION_NAME: "No organisation name is specified in YML configuration. Ensure the 'metadata_organisation_name' value is defined in your YML configuration"
-    ERR_CONFIG_NO_ORGANISATION_DISPLAY_NAME: "No organisation display name is specified in YML configuration. Ensure the 'metadata_organisation_display_name' value is defined in your YML configuration"
-    ERR_CONFIG_NO_ORGANISATION_URL: "No organisation URL is specified in YML configuration. Ensure the 'metadata_organisation_url' value is defined in your YML configuration"
-    ERR_CONFIG_NO_SUPPORT_CONTACT: "Support contact detail is missing from YML configuration. Ensure the following values are defined in YML configuration: metadata_contact_support_company, metadata_contact_support_firstnames, metadata_contact_support_surname"
-    ERR_CERT_NO_SIGNING_CERT: "No SAML signing PEM certificate defined, or the file can't be read. Define the {const} const in your _ss_environment.php file, and ensure the file exists in the certificate directory"
-    ERR_CERT_SIGNING_CERT_CONTENT: "The file specified for the signing certificate ({file}) does not contain a valid certificate (beginning with -----BEGIN CERTIFICATE-----). Check this file to ensure it contains the certificate and private key"
-    ERR_CERT_NO_MUTUAL_CERT: "No mutual back-channel PEM certificate defined, or the file can't be read. Define the {const} const in your _ss_environment.php file, and ensure the file exists in the certificate directory"
-    VALIDATION_SUCCESS: "Validation succeeded, continuing with setup..."
-    BUILD_FINISH: "RealMe setup complete. Please copy the XML into a file for upload to the %s environment or DIA to complete the integration"
+  SilverStripe\RealMe\Authenticator\LoginForm:
+    ASSERTLOGINBUTTON: 'Share your details with {orgname}'
+    AUTHENTICATOR_NAME: 'RealMe Account'
+    LOGINBUTTON: Login
+  SilverStripe\RealMe\RealMeService:
+    ERROR_AUTHNFAILED: 'You have chosen to leave RealMe.'
+    ERROR_GENERAL: 'RealMe reported a serious application error. Please try again later. If the problem persists, please contact the RealMe Help Desk. From New Zealand: 0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply).'
+    ERROR_INTERNAL: 'RealMe was unable to process your request due to a RealMe internal error. Please try again. If the problem persists, please contact the RealMe Help Desk. From New Zealand dial 0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply).'
+    ERROR_NOAUTHNCONTEXT: 'RealMe reported a serious application error with the message ''No AuthN Context''. Please try again later. If the problem persists, please contact the RealMe Help Desk. From New Zealand: 0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply).'
+    ERROR_NOAVAILABLEIDP: 'RealMe reported that the TXT service or the token service is not available. You may try again later. If the problem persists, please contact the RealMe Help Desk. From New Zealand dial 0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply).'
+    ERROR_NOPASSIVE: 'RealMe reported a serious application error with the message ''No Passive''. Please try again later. If the problem persists, please contact the RealMe Help Desk. From New Zealand: 0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply).'
+    ERROR_REQUESTDENIED: 'RealMe reported a serious application error with the message ''Request Denied''. Please try again later. If the problem persists, please contact the RealMe Help Desk. From New Zealand: 0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply).'
+    ERROR_REQUESTUNSUPPORTED: 'RealMe reported a serious application error with the message ''Request Unsupported''. Please try again later. If the problem persists, please contact the RealMe Help Desk. From New Zealand: 0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply).'
+    ERROR_TIMEOUT: 'Your RealMe session has timed out – please try again.'
+    ERROR_UNKNOWNPRINCIPAL: 'You are unable to use RealMe to verify your identity if you do not have a RealMe account. Visit the RealMe home page for more information and to create an account.'
+    ERROR_UNSUPPORTEDBINDING: 'RealMe reported a serious application error with the message ''Unsupported Binding''. Please try again later. If the problem persists, please contact the RealMe Help Desk. From New Zealand: 0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply).'
+  SilverStripe\RealMe\Task\RealMeSetupTask:
+    BUILD_FINISH: 'RealMe setup complete. Please copy the XML into a file for upload to the %s environment or DIA to complete the integration'
+    ERR_CERT_DIR_MISSING: 'No certificate dir is specified. Define the REALME_CERT_DIR environment variable in your .env file'
+    ERR_CERT_DIR_NOT_READABLE: 'Certificate dir specified (''{dir}'') must be created and be readable. Ensure permissions are set correctly and the directory is absolute'
+    ERR_CERT_NO_SIGNING_CERT: 'No SAML signing PEM certificate defined, or the file can''t be read. Define the {const} environment variable in your .env file, and ensure the file exists in the certificate directory'
+    ERR_CERT_SIGNING_CERT_CONTENT: 'The file specified for the signing certificate ({file}) does not contain a valid certificate (beginning with -----BEGIN CERTIFICATE-----). Check this file to ensure it contains the certificate and private key'
+    ERR_CONFIG_ENTITYID: 'The Entity ID (''{entityId}'') must be https, not be ''localhost'', and must contain a valid service name and privacy realm e.g. https://my-realme-integration.govt.nz/p-realm/s-name'
+    ERR_CONFIG_ENTITYID_PRIVACY_REALM: 'The privacy realm ''{privacyRealm}'' must not be blank for entityID ''{entityId}'''
+    ERR_CONFIG_ENTITYID_SERVICE_NAME: 'The service name ''{serviceName}'' must be a maximum of 20 characters and not blank for entityID ''{entityId}'''
+    ERR_CONFIG_INVALID_AUTHNCONTEXT: 'The AuthnContext specified for environment ''{env}'' is invalid, please check your configuration'
+    ERR_CONFIG_NO_AUTHNCONTEXT: 'No AuthnContext specified for environment ''{env}''. Specify this in your YML configuration, see the module documentation for more details'
+    ERR_CONFIG_NO_ENTITYID: 'No entityID specified for environment ''{env}''. Specify this in your YML configuration, see the module documentation for more details'
+    ERR_CONFIG_NO_ORGANISATION_DISPLAY_NAME: 'No organisation display name is specified in YML configuration. Ensure the ''metadata_organisation_display_name'' value is defined in your YML configuration'
+    ERR_CONFIG_NO_ORGANISATION_NAME: 'No organisation name is specified in YML configuration. Ensure the ''metadata_organisation_name'' value is defined in your YML configuration'
+    ERR_CONFIG_NO_ORGANISATION_URL: 'No organisation URL is specified in YML configuration. Ensure the ''metadata_organisation_url'' value is defined in your YML configuration'
+    ERR_CONFIG_NO_SUPPORT_CONTACT: 'Support contact detail is missing from YML configuration. Ensure the following values are defined in the YML configuration: metadata_contact_support_company, metadata_contact_support_firstnames, metadata_contact_support_surname'
+    ERR_ENV_NOT_ALLOWED: 'The RealMe environment specified on the cli (''{env}'') is not allowed. It must be one of: {allowedEnvs}'
+    ERR_ENV_NOT_SPECIFIED: 'The RealMe environment was not specified on the cli It must be one of: {allowedEnvs} e.g. sake dev/tasks/RealMeSetupTask forEnv=mts'
+    ERR_NOT_CLI: 'This task can only be run from the command-line, not in your browser.'
+    VALIDATION_SUCCESS: 'Validation succeeded, continuing with setup...'
