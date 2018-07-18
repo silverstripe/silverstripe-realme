@@ -175,11 +175,14 @@ using the basic configuration system above, because you will want multiple diffe
 integrations (e.g. 'test1' website points to MTS, while 'test2' and 'staging' websites both point to ITE). To do this, 
 each website installation needs a separate RealMe integration (that is, a different SP Entity ID). Once these are 
 configured with RealMe, you can switch them out by modifying configuration. For now (until a solution to #26 is built), 
-the best solution is to use `RealMeService::config()->set()` for SS4, e.g. in your \_config.php:
+the best solution is to use `RealMeService::config()->set()` for SS4. **Note:** This can cause a significant performance impact in SilverStripe 4, as by default YML configuration is immutable, and this overrides this which is not ideal. Use this only if it's really necessary, and ensure that the majority of your environments are still configured via YML as normal.
+
+In your app/\_config.php:
 
 ```php
 use \SilverStripe\RealMe\RealMeService
 
+$changed = false;
 $entityIds = RealMeService::config()->get('sp_entity_ids');
 $domains = RealMeService::config()->get('metadata_assertion_service_domains');
 
@@ -187,13 +190,18 @@ $domains = RealMeService::config()->get('metadata_assertion_service_domains');
 if (getenv('SITE_ENVIRONMENT') == 'test2')) {
     $entityIds['ite'] = 'https://test2-domain.example.com/privacy-realm/service-name';
     $domains['ite'] = 'https://test2-domain.example.com';
+    $changed = true;
 } elseif(getenv('SITE_ENVIRONMENT') == 'staging')) {
     $entityIds['ite'] = 'https://staging-domain.example.com/privacy-realm/service-name';
     $domains['ite'] = 'https://staging-domain.example.com';
+    $changed = true;
 }
 
-RealMeService::config()->set('sp_entity_ids', $entityIds);
-RealMeService::config()->set('metadata_assertion_service_domains', $domains);
+// Only mutate config if it's really necessary
+if ($changed) {
+    RealMeService::config()->set('sp_entity_ids', $entityIds);
+    RealMeService::config()->set('metadata_assertion_service_domains', $domains);
+}
 ```
 
 This will allow you, if necessary, to re-configure the module in real-time based on the website environment. Note that you will still need to deploy the correct private/public keypairs to the correct servers etc.
