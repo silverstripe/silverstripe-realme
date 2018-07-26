@@ -4,7 +4,7 @@ namespace SilverStripe\RealMe;
 
 use DOMDocument;
 use DOMNodeList;
-use Exception;
+use Exception as BaseException;
 use InvalidArgumentException;
 use OneLogin_Saml2_Auth;
 use OneLogin_Saml2_Error;
@@ -439,7 +439,7 @@ class RealMeService implements TemplateGlobalProvider
 
             // call a success method as we've successfully logged in (if it exists)
             Member::singleton()->extend('onRealMeLoginSuccess', $authData);
-        } catch (Exception $e) {
+        } catch (BaseException $e) {
             Member::singleton()->extend("onRealMeLoginFailure", $e);
 
             // No auth data or failed to decrypt, enforce login again
