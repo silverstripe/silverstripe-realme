@@ -312,6 +312,18 @@ class RealMeService implements TemplateGlobalProvider
     }
 
     /**
+     * @return HTTPRequest|null
+     */
+    protected static function getRequest()
+    {
+        if (!Injector::inst()->has(HTTPRequest::class)) {
+            return null;
+        };
+
+        return Injector::inst()->get(HTTPRequest::class);
+    }
+
+    /**
      * Return the user data which was saved to session from the first RealMe
      * auth.
      * Note: Does not check authenticity or expiry of this data
@@ -325,7 +337,12 @@ class RealMeService implements TemplateGlobalProvider
             return static::$user_data;
         }
 
-        $request = Injector::inst()->get(HTTPRequest::class);
+        $request = self::getRequest();
+
+        if (!$request) {
+            return null;
+        }
+
         $sessionData = $request->getSession()->get('RealMe.SessionData');
 
         // Exit point
@@ -857,7 +874,10 @@ class RealMeService implements TemplateGlobalProvider
         }
 
         if (!$request) {
-            $request = Injector::inst()->get(HTTPRequest::class);
+            $request = self::getRequest();
+            if (!$request) {
+                throw new RealMeException('A request must be provided for session access');
+            }
         }
 
         // Ensure onelogin is using the correct host, protocol and port incase a proxy is involved

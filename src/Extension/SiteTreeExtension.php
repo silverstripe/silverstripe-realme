@@ -3,6 +3,7 @@
 namespace SilverStripe\RealMe\Extension;
 
 use SilverStripe\RealMe\RealMeService;
+use SilverStripe\Security\InheritedPermissions;
 use SilverStripe\Security\Member;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\DataExtension;
@@ -27,43 +28,33 @@ class SiteTreeExtension extends DataExtension
      *
      * @param Member|int $member
      *
-     * @return bool True if the current user can view this page
+     * @return bool|null True if the current user can view this page (or null to defer)
      */
     public function canView($member)
     {
-        switch ($this->owner->CanViewType) {
-            case 'Anyone':
-                return true;
-
-            case 'Inherit':
-                if ($this->owner->ParentID) {
-                    return $this->owner->Parent()->canView($member);
-                }
-                return $this->owner->getSiteConfig()->canViewPages($member);
-
-            case 'LoggedInUsers':
-                // check for any logged-in RealMe Sessions
-                $data = $this->service->getUserData();
-                if (!is_null($data)) {
-                    return true;
-                }
-
-                if ($member && is_numeric($member)) {
-                    return true;
-                }
-
-                return false;
-
-            case 'OnlyTheseUsers':
-                if ($member && is_numeric($member)) {
-                    $member = DataObject::get_by_id(Member::class, $member);
-
-                    /** @var Member $member */
-                    if ($member && $member->inGroups($this->owner->ViewerGroups())) {
-                        return true;
-                    }
-                }
+        // Defer if there's a member - this only catches allowing those who aren't members but might be authenticated
+        // with RealMe
+        if ($member && $member->ID) {
+            return null;
         }
-        return false;
+        
+        $data = $this->service->getUserData();
+        if (empty($data)) {
+            // Defer if there's no logged in RealMe user
+            return null;
+        }
+
+        // Follow existing SiteTree logic where orphaned pages aren't viewable
+        if ($this->owner->isOrphaned()) {
+            return false;
+        }
+
+        if ($this->owner->CanViewType === InheritedPermissions::LOGGED_IN_USERS) {
+            // We have a logged in RealMe user (which may not be a member)
+            return true;
+        }
+
+        // Defer in all other cases
+        return null;
     }
 }
