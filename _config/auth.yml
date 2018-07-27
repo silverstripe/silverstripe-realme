@@ -1,5 +1,7 @@
 ---
-Name: realmeauthentication
+Name: realmeauthenticator
+Only:
+  EnvVarSet: REALME_CERT_DIR
 ---
 SilverStripe\Core\Injector\Injector:
   SilverStripe\Security\Security:
