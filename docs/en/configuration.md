@@ -218,7 +218,7 @@ successful RealMe authentication.
 ```yaml
 SilverStripe\Security\Member:
   extensions:
-    - RealMeMemberExtension
+    - SilverStripe\RealMe\Extension\MemberExtension
     
 SilverStripe\RealMe\RealMeService:
   sync_with_local_member_database: true
