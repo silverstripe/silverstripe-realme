@@ -5,8 +5,7 @@ silverstripe-realme
 [![SilverStripe supported module](https://img.shields.io/badge/silverstripe-supported-0071C4.svg)](https://www.silverstripe.org/software/addons/silverstripe-commercially-supported-module-list/)
 [![Code Quality](http://img.shields.io/scrutinizer/g/silverstripe/silverstripe-realme.svg?style=flat-square)](https://scrutinizer-ci.com/g/silverstripe/silverstripe-realme)
 [![License](http://img.shields.io/packagist/l/silverstripe/realme.svg?style=flat-square)](LICENSE.md)
-
-<!-- [![Version](http://img.shields.io/packagist/v/silverstripe/realme.svg?style=flat-square)](https://packagist.org/packages/silverstripe/realme) -->
+[![Version](http://img.shields.io/packagist/v/silverstripe/realme.svg?style=flat-square)](https://packagist.org/packages/silverstripe/realme)
 
 Adds support to SilverStripe for authentication and identity assertion via [RealMe](https://www.realme.govt.nz/).
 
@@ -17,9 +16,9 @@ If integration with RealMe is wanted, it is best to get in touch with the RealMe
 accomplished by [getting in touch with the RealMe team](https://www.realme.govt.nz/realme-business/).
 
 ## Releases
-There are multiple releases of this module. The current stable version is the 2.x line. This is a stable module that
-provides `logon` (authentication) and `assert` (identity assertion) capability. The older 0.9.x line is considered end
-of life and should not be used for new integrations.
+There are multiple releases of this module. The current stable version is the 3.x line. This is a stable module that
+provides `logon` (authentication) and `assert` (identity assertion) capability. The 2.x line can be used for SilverStripe
+3.x support, and the older 0.9.x line is considered end of life and should not be used for new integrations.
 
 Support is provided via the GitHub Issues for this module. If you encounter any issues, please
 [open a new issue here](https://github.com/silverstripe/silverstripe-realme/issues).
@@ -44,7 +43,7 @@ responses, hence the custom `repositories` section.
 ```
 {
     "require": {
-        "silverstripe/realme": "^2.0",
+        "silverstripe/realme": "^3.0",
         "onelogin/php-saml": "dev-fixes/realme-dsig-validation as 2.11.0"
     },
 
