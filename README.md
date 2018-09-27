@@ -20,7 +20,8 @@ There are multiple releases of this module. The current stable version is the 3.
 provides `logon` (authentication) and `assert` (identity assertion) capability. The 2.x line can be used for SilverStripe
 3.x support, and the older 0.9.x line is considered end of life and should not be used for new integrations.
 
-Support is provided via the GitHub Issues for this module. If you encounter any issues, please
+## Support
+Support is provided via the GitHub Issues for this module. As the 3.0.0 release has not been fully tested for all project scenarios, if you encounter any issues please
 [open a new issue here](https://github.com/silverstripe/silverstripe-realme/issues).
 
 ## Requirements
