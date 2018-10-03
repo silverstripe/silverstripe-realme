@@ -7,6 +7,7 @@ use DOMXPath;
 
 use SilverStripe\ORM\FieldType\DBField;
 use SilverStripe\View\ViewableData;
+use SilverStripe\ORM\FieldType\DBDatetime;
 
 /**
  * Class RealMeFederatedIdentity
@@ -205,7 +206,8 @@ class FederatedIdentity extends ViewableData
     {
         if ($this->BirthYear && $this->BirthMonth && $this->BirthDay) {
             $value = sprintf('%d-%d-%d', $this->BirthYear, $this->BirthMonth, $this->BirthDay);
-            return DBField::create_field('SS_DateTime', $value);
+            $dateTime = DBDatetime::create()->setValue($value);
+            return $dateTime;
         } else {
             return null;
         }
