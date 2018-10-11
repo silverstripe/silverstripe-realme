@@ -196,12 +196,14 @@ class LoginForm extends BaseLoginForm
                     self::class . '.ASSERTLOGINBUTTON',
                     'Share your details with {orgname}',
                     ['orgname' => $service->config()->metadata_organisation_display_name]
-                )
+                ),
+                'ShowNewWindowIcon' => false
             ))->renderWith(self::class . '/RealMeLoginButton');
         } else {
             // Login button
             $loginButtonContent = ArrayData::create(array(
-                'Label' => _t(self::class . '.LOGINBUTTON', 'Login')
+                'Label' => _t(self::class . '.LOGINBUTTON', 'Login'),
+                'ShowNewWindowIcon' => true
             ))->renderWith(self::class . '/RealMeLoginButton');
         }
 
