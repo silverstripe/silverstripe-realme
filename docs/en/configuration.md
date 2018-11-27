@@ -159,7 +159,7 @@ You should now be able to proceed to testing the standard login form, or [using 
 
 - Complete an integration to MTS.
 - You will need a secure certificate which meets the requirements as seen on the [Certificate requirements](https://developers.realme.govt.nz/how-realme-works/certificate-requirements/) page.
-    - If you are using the Common Web Platform, you can request that the CWP Operations team set this up for you by raising a ticket on the [CWP Service desk](https://www.cwp.govt.nz/service-desk/new-request/).
+    - If you are using the Common Web Platform, once you have the certificate raise a ticket on the [CWP Service desk](https://www.cwp.govt.nz/service-desk/new-request/) to get it installed.
     - Otherwise, you can generate one yourself and install it into your test or staging environment.
 - Request an account on the [RealMe Developers site](https://developers.realme.govt.nz/), and complete an integration request for ITE.
 - Publish your site to your test or staging environment with a working configuration (`realme.yml` file) for ITE.
