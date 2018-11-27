@@ -230,9 +230,10 @@ found, a new member will be created.
 
 ### UAT and production environments
 
-The SAML signing security certificates must be purchased by the agency, or if you are hosting on the Common Web Platform 
-then the [CWP Service desk](https://www.cwp.govt.nz/service-desk/new-request/) can do this for you. More information
-on the requirements can be found on the [RealMe developers site](https://developers.realme.govt.nz/how-realme-works/certificate-requirements/).
+The SAML signing security certificates must be purchased by the agency. If you are hosting on the Common Web Platform, 
+the [CWP Service desk](https://www.cwp.govt.nz/service-desk/new-request/) can help generating the certificate signing 
+request (CSR) and installing the certificate once purchased by the agency. More information on the requirements can be 
+found on the [RealMe developers site](https://developers.realme.govt.nz/how-realme-works/certificate-requirements/).
 
 #### When you're hosting on CWP
 
