@@ -65,7 +65,7 @@ or directly in your css, e.g. .realme_popup {width: 450px}
             <!-- realme_popup -->
             <div class="realme_popup" style="width:420px;">
                 <h2 class="realme_popup_title">The easy way to prove who you are online</h2>
-                <p><strong>RealMe</strong> is a service from the New Zealand government and New Zealand Post that allows you to prove who you are online.</p>
+                <p><strong>RealMe</strong> is a service from the New Zealand government that allows you to prove who you are online.</p>
                 <h2 class="realme_popup_title">Have you already verified your identity with RealMe?</h2>
                 <p>The answer is yes if you have applied online and then visited a PostShop to have your photo taken, or signed up for a verified identity when you renewed your passport online.</p>
                 <h2 class="realme_popup_title">What's so good about being verified?</h2>
