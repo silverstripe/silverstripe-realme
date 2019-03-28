@@ -94,6 +94,10 @@ take a simple Controller that ensures that all users have a valid RealMe 'FLT' (
 user, but is not their username):
 
 ```php
+use SilverStripe\Control\Controller;
+use SilverStripe\Control\HTTPRequest;
+use SilverStripe\RealMe\RealMeService;
+
 class RealMeTestController extends Controller {
 	/**
 	 * @var RealMeService
@@ -101,14 +105,14 @@ class RealMeTestController extends Controller {
 	public $realMeService;
 
 	private static $dependencies = array(
-		'realMeService' => '%$SilverStripe/RealMe/RealMeService'
+		'realMeService' => '%$SilverStripe\RealMe\RealMeService'
 	);
 
-	public function index() {
+	public function index(HTTPRequest $request) {
 		// enforceLogin will redirect the user to RealMe if they're not authenticated, or return true if they are
 		// authenticated with RealMe. It should only ever return 'false' if there was an error initialising config
-		if($this->service->enforceLogin()) {
-			$userData = $this->service->getUserData();
+		if($this->realMeService->enforceLogin($request)) {
+			$userData = $this->realMeService->getUserData();
 
 			printf("Congratulations, you're authenticated with a unique ID of '%s'!", $userData->SPNameID);
 		} else {
