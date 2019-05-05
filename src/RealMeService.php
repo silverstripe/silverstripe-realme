@@ -19,6 +19,7 @@ use SilverStripe\Core\Environment;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\RealMe\Exception as RealMeException;
+use SilverStripe\RealMe\Model\FederatedAddress;
 use SilverStripe\RealMe\Model\FederatedIdentity;
 use SilverStripe\RealMe\Model\User;
 use SilverStripe\Security\Member;
@@ -69,6 +70,10 @@ class RealMeService implements TemplateGlobalProvider
     const ERR_REQUEST_UNSUPPORTED    = 'urn:oasis:names:tc:SAML:2.0:status:RequestUnsupported';
     const ERR_REQUEST_DENIED         = 'urn:oasis:names:tc:SAML:2.0:status:RequestDenied';
     const ERR_UNSUPPORTED_BINDING    = 'urn:oasis:names:tc:SAML:2.0:status:UnsupportedBinding';
+
+    const ATTRIBUTE_TYPE_IVS         = 'urn:nzl:govt:ict:stds:authn:safeb64:attribute:igovt:IVS:Assertion:Identity';
+    const ATTRIBUTE_TYPE_FIT         = 'urn:nzl:govt:ict:stds:authn:attribute:igovt:IVS:FIT';
+    const ATTRIBUTE_TYPE_AVS         = 'urn:nzl:govt:ict:stds:authn:safeb64:attribute:NZPost:AVS:Assertion:Address';
 
     /**
      * @var bool true to sync RealMe data and create/update local {@link Member} objects upon successful authentication
@@ -1051,8 +1056,8 @@ class RealMeService implements TemplateGlobalProvider
         $fit = null;
         $attributes = $auth->getAttributes();
 
-        if (isset($attributes['urn:nzl:govt:ict:stds:authn:attribute:igovt:IVS:FIT'])) {
-            $fit = $attributes['urn:nzl:govt:ict:stds:authn:attribute:igovt:IVS:FIT'][0];
+        if (isset($attributes[self::ATTRIBUTE_TYPE_FIT])) {
+            $fit = $attributes[self::ATTRIBUTE_TYPE_FIT][0];
         }
 
         return $fit;
@@ -1070,42 +1075,60 @@ class RealMeService implements TemplateGlobalProvider
         $nameId = $auth->getNameId();
 
         // If identity information exists, retrieve the FIT (Federated Identity Tag) and identity data
-        if (isset($attributes['urn:nzl:govt:ict:stds:authn:safeb64:attribute:igovt:IVS:Assertion:Identity'])) {
-            // Identity information is encoded using 'Base 64 Encoding with URL and Filename Safe Alphabet'
-            // For more info, review RFC3548, section 4 (https://tools.ietf.org/html/rfc3548#page-6)
-            // Note: This is different to PHP's standard base64_decode() function, therefore we need to swap chars
-            // to match PHP's expectations:
-            // char 62 (-) becomes +
-            // char 63 (_) becomes /
-
-            $identity = $attributes['urn:nzl:govt:ict:stds:authn:safeb64:attribute:igovt:IVS:Assertion:Identity'];
-
-            if (!is_array($identity) || !isset($identity[0])) {
-                throw new RealMeException(
-                    'Invalid identity response received from RealMe',
-                    RealMeException::INVALID_IDENTITY_VALUE
-                );
-            }
-
-            // Switch from filename-safe alphabet base64 encoding to standard base64 encoding
-            $identity = strtr($identity[0], '-_', '+/');
-            $identity = base64_decode($identity, true);
-
-            if (is_bool($identity) && !$identity) {
-                // Strict base64_decode fails, either the identity didn't exist or was mangled during transmission
-                throw new RealMeException(
-                    'Failed to parse safe base64 encoded identity',
-                    RealMeException::FAILED_PARSING_IDENTITY
-                );
-            }
+        if (isset($attributes[self::ATTRIBUTE_TYPE_IVS])) {
+            $identity = $this->parseIdentity($attributes[self::ATTRIBUTE_TYPE_IVS]);
 
             $identityDoc = new DOMDocument();
             if ($identityDoc->loadXML($identity)) {
                 $federatedIdentity = new FederatedIdentity($identityDoc, $nameId);
             }
+
+            if ($identityDoc && isset($attributes[self::ATTRIBUTE_TYPE_AVS])) {
+                $address = $this->parseIdentity($attributes[self::ATTRIBUTE_TYPE_AVS]);
+                $addressDoc = new DOMDocument();
+                if ($addressDoc->loadXML($address)) {
+                    $federatedIdentity->Address = new FederatedAddress($addressDoc);
+                }
+            }
         }
 
         return $federatedIdentity;
+    }
+
+    /**
+     * Identity information is encoded using 'Base 64 Encoding with URL and Filename Safe Alphabet'
+     * For more info, review RFC3548, section 4 (https://tools.ietf.org/html/rfc3548#page-6)
+     * Note: This is different to PHP's standard base64_decode() function, therefore we need to swap chars
+     * to match PHP's expectations:
+     * char 62 (-) becomes +
+     * char 63 (_) becomes /
+     *
+     * @param string $identity
+     *
+     * @return string
+     */
+    private function parseIdentity($identity)
+    {
+        if (!is_array($identity) || !isset($identity[0])) {
+            throw new RealMeException(
+                'Invalid identity response received from RealMe',
+                RealMeException::INVALID_IDENTITY_VALUE
+            );
+        }
+
+        // Switch from filename-safe alphabet base64 encoding to standard base64 encoding
+        $identity = strtr($identity[0], '-_', '+/');
+        $identity = base64_decode($identity, true);
+
+        if (is_bool($identity) && !$identity) {
+            // Strict base64_decode fails, either the identity didn't exist or was mangled during transmission
+            throw new RealMeException(
+                'Failed to parse safe base64 encoded identity',
+                RealMeException::FAILED_PARSING_IDENTITY
+            );
+        }
+
+        return $identity;
     }
 
     /**

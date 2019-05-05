@@ -99,6 +99,11 @@ class FederatedIdentity extends ViewableData
     public $BirthPlaceLocality;
 
     /**
+     * @var null|FederatedAddress The verified address for this user as returned by the AVS
+     */
+    public $Address;
+
+    /**
      * Constructor that sets the expected federated identity details based on a provided DOMDocument. The expected XML
      * structure for the DOMDocument is the following:
      *
