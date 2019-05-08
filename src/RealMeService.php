@@ -730,7 +730,8 @@ class RealMeService implements TemplateGlobalProvider
                 if ($contentType == 'certificate') {
                     $pattern = '/-----BEGIN CERTIFICATE-----[\r\n]*([^-]*)[\r\n]*-----END CERTIFICATE-----/';
                 } elseif ($contentType == 'key') {
-                    $pattern = '/-----BEGIN [A-Z ]*PRIVATE KEY-----[\r\n]*([^-]*)[\r\n]*-----END [A-Z ]*PRIVATE KEY-----/';
+                    $pattern = '/-----BEGIN [A-Z ]*PRIVATE KEY-----[\r\n]*([^-]*)[\r\n]*'
+                        . '-----END [A-Z ]*PRIVATE KEY-----/';
                 } else {
                     throw new InvalidArgumentException('Argument contentType must be either "certificate" or "key"');
                 }
