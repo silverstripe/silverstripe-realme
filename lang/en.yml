@@ -16,7 +16,7 @@ en:
     ERROR_UNKNOWNPRINCIPAL: 'You are unable to use RealMe to verify your identity if you do not have a RealMe account. Visit the RealMe home page for more information and to create an account.'
     ERROR_UNSUPPORTEDBINDING: 'RealMe reported a serious application error with the message ''Unsupported Binding''. Please try again later. If the problem persists, please contact the RealMe Help Desk. From New Zealand: 0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply).'
   SilverStripe\RealMe\Task\RealMeSetupTask:
-    BUILD_FINISH: 'RealMe setup complete. Please copy the XML into a file for upload to the %s environment or DIA to complete the integration'
+    BUILD_FINISH: 'RealMe setup complete. Please copy the XML into a file for upload to the {env} environment or DIA to complete the integration'
     ERR_CERT_DIR_MISSING: 'No certificate dir is specified. Define the REALME_CERT_DIR environment variable in your .env file'
     ERR_CERT_DIR_NOT_READABLE: 'Certificate dir specified (''{dir}'') must be created and be readable. Ensure permissions are set correctly and the directory is absolute'
     ERR_CERT_NO_SIGNING_CERT: 'No SAML signing PEM certificate defined, or the file can''t be read. Define the {const} environment variable in your .env file, and ensure the file exists in the certificate directory'
@@ -32,6 +32,7 @@ en:
     ERR_CONFIG_NO_ORGANISATION_URL: 'No organisation URL is specified in YML configuration. Ensure the ''metadata_organisation_url'' value is defined in your YML configuration'
     ERR_CONFIG_NO_SUPPORT_CONTACT: 'Support contact detail is missing from YML configuration. Ensure the following values are defined in the YML configuration: metadata_contact_support_company, metadata_contact_support_firstnames, metadata_contact_support_surname'
     ERR_ENV_NOT_ALLOWED: 'The RealMe environment specified on the cli (''{env}'') is not allowed. It must be one of: {allowedEnvs}'
-    ERR_ENV_NOT_SPECIFIED: 'The RealMe environment was not specified on the cli It must be one of: {allowedEnvs} e.g. sake dev/tasks/RealMeSetupTask forEnv=mts'
+    ERR_ENV_NOT_SPECIFIED: 'The RealMe environment was not specified on the cli It must be one of: {allowedEnvs} e.g. vendor/bin/sake dev/tasks/RealMeSetupTask forEnv=mts'
     ERR_NOT_CLI: 'This task can only be run from the command-line, not in your browser.'
+    OUPUT_PREFIX: 'Metadata XML is listed below for the ''{env}'' RealMe environment, this should be sent to the agency so they can pass it on to RealMe Operations staff'
     VALIDATION_SUCCESS: 'Validation succeeded, continuing with setup...'
