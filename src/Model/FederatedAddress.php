@@ -42,6 +42,11 @@ class FederatedAddress extends ViewableData
     public $NZNumberStreet;
 
     /**
+     * @var string Unit number for the address
+     */
+    public $NZUnit;
+
+    /**
      * @var string String representing the RD number of this address, e.g RD 123. Required if the address type is rural
      */
     public $NZRuralDelivery;
@@ -78,6 +83,9 @@ class FederatedAddress extends ViewableData
      *              <a:Thoroughfare>
      *                  <a:NameElement a:NameType="NZNumberStreet">1 Main St</a:NameElement>
      *              </a:Thoroughfare>
+     *              <a:Premises>
+     *                  <a:NameElement a:NameType="NZUnit">14</a:NameElement>
+     *              </a:Premises>
      *              <a:PostCode>
      *                  <a:Identifier Type="NZPostCode">1111</a:Identifier>
      *              </a:PostCode>
@@ -104,6 +112,10 @@ class FederatedAddress extends ViewableData
         $this->NZNumberStreet = $this->getNodeValue(
             $xpath,
             "/p:Party/a:Addresses/a:Address/a:Thoroughfare/a:NameElement[@a:NameType='NZNumberStreet']"
+        );
+        $this->NZUnit = $this->getNodeValue(
+            $xpath,
+            "/p:Party/a:Addresses/a:Address/a:Premises/a:NameElement[@a:NameType='NZUnit']"
         );
         $this->NZRuralDelivery = $this->getNodeValue(
             $xpath,
