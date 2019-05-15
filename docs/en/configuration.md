@@ -134,7 +134,7 @@ environment. In this environment, RealMe provide all SSL certificates required t
     - Add a new line as line 1 of the file with the following: `-----BEGIN CERTIFICATE-----`
     - Add a new line as the last line of the file with the following: `-----END CERTIFICATE-----`
 - Ensure your `realme.yml` [configuration](docs/en/configuration.md) is complete (see above).
-- Run the RealMe build task to validate your configuration and get the XML metadata to provide to MTS: `framework/sake dev/tasks/RealMeSetupTask forEnv=mts`
+- Run the RealMe build task to validate your configuration and get the XML metadata to provide to MTS: `vendor/bin/sake dev/tasks/RealMeSetupTask forEnv=mts`
 - Save the XML output from the above task to an XML file, and upload this to MTS:
     - For a 'logon' integration, submit here: [MTS logon metadata upload](https://mts.realme.govt.nz/logon-mts/metadataupdate).
     - For an 'assert' integration, submit here: [MTS assert metadata upload](https://mts.realme.govt.nz/realme-mts/metadata/import.xhtml).
