@@ -1133,7 +1133,7 @@ class RealMeService implements TemplateGlobalProvider
                     self::class . '.ERROR_INTERNAL',
                     'RealMe was unable to process your request due to a RealMe internal error. Please try again. ' .
                         'If the problem persists, please contact the RealMe Help Desk. From New Zealand dial ' .
-                        '0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply).'
+                        '0800 664 774 (toll free), from overseas dial +64 4 462 0674 (overseas call charges apply).'
                 );
                 break;
 
@@ -1142,7 +1142,7 @@ class RealMeService implements TemplateGlobalProvider
                     self::class . '.ERROR_NOAVAILABLEIDP',
                     'RealMe reported that the TXT service or the token service is not available. You may try again ' .
                         'later. If the problem persists, please contact the RealMe Help Desk. From New Zealand dial ' .
-                        '0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply).'
+                        '0800 664 774 (toll free), from overseas dial +64 4 462 0674 (overseas call charges apply).'
                 );
                 break;
 
@@ -1151,7 +1151,7 @@ class RealMeService implements TemplateGlobalProvider
                     self::class . '.ERROR_REQUESTUNSUPPORTED',
                     'RealMe reported a serious application error with the message \'Request Unsupported\'. Please try' .
                         ' again later. If the problem persists, please contact the RealMe Help Desk. From New Zealand' .
-                        ': 0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply).'
+                        ': 0800 664 774 (toll free), from overseas dial +64 4 462 0674 (overseas call charges apply).'
                 );
                 break;
 
@@ -1160,7 +1160,7 @@ class RealMeService implements TemplateGlobalProvider
                     self::class . '.ERROR_NOPASSIVE',
                     'RealMe reported a serious application error with the message \'No Passive\'. Please try again ' .
                         'later. If the problem persists, please contact the RealMe Help Desk. From New Zealand: 0800 ' .
-                        '664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply).'
+                        '664 774 (toll free), from overseas dial +64 4 462 0674 (overseas call charges apply).'
                 );
                 break;
 
@@ -1169,7 +1169,7 @@ class RealMeService implements TemplateGlobalProvider
                     self::class . '.ERROR_REQUESTDENIED',
                     'RealMe reported a serious application error with the message \'Request Denied\'. Please try ' .
                         'again later. If the problem persists, please contact the RealMe Help Desk. From New Zealand:' .
-                        ' 0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply).'
+                        ' 0800 664 774 (toll free), from overseas dial +64 4 462 0674 (overseas call charges apply).'
                 );
                 break;
 
@@ -1178,7 +1178,7 @@ class RealMeService implements TemplateGlobalProvider
                     self::class . '.ERROR_UNSUPPORTEDBINDING',
                     'RealMe reported a serious application error with the message \'Unsupported Binding\'. Please ' .
                         'try again later. If the problem persists, please contact the RealMe Help Desk. From New ' .
-                        'Zealand: 0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges ' .
+                        'Zealand: 0800 664 774 (toll free), from overseas dial +64 4 462 0674 (overseas call charges ' .
                         'apply).'
                 );
                 break;
@@ -1196,7 +1196,7 @@ class RealMeService implements TemplateGlobalProvider
                     self::class . '.ERROR_NOAUTHNCONTEXT',
                     'RealMe reported a serious application error with the message \'No AuthN Context\'. Please try ' .
                         'again later. If the problem persists, please contact the RealMe Help Desk. From New Zealand:' .
-                        ' 0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply).'
+                        ' 0800 664 774 (toll free), from overseas dial +64 4 462 0674 (overseas call charges apply).'
                 );
                 break;
 
@@ -1205,7 +1205,7 @@ class RealMeService implements TemplateGlobalProvider
                     self::class . '.ERROR_GENERAL',
                     'RealMe reported a serious application error. Please try again later. If the problem persists, ' .
                         'please contact the RealMe Help Desk. From New Zealand: 0800 664 774 (toll free), from ' .
-                        'overseas dial +64 9 357 4468 (overseas call charges apply).'
+                        'overseas dial +64 4 462 0674 (overseas call charges apply).'
                 );
                 break;
         }
