@@ -2,6 +2,7 @@
 
 namespace SilverStripe\RealMe\Tests;
 
+use OneLogin\Saml2\Auth;
 use SilverStripe\Control\NullHTTPRequest;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Environment;
@@ -66,7 +67,7 @@ class RealMeServiceTest extends SapphireTest
     public function testGetAuth()
     {
         $auth = $this->service->getAuth(new NullHTTPRequest());
-        $this->assertTrue(get_class($auth) === 'OneLogin_Saml2_Auth');
+        $this->assertTrue(get_class($auth) === Auth::class);
 
         // Service Provider settings
         $spData = $auth->getSettings()->getSPData();
