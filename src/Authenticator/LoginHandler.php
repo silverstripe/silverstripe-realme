@@ -13,7 +13,7 @@ use SilverStripe\RealMe\Exception as RealMeException;
 use SilverStripe\RealMe\Extension\MemberExtension;
 use SilverStripe\RealMe\RealMeService;
 use SilverStripe\Security\Member;
-use SilverStripe\Security\RequestAuthenticationHandler;
+use SilverStripe\Security\AuthenticationHandler;
 use SilverStripe\Security\Security;
 
 class LoginHandler extends RequestHandler
@@ -115,7 +115,7 @@ class LoginHandler extends RequestHandler
                         $authData->getMember()->write();
                     }
                     if (RealMeService::config()->get('login_member_after_authentication') === true) {
-                        Injector::inst()->get(RequestAuthenticationHandler::class)->login($authData->getMember());
+                        Injector::inst()->get(AuthenticationHandler::class)->login($authData->getMember());
                     }
                 }
 
