@@ -6,10 +6,10 @@ use DOMDocument;
 use DOMNodeList;
 use Exception as BaseException;
 use InvalidArgumentException;
-use OneLogin_Saml2_Auth;
-use OneLogin_Saml2_Error;
-use OneLogin_Saml2_Response;
-use OneLogin_Saml2_Utils;
+use OneLogin\Saml2\Auth;
+use OneLogin\Saml2\Error;
+use OneLogin\Saml2\Response;
+use OneLogin\Saml2\Utils;
 use Psr\Log\LoggerInterface;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\Director;
@@ -289,7 +289,7 @@ class RealMeService implements TemplateGlobalProvider
     private static $metadata_contact_support_surname = null;
 
     /**
-     * @var OneLogin_Saml2_Auth|null Set by {@link getAuth()}, which creates an instance of OneLogin_Saml2_Auth to check
+     * @var Auth|null Set by {@link getAuth()}, which creates an instance of Auth to check
      * authentication against
      */
     private $auth = null;
@@ -416,7 +416,7 @@ class RealMeService implements TemplateGlobalProvider
      * @param HTTPRequest $request
      * @param string $backUrl
      * @return bool|null true if the user is correctly authenticated, false if there was an error with login
-     * @throws OneLogin_Saml2_Error
+     * @throws Error
      */
     public function enforceLogin(HTTPRequest $request, $backUrl = null)
     {
@@ -479,8 +479,8 @@ class RealMeService implements TemplateGlobalProvider
         // The error message returned by onelogin/php-saml is the top-level error, but we want the actual error
         $request = Controller::curr()->getRequest();
         if ($request->isPOST() && $request->postVar("SAMLResponse")) {
-            $response = new OneLogin_Saml2_Response($this->getAuth()->getSettings(), $request->postVar("SAMLResponse"));
-            $internalError = OneLogin_Saml2_Utils::query(
+            $response = new Response($this->getAuth()->getSettings(), $request->postVar("SAMLResponse"));
+            $internalError = Utils::query(
                 $response->document,
                 "/samlp:Response/samlp:Status/samlp:StatusCode/samlp:StatusCode/@Value"
             );
@@ -516,7 +516,7 @@ class RealMeService implements TemplateGlobalProvider
     /**
      * Returns a {@link RealMeUser} object if one can be built from the RealMe session data.
      *
-     * @throws OneLogin_Saml2_Error Passes on the SAML error if it's not indicating a lack of SAML response data
+     * @throws Error Passes on the SAML error if it's not indicating a lack of SAML response data
      * @throws RealMeException If identity information exists but couldn't be decoded, or doesn't exist
      * @return User|null
      */
@@ -571,10 +571,10 @@ class RealMeService implements TemplateGlobalProvider
                 'Attributes' => $attributes,
                 'FederatedIdentity' => $federatedIdentity,
             ]);
-        } catch (OneLogin_Saml2_Error $e) {
+        } catch (Error $e) {
             // If the Exception code indicates there wasn't a response, we ignore it as it simply means the visitor
             // isn't authenticated yet. Otherwise, we re-throw the Exception
-            if ($e->getCode() === OneLogin_Saml2_Error::SAML_RESPONSE_NOT_FOUND) {
+            if ($e->getCode() === Error::SAML_RESPONSE_NOT_FOUND) {
                 return null;
             } else {
                 throw $e;
@@ -864,9 +864,9 @@ class RealMeService implements TemplateGlobalProvider
     }
 
     /**
-     * Returns the internal {@link OneLogin_Saml2_Auth} object against which visitors are authenticated.
+     * Returns the internal {@link Auth} object against which visitors are authenticated.
      *
-     * @return OneLogin_Saml2_Auth
+     * @return Auth
      */
     public function getAuth(HTTPRequest $request = null)
     {
@@ -882,8 +882,8 @@ class RealMeService implements TemplateGlobalProvider
         }
 
         // Ensure onelogin is using the correct host, protocol and port incase a proxy is involved
-        OneLogin_Saml2_Utils::setSelfHost($request->getHeader('Host'));
-        OneLogin_Saml2_Utils::setSelfProtocol($request->getScheme());
+        Utils::setSelfHost($request->getHeader('Host'));
+        Utils::setSelfProtocol($request->getScheme());
 
         $port = null;
         if (isset($_SERVER['HTTP_X_FORWARDED_PORT'])) {
@@ -893,7 +893,7 @@ class RealMeService implements TemplateGlobalProvider
         }
 
         if ($port) {
-            OneLogin_Saml2_Utils::setSelfPort($port);
+            Utils::setSelfPort($port);
         }
 
         $settings = [
@@ -938,7 +938,7 @@ class RealMeService implements TemplateGlobalProvider
             ]
         ];
 
-        $this->auth = new OneLogin_Saml2_Auth($settings);
+        $this->auth = new Auth($settings);
         return $this->auth;
     }
 
@@ -1035,19 +1035,19 @@ class RealMeService implements TemplateGlobalProvider
     }
 
     /**
-     * @param OneLogin_Saml2_Auth $auth
+     * @param Auth $auth
      * @return string|null null if there's no FLT, or a string if there is one
      */
-    private function retrieveFederatedLogonTag(OneLogin_Saml2_Auth $auth)
+    private function retrieveFederatedLogonTag(Auth $auth)
     {
         return null; // @todo
     }
 
     /**
-     * @param OneLogin_Saml2_Auth $auth
+     * @param Auth $auth
      * @return string|null null if there's not FIT, or a string if there is one
      */
-    private function retrieveFederatedIdentityTag(OneLogin_Saml2_Auth $auth)
+    private function retrieveFederatedIdentityTag(Auth $auth)
     {
         $fit = null;
         $attributes = $auth->getAttributes();
@@ -1060,11 +1060,11 @@ class RealMeService implements TemplateGlobalProvider
     }
 
     /**
-     * @param OneLogin_Saml2_Auth $auth
+     * @param Auth $auth
      * @return FederatedIdentity|null
      * @throws RealMeException
      */
-    private function retrieveFederatedIdentity(OneLogin_Saml2_Auth $auth)
+    private function retrieveFederatedIdentity(Auth $auth)
     {
         $federatedIdentity = null;
         $attributes = $auth->getAttributes();
