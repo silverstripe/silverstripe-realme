@@ -37,39 +37,17 @@ instructions - one for use on CWP, and one for generic use.
 
 ## Installation
 
-The module is best installed via Composer, by adding the below to your composer.json. For now, we need to specify a
-custom version of the excellent onelogin/php-saml module to fix some XMLDSig validation errors with the RealMe XML
-responses, hence the custom `repositories` section.
+The module is best installed via Composer, by adding the below to your composer.json.
 
-```
-{
+```json
     "require": {
-        "silverstripe/realme": "^3.0",
-        "onelogin/php-saml": "dev-fixes/realme-dsig-validation as 2.11.0"
+        "silverstripe/realme": "^4"
     },
-
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/madmatt/php-saml.git"
-        }
-    ]
-}
 ```
+
+Or by running `composer require silverstripe/realme ^4` in your project root.
 
 Once installation is completed, configuration is required before this module will work - see below.
-
-#### Using in PHP 7.1
-
-If you are installing this module on PHP 7.1 you may have to supress deprecation notices as this module requires `php-saml` which relies on the deprecated mcrypt library. You can add to your sites `_config.php` file:
-
-```php
-use SilverStripe\Control\Director;
-
-if (Director::isDev()) {
-    error_reporting(E_ALL ^ E_DEPRECATED);
-}
-```
 
 ## Configuration of RealMe for your application
 
@@ -125,3 +103,31 @@ class RealMeTestController extends Controller {
 ## Appreciation
 
 * Sincere thanks to Jackson (@jakxnz) for his work reviewing and updating pull requests.
+
+## Troubleshooting
+
+If you experience XMLDSig validation errors with the RealMe XML responses, this _may_ be caused by some reading corruption
+of the response (or a poorly formed response). This was an issue with older versions of this module, particularly on older
+versions of PHP. If this issue persists for your project with this newer version, this can be worked around with a fork.
+
+Specify a custom version of the excellent onelogin/php-saml module; in the `repositories` section add:
+
+```json
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/madmatt/php-saml.git"
+        }
+    ],
+```
+
+And in the requirements specify the following branch as an alias:
+
+```json
+    "require": {
+        "silverstripe/realme": "^4",
+        "onelogin/php-saml": "dev-fixes/realme-dsig-validation-3.2.1 as 3.2.1"
+    },
+```
+
+This fork performs a very basic search & replace to correct some XML tag namespaces before the signature check is performed.
