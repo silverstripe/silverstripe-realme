@@ -1,4 +1,10 @@
 <?php
+
+use OneLogin\Saml2\Auth;
+use OneLogin\Saml2\Error;
+use OneLogin\Saml2\Response;
+use OneLogin\Saml2\Utils;
+
 class RealMeService extends SS_Object implements TemplateGlobalProvider
 {
     /**
@@ -259,7 +265,7 @@ class RealMeService extends SS_Object implements TemplateGlobalProvider
     private static $metadata_contact_support_surname = null;
 
     /**
-     * @var OneLogin\Saml2\Auth|null Set by {@link getAuth()}, which creates an instance of OneLogin\Saml2\Auth to check
+     * @var Auth|null Set by {@link getAuth()}, which creates an instance of Auth to check
      * authentication against
      */
     private $auth = null;
@@ -419,8 +425,8 @@ class RealMeService extends SS_Object implements TemplateGlobalProvider
         $request = Controller::curr()->getRequest();
         if($request->isPOST() && $request->postVar("SAMLResponse")) {
 
-            $response = new OneLogin\Saml2\Response($this->getAuth()->getSettings(), $request->postVar("SAMLResponse"));
-            $internalError = OneLogin\Saml2\Utils::query($response->document, "/samlp:Response/samlp:Status/samlp:StatusCode/samlp:StatusCode/@Value");
+            $response = new Response($this->getAuth()->getSettings(), $request->postVar("SAMLResponse"));
+            $internalError = Utils::query($response->document, "/samlp:Response/samlp:Status/samlp:StatusCode/samlp:StatusCode/@Value");
 
             if($internalError instanceof DOMNodeList && $internalError->length > 0) {
                 $internalErrorCode = $internalError->item(0)->textContent;
@@ -456,7 +462,7 @@ class RealMeService extends SS_Object implements TemplateGlobalProvider
     /**
      * Returns a {@link RealMeUser} object if one can be built from the RealMe session data.
      *
-     * @throws OneLogin\Saml2\Error Passes on the SAML error if it's not indicating a lack of SAML response data
+     * @throws Error Passes on the SAML error if it's not indicating a lack of SAML response data
      * @throws RealMeException If identity information exists but couldn't be decoded, or doesn't exist
      * @return RealMeUser|null
      */
@@ -511,10 +517,10 @@ class RealMeService extends SS_Object implements TemplateGlobalProvider
                 'Attributes' => $attributes,
                 'FederatedIdentity' => $federatedIdentity
             ]);
-        } catch(OneLogin\Saml2\Error $e) {
+        } catch(Error $e) {
             // If the Exception code indicates there wasn't a response, we ignore it as it simply means the visitor
             // isn't authenticated yet. Otherwise, we re-throw the Exception
-            if($e->getCode() === OneLogin\Saml2\Error::SAML_RESPONSE_NOT_FOUND) {
+            if($e->getCode() === Error::SAML_RESPONSE_NOT_FOUND) {
                 return null;
             } else {
                 throw $e;
@@ -821,9 +827,9 @@ class RealMeService extends SS_Object implements TemplateGlobalProvider
     }
 
     /**
-     * Returns the internal {@link OneLogin\Saml2\Auth} object against which visitors are authenticated.
+     * Returns the internal {@link Auth} object against which visitors are authenticated.
      *
-     * @return OneLogin\Saml2\Auth
+     * @return Auth
      */
     public function getAuth()
     {
@@ -832,7 +838,7 @@ class RealMeService extends SS_Object implements TemplateGlobalProvider
         // If we're behind a trusted proxy, force onelogin to use the HTTP_X_FORWARDED_FOR headers to determine
         // protocol, host and port
         if(TRUSTED_PROXY) {
-            OneLogin\Saml2\Utils::setProxyVars(true);
+            Utils::setProxyVars(true);
         }
 
         $settings = [
@@ -877,7 +883,7 @@ class RealMeService extends SS_Object implements TemplateGlobalProvider
             ]
         ];
 
-        $this->auth = new OneLogin\Saml2\Auth($settings);
+        $this->auth = new Auth($settings);
         return $this->auth;
     }
 
@@ -974,19 +980,19 @@ class RealMeService extends SS_Object implements TemplateGlobalProvider
     }
 
     /**
-     * @param OneLogin\Saml2\Auth $auth
+     * @param Auth $auth
      * @return string|null null if there's no FLT, or a string if there is one
      */
-    private function retrieveFederatedLogonTag(OneLogin\Saml2\Auth $auth)
+    private function retrieveFederatedLogonTag(Auth $auth)
     {
         return null; // @todo
     }
 
     /**
-     * @param OneLogin\Saml2\Auth $auth
+     * @param Auth $auth
      * @return string|null null if there's not FIT, or a string if there is one
      */
-    private function retrieveFederatedIdentityTag(OneLogin\Saml2\Auth $auth)
+    private function retrieveFederatedIdentityTag(Auth $auth)
     {
         $fit = null;
         $attributes = $auth->getAttributes();
@@ -999,11 +1005,11 @@ class RealMeService extends SS_Object implements TemplateGlobalProvider
     }
 
     /**
-     * @param OneLogin\Saml2\Auth $auth
+     * @param Auth $auth
      * @return RealMeFederatedIdentity|null
      * @throws RealMeException
      */
-    private function retrieveFederatedIdentity(OneLogin\Saml2\Auth $auth)
+    private function retrieveFederatedIdentity(Auth $auth)
     {
         $federatedIdentity = null;
         $attributes = $auth->getAttributes();
