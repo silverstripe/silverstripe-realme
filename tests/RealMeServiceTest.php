@@ -1,4 +1,7 @@
 <?php
+
+use OneLogin\Saml2\Auth;
+
 class RealMeServiceTest extends SapphireTest
 {
     private $pathForTempCertificate;
@@ -55,7 +58,7 @@ class RealMeServiceTest extends SapphireTest
     public function testGetAuth()
     {
         $auth = $this->service->getAuth();
-        $this->assertTrue(get_class($auth) === 'OneLogin_Saml2_Auth');
+        $this->assertTrue(get_class($auth) === Auth::class);
 
         // Service Provider settings
         $spData = $auth->getSettings()->getSPData();
