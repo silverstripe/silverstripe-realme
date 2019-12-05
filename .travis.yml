@@ -1,14 +1,28 @@
 # See https://github.com/silverstripe-labs/silverstripe-travis-support for setup details
+dist: xenial
+
+services:
+  - mysql
+  - postgresql
 
 sudo: false
 
 language: php
 
-php:
-  - 5.6
-
 env:
-  - DB=MYSQL CORE_RELEASE=3.6
+  global:
+    - COMPOSER_ROOT_VERSION=2.1.x-dev
+
+matrix:
+  include:
+    - php: 5.6
+      env: DB=MYSQL CORE_RELEASE=3.7
+    - php: 7.1
+      env: DB=MYSQL CORE_RELEASE=3.7
+    - php: 7.2
+      env: DB=PGSQL CORE_RELEASE=3.7
+    - php: 7.3
+      env: DB=MYSQL CORE_RELEASE=3.7
 
 before_script:
   - composer self-update || true
