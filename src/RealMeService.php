@@ -433,7 +433,7 @@ class RealMeService implements TemplateGlobalProvider
 
         // If not, attempt to retrieve authentication data from OneLogin (in case this is called during SAML assertion)
         try {
-            if (!$session->get("RealMeErrorBackURL")) {
+            if (!$session->get("RealMeErrorBackURL") && Controller::has_curr()) {
                 $session->set("RealMeErrorBackURL", Controller::curr()->Link("Login"));
             }
 
