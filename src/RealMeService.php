@@ -460,7 +460,7 @@ class RealMeService implements TemplateGlobalProvider
             Member::singleton()->extend("onRealMeLoginFailure", $e);
 
             // No auth data or failed to decrypt, enforce login again
-            $auth->login(Director::absoluteBaseURL());
+            $this->getAuth()->login(Director::absoluteBaseURL());
             die;
         }
 
