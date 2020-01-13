@@ -1070,40 +1070,47 @@ class RealMeService implements TemplateGlobalProvider
         $attributes = $auth->getAttributes();
         $nameId = $auth->getNameId();
 
-        // If identity information exists, retrieve the FIT (Federated Identity Tag) and identity data
-        if (isset($attributes['urn:nzl:govt:ict:stds:authn:safeb64:attribute:igovt:IVS:Assertion:Identity'])) {
-            // Identity information is encoded using 'Base 64 Encoding with URL and Filename Safe Alphabet'
-            // For more info, review RFC3548, section 4 (https://tools.ietf.org/html/rfc3548#page-6)
-            // Note: This is different to PHP's standard base64_decode() function, therefore we need to swap chars
-            // to match PHP's expectations:
-            // char 62 (-) becomes +
-            // char 63 (_) becomes /
+        $source = isset($attributes[FederatedIdentity::SOURCE_XML])
+            ? FederatedIdentity::SOURCE_XML
+            : FederatedIdentity::SOURCE_JSON;
 
-            $identity = $attributes['urn:nzl:govt:ict:stds:authn:safeb64:attribute:igovt:IVS:Assertion:Identity'];
+        // Identity information is encoded using 'Base 64 Encoding with URL and Filename Safe Alphabet'
+        // For more info, review RFC3548, section 4 (https://tools.ietf.org/html/rfc3548#page-6)
+        // Note: This is different to PHP's standard base64_decode() function, therefore we need to swap chars
+        // to match PHP's expectations:
+        // char 62 (-) becomes +
+        // char 63 (_) becomes /
 
-            if (!is_array($identity) || !isset($identity[0])) {
-                throw new RealMeException(
-                    'Invalid identity response received from RealMe',
-                    RealMeException::INVALID_IDENTITY_VALUE
-                );
-            }
+        $identity = $attributes[$source];
 
-            // Switch from filename-safe alphabet base64 encoding to standard base64 encoding
-            $identity = strtr($identity[0], '-_', '+/');
-            $identity = base64_decode($identity, true);
+        if (!is_array($identity) || !isset($identity[0])) {
+            throw new RealMeException(
+                'Invalid identity response received from RealMe',
+                RealMeException::INVALID_IDENTITY_VALUE
+            );
+        }
 
-            if (is_bool($identity) && !$identity) {
-                // Strict base64_decode fails, either the identity didn't exist or was mangled during transmission
-                throw new RealMeException(
-                    'Failed to parse safe base64 encoded identity',
-                    RealMeException::FAILED_PARSING_IDENTITY
-                );
-            }
+        // Switch from filename-safe alphabet base64 encoding to standard base64 encoding
+        $identity = strtr($identity[0], '-_', '+/');
+        $identity = base64_decode($identity, true);
 
+        if (is_bool($identity) && !$identity) {
+            // Strict base64_decode fails, either the identity didn't exist or was mangled during transmission
+            throw new RealMeException(
+                'Failed to parse safe base64 encoded identity',
+                RealMeException::FAILED_PARSING_IDENTITY
+            );
+        }
+
+        if ($source === FederatedIdentity::SOURCE_XML) {
             $identityDoc = new DOMDocument();
             if ($identityDoc->loadXML($identity)) {
-                $federatedIdentity = new FederatedIdentity($identityDoc, $nameId);
+                $federatedIdentity = FederatedIdentity::createFromXML($identityDoc, $nameId);
             }
+        }
+
+        if ($source === FederatedIdentity::SOURCE_JSON) {
+            $federatedIdentity = FederatedIdentity::createFromJSON($identity, $nameId);
         }
 
         return $federatedIdentity;
