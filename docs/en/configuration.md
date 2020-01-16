@@ -210,13 +210,15 @@ This will allow you, if necessary, to re-configure the module in real-time based
 
 ## Syncing Realme with SilverStripe members
 After logging in the module can sync the attributes returned from RealMe (depending on your assertion type) and sync the
-details with the appropriate members.
+details with the appropriate members. This is not available for `assert` type authenticaiton as the unique identifier is
+valid only for that session, meaning each time a user logged in they would have a new `Member` object created for them,
+and any associated historic user activity would be lost to them.
 
-To setup syncing, you must have the `RealMeMemberExtension` enabled on Member (or subclass) and then tell the module to
-sync with the database via the following configuration in realme.yml. You can also include
-`login_member_after_authentication` which will automatically login a user (as a SilverStripe `Member` object) after
-successful RealMe authentication.
-
+To setup syncing, you **must** be using the `login` type of authentication and have the `RealMeMemberExtension` enabled
+on `Member` (or a subclass of it) and then tell the module to sync with the database via the following configuration in
+realme.yml. You can also include `login_member_after_authentication` which will automatically login a user (as a
+Silverstripe `Member` object) after successful RealMe authentication.
+ 
 ```yaml
 SilverStripe\Security\Member:
   extensions:
