@@ -1070,6 +1070,10 @@ class RealMeService implements TemplateGlobalProvider
         $attributes = $auth->getAttributes();
         $nameId = $auth->getNameId();
 
+        if (!isset($attributes[FederatedIdentity::SOURCE_XML]) || !isset($attributes[FederatedIdentity::SOURCE_XML])) {
+            return $federatedIdentity;
+        }
+
         $source = isset($attributes[FederatedIdentity::SOURCE_XML])
             ? FederatedIdentity::SOURCE_XML
             : FederatedIdentity::SOURCE_JSON;

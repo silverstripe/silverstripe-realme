@@ -229,8 +229,11 @@ SilverStripe\RealMe\RealMeService:
   login_member_after_authentication: true
 ```
 
-Run a `dev/build` and after a valid RealMe login, a new member will be synced based on the RealMe FLT or FIT. If not
-found, a new member will be created.
+Run a `dev/build` to ensure the configuration changes are accounted for.
+
+When a RealMe login completes with success, a new member will be synced based on the RealMe FLT. If no member matching the
+FLT is found, a new member will be created. _Note this is not supported for `assert`, as the FIT is transient (changes each
+time a member logs in)._
 
 ### UAT and production environments
 

@@ -105,7 +105,7 @@ class LoginHandler extends RequestHandler
 
                 $realMeServiceConfig = RealMeService::config();
                 if ($realMeServiceConfig->get('sync_with_local_member_database') === true) {
-                    if ($realMeServiceConfig->get('integration_type') === RealMeService::TYPE_LOGIN) {
+                    if ($realMeServiceConfig->get('integration_type') === RealMeService::TYPE_ASSERT) {
                         throw new RealMeException(
                             'NameID is transient for ASSERT - it cannot be used to identify a user between sessions.',
                             RealMeException::PERSISTING_TRANSIENT_ID
