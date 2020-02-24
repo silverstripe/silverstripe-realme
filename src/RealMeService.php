@@ -1040,7 +1040,7 @@ class RealMeService implements TemplateGlobalProvider
      */
     private function retrieveFederatedLogonTag(Auth $auth)
     {
-        return null; // @todo
+        return $auth->getNameId(); // RealMe FLT is a synonym of NameID
     }
 
     /**
@@ -1070,7 +1070,7 @@ class RealMeService implements TemplateGlobalProvider
         $attributes = $auth->getAttributes();
         $nameId = $auth->getNameId();
 
-        if (!isset($attributes[FederatedIdentity::SOURCE_XML]) || !isset($attributes[FederatedIdentity::SOURCE_XML])) {
+        if (!isset($attributes[FederatedIdentity::SOURCE_XML]) && !isset($attributes[FederatedIdentity::SOURCE_JSON])) {
             return $federatedIdentity;
         }
 
