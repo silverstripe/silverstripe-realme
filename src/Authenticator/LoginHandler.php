@@ -103,7 +103,14 @@ class LoginHandler extends RequestHandler
                 $session->set('RealMe.SessionData', serialize($authData));
                 $session->set('RealMe.OriginalResponse', $request->postVar('SAMLResponse'));
 
-                if (RealMeService::config()->get('sync_with_local_member_database') === true) {
+                $realMeServiceConfig = RealMeService::config();
+                if ($realMeServiceConfig->get('sync_with_local_member_database') === true) {
+                    if ($realMeServiceConfig->get('integration_type') === RealMeService::TYPE_ASSERT) {
+                        throw new RealMeException(
+                            'NameID is transient for ASSERT - it cannot be used to identify a user between sessions.',
+                            RealMeException::PERSISTING_TRANSIENT_ID
+                        );
+                    }
                     if (!Member::has_extension(MemberExtension::class)) {
                         throw new RealMeException(
                             'The RealMe MemberExtension should be used when syncing with a local database',
@@ -114,7 +121,7 @@ class LoginHandler extends RequestHandler
                     if (!$authData->getMember()->isInDb()) {
                         $authData->getMember()->write();
                     }
-                    if (RealMeService::config()->get('login_member_after_authentication') === true) {
+                    if ($realMeServiceConfig->get('login_member_after_authentication') === true) {
                         Injector::inst()->get(AuthenticationHandler::class)->login($authData->getMember());
                     }
                 }

@@ -30,6 +30,8 @@ use SilverStripe\ORM\FieldType\DBDatetime;
  */
 class FederatedIdentity extends ViewableData
 {
+    const SOURCE_XML = 'urn:nzl:govt:ict:stds:authn:safeb64:attribute:igovt:IVS:Assertion:Identity';
+    const SOURCE_JSON = 'urn:nzl:govt:ict:stds:authn:safeb64:attribute:igovt:IVS:Assertion:JSON:Identity';
 
     /**
      * @var string The FIT (Federated Identity Tag) for this identity. This is the unique string that identifies an
@@ -98,6 +100,12 @@ class FederatedIdentity extends ViewableData
      */
     public $BirthPlaceLocality;
 
+    public function __construct($nameId)
+    {
+        parent::__construct();
+        $this->nameId = $nameId;
+    }
+
     /**
      * Constructor that sets the expected federated identity details based on a provided DOMDocument. The expected XML
      * structure for the DOMDocument is the following:
@@ -135,12 +143,11 @@ class FederatedIdentity extends ViewableData
      * @param DOMDocument $identity
      * @param string $nameId
      */
-    public function __construct(DOMDocument $identity, $nameId)
+    public static function createFromXML(DOMDocument $identityDocument, $nameId)
     {
-        parent::__construct();
-        $this->nameId = $nameId;
+        $identity = new self($nameId);
 
-        $xpath = new DOMXPath($identity);
+        $xpath = new DOMXPath($identityDocument);
         $xpath->registerNamespace('p', 'urn:oasis:names:tc:ciq:xpil:3');
         $xpath->registerNamespace('dataQuality', 'urn:oasis:names:tc:ciq:ct:3');
         $xpath->registerNamespace('n', 'urn:oasis:names:tc:ciq:xnl:3');
@@ -148,53 +155,55 @@ class FederatedIdentity extends ViewableData
         $xpath->registerNamespace('addr', 'urn:oasis:names:tc:ciq:xal:3');
 
         // Name elements
-        $this->FirstName = $this->getNodeValue(
+        $identity->FirstName = self::getNodeValue(
             $xpath,
             "/p:Party/p:PartyName/n:PersonName/n:NameElement[@n:ElementType='FirstName']"
         );
-        $this->MiddleName = $this->getNodeValue(
+        $identity->MiddleName = self::getNodeValue(
             $xpath,
             "/p:Party/p:PartyName/n:PersonName/n:NameElement[@n:ElementType='MiddleName']"
         );
-        $this->LastName = $this->getNodeValue(
+        $identity->LastName = self::getNodeValue(
             $xpath,
             "/p:Party/p:PartyName/n:PersonName/n:NameElement[@n:ElementType='LastName']"
         );
 
         // Gender
-        $this->Gender = $this->getNamedItemNodeValue($xpath, '/p:Party/p:PersonInfo[@p:Gender]', 'Gender');
+        $identity->Gender = self::getNamedItemNodeValue($xpath, '/p:Party/p:PersonInfo[@p:Gender]', 'Gender');
 
         // Birth info
-        $this->BirthInfoQuality = $xpath->query("/p:Party/p:BirthInfo[@dataQuality:DataQualityType]");
+        $identity->BirthInfoQuality = $xpath->query("/p:Party/p:BirthInfo[@dataQuality:DataQualityType]");
 
         // Birth date
-        $this->BirthYear = $this->getNodeValue(
+        $identity->BirthYear = self::getNodeValue(
             $xpath,
             "/p:Party/p:BirthInfo/p:BirthInfoElement[@p:Type='BirthYear']"
         );
-        $this->BirthMonth = $this->getNodeValue(
+        $identity->BirthMonth = self::getNodeValue(
             $xpath,
             "/p:Party/p:BirthInfo/p:BirthInfoElement[@p:Type='BirthMonth']"
         );
-        $this->BirthDay = $this->getNodeValue(
+        $identity->BirthDay = self::getNodeValue(
             $xpath,
             "/p:Party/p:BirthInfo/p:BirthInfoElement[@p:Type='BirthDay']"
         );
 
         // Birth place
-        $this->BirthPlaceQuality = $this->getNamedItemNodeValue(
+        $identity->BirthPlaceQuality = self::getNamedItemNodeValue(
             $xpath,
             '/p:Party/p:BirthInfo/p:BirthPlaceDetails[@dataQuality:DataQualityType]',
             'DataQualityType'
         );
-        $this->BirthPlaceCountry = $this->getNodeValue(
+        $identity->BirthPlaceCountry = self::getNodeValue(
             $xpath,
             "/p:Party/p:BirthInfo/p:BirthPlaceDetails/addr:Country/addr:NameElement[@addr:NameType='Name']"
         );
-        $this->BirthPlaceLocality = $this->getNodeValue(
+        $identity->BirthPlaceLocality = self::getNodeValue(
             $xpath,
             "/p:Party/p:BirthInfo/p:BirthPlaceDetails/addr:Locality/addr:NameElement[@addr:NameType='Name']"
         );
+
+        return $identity;
     }
 
     public function isValid()
@@ -219,7 +228,7 @@ class FederatedIdentity extends ViewableData
      * @param string $namedAttr The named attribute to retrieve from the XPath query
      * @return string|null Either the value from the named item, or null if no item exists
      */
-    private function getNamedItemNodeValue(DOMXPath $xpath, $query, $namedAttr)
+    private static function getNamedItemNodeValue(DOMXPath $xpath, $query, $namedAttr)
     {
         $query = $xpath->query($query);
         $value = null;
@@ -244,9 +253,46 @@ class FederatedIdentity extends ViewableData
      * @param string $query The XPath query to find the relevant node
      * @return string|null Either the first matching node's value (there should only ever be one), or null if none found
      */
-    private function getNodeValue(DOMXPath $xpath, $query)
+    private static function getNodeValue(DOMXPath $xpath, $query)
     {
         $query = $xpath->query($query);
         return ($query->length > 0 ? $query->item(0)->nodeValue : null);
+    }
+
+    /**
+     * create a FederatedIdentity from a JSON string.
+     *
+     * @param string $identityHashMap
+     * @param string $nameId
+     * @return void
+     */
+    public static function createFromJSON($identityHashMap, $nameId)
+    {
+        $identity = new self($nameId);
+
+        $identityMap = json_decode($identityHashMap, true);
+
+        // Name elements
+        $identity->FirstName = $identityMap['name']['firstName'];
+        $identity->MiddleName = $identityMap['name']['middleName'];
+        $identity->LastName = $identityMap['name']['lastName'];
+
+        // Gender
+        $identity->Gender = $identityMap['gender']['genderValue'];
+
+        // Birth info
+        $identity->BirthInfoQuality = $identityMap['dateOfBirth']['dateOfBirthDisputed'] ?: 'Valid';
+
+        // Birth date
+        $identity->BirthYear = explode('-', $identityMap['dateOfBirth']['dateOfBirthValue'])[0];
+        $identity->BirthMonth = explode('-', $identityMap['dateOfBirth']['dateOfBirthValue'])[1];
+        $identity->BirthDay = explode('-', $identityMap['dateOfBirth']['dateOfBirthValue'])[2];
+
+        // Birth place
+        $identity->BirthPlaceQuality = $identityMap['placeOfBirth']['placeOfBirthDisputed']?: 'Valid';
+        $identity->BirthPlaceCountry = $identityMap['placeOfBirth']['country'];
+        $identity->BirthPlaceLocality = $identityMap['placeOfBirth']['locality'];
+
+        return $identity;
     }
 }

@@ -15,4 +15,5 @@ class Exception extends BaseException
     const MISSING_AUTHN_RESPONSE = 6;
     const NOT_AUTHENTICATED = 7;
     const MISSING_MEMBER_EXTENSION = 8;
+    const PERSISTING_TRANSIENT_ID = 9;
 }
