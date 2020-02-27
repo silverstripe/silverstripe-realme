@@ -16,21 +16,25 @@ If integration with RealMe is wanted, it is best to get in touch with the RealMe
 accomplished by [getting in touch with the RealMe team](https://www.realme.govt.nz/realme-business/).
 
 ## Releases
-There are multiple releases of this module. The current stable version is the 3.x line. This is a stable module that
+There are multiple releases of this module. The current stable version is the 4.x line. This is a stable module that
 provides `logon` (authentication) and `assert` (identity assertion) capability. The 2.x line can be used for SilverStripe
-3.x support, and the older 0.9.x line is considered end of life and should not be used for new integrations.
+3.x support. The line 3.x only works with PHP <= 7.1 and is deprecated. The older 0.9.x line is considered end of life and should not be used.
 
 ## Support
-Support is provided via the GitHub Issues for this module. As the 3.0.0 release has not been fully tested for all project scenarios, if you encounter any issues please
-[open a new issue here](https://github.com/silverstripe/silverstripe-realme/issues).
+Support is provided via the GitHub Issues for this module.
+
+The 4.0.0 release has been tested with PHP 7.1, 7.2 and 7.3 for the following integrations:
+ - MTS Logon
+ - MTS Assert (XML)
+ - ITE Logon
+ - ITE Assert (JSON)
+
+If you encounter any issues please [open a new issue here](https://github.com/silverstripe/silverstripe-realme/issues).
 
 ## Requirements
 This module doesn't have any specific requirements beyond those required by
-[onelogin/php-saml](https://github.com/onelogin/php-saml/blob/master/composer.json), the tool used to control
-authentication with the RealMe systems.
-
-These requirements are PHP 5.6, with the following required PHP extensions enabled: date, dom, hash, libxml, openssl,
-pcre, SPL, zlib, and mcrypt with the PHP bindings.
+[onelogin/php-saml](https://github.com/onelogin/php-saml), the tool used to control
+authentication with the RealMe systems. The requirements of php-saml can be found on the [module page](https://github.com/onelogin/php-saml#dependencies)
 
 This module is designed to be run on a [CWP](https://www.cwp.govt.nz/) instance, and there are two sets of installation
 instructions - one for use on CWP, and one for generic use.
@@ -103,31 +107,3 @@ class RealMeTestController extends Controller {
 ## Appreciation
 
 * Sincere thanks to Jackson (@jakxnz) for his work reviewing and updating pull requests.
-
-## Troubleshooting
-
-If you experience XMLDSig validation errors with the RealMe XML responses, this _may_ be caused by some reading corruption
-of the response (or a poorly formed response). This was an issue with older versions of this module, particularly on older
-versions of PHP. If this issue persists for your project with this newer version, this can be worked around with a fork.
-
-Specify a custom version of the excellent onelogin/php-saml module; in the `repositories` section add:
-
-```json
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/madmatt/php-saml.git"
-        }
-    ],
-```
-
-And in the requirements specify the following branch as an alias:
-
-```json
-    "require": {
-        "silverstripe/realme": "^4",
-        "onelogin/php-saml": "dev-fixes/realme-dsig-validation-3.2.1 as 3.2.1"
-    },
-```
-
-This fork performs a very basic search & replace to correct some XML tag namespaces before the signature check is performed.
