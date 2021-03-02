@@ -111,13 +111,15 @@ class RealMeService extends SS_Object implements TemplateGlobalProvider
      */
     private static $idp_entity_ids = array(
         self::ENV_MTS => array(
-            self::TYPE_LOGIN  => 'https://mts.realme.govt.nz/saml2',
-            self::TYPE_ASSERT => 'https://mts.realme.govt.nz/realmemts/realmeidp',
+            self::TYPE_LOGIN  => 'https://mts.login.realme.govt.nz/4af8e0e0-497b-4f52-805c-00fa09b50c16/B2C_1A_DIA_RealMe_MTSLoginService',
+            self::TYPE_ASSERT => 'https://mts.login.realme.govt.nz/4af8e0e0-497b-4f52-805c-00fa09b50c16/B2C_1A_DIA_RealMe_MTSAssertionService',
         ),
+
         self::ENV_ITE => array(
-            self::TYPE_LOGIN  => 'https://www.ite.logon.realme.govt.nz/saml2',
-            self::TYPE_ASSERT => 'https://www.ite.account.realme.govt.nz/saml2/assertion',
+            self::TYPE_LOGIN  => 'https://ite.login.realme.govt.nz/12c36372-4b2d-4865-b1d1-9599b0d37348/B2C_1A_DIA_RealMe_LoginService',
+            self::TYPE_ASSERT => 'https://ite.login.realme.govt.nz/12c36372-4b2d-4865-b1d1-9599b0d37348/B2C_1A_DIA_RealMe_AssertionService',
         ),
+
         self::ENV_PROD => array(
             self::TYPE_LOGIN  => 'https://www.logon.realme.govt.nz/saml2',
             self::TYPE_ASSERT => 'https://www.account.realme.govt.nz/saml2/assertion',
@@ -126,13 +128,15 @@ class RealMeService extends SS_Object implements TemplateGlobalProvider
 
     private static $idp_sso_service_urls = array(
         self::ENV_MTS => array(
-            self::TYPE_LOGIN  => 'https://mts.realme.govt.nz/logon-mts/mtsEntryPoint',
-            self::TYPE_ASSERT => 'https://mts.realme.govt.nz/realme-mts/validate/realme-mts-idp.xhtml'
+            self::TYPE_LOGIN  => 'https://mts.login.realme.govt.nz/4af8e0e0-497b-4f52-805c-00fa09b50c16/B2C_1A_DIA_RealMe_MTSLoginService/samlp/sso/login',
+            self::TYPE_ASSERT => 'https://mts.login.realme.govt.nz/4af8e0e0-497b-4f52-805c-00fa09b50c16/B2C_1A_DIA_RealMe_MTSAssertionService/samlp/sso/login'
         ),
+
         self::ENV_ITE => array(
-            self::TYPE_LOGIN  => 'https://www.ite.logon.realme.govt.nz/sso/logon/metaAlias/logon/logonidp',
-            self::TYPE_ASSERT => 'https://www.ite.assert.realme.govt.nz/sso/SSORedirect/metaAlias/assertion/realmeidp'
+            self::TYPE_LOGIN  => 'https://ite.login.realme.govt.nz/12c36372-4b2d-4865-b1d1-9599b0d37348/B2C_1A_DIA_RealMe_LoginService/samlp/sso/login',
+            self::TYPE_ASSERT => 'https://ite.login.realme.govt.nz/12c36372-4b2d-4865-b1d1-9599b0d37348/B2C_1A_DIA_RealMe_AssertionService/samlp/sso/login'
         ),
+
         self::ENV_PROD => array(
             self::TYPE_LOGIN  => 'https://www.logon.realme.govt.nz/sso/logon/metaAlias/logon/logonidp',
             self::TYPE_ASSERT => 'https://www.assert.realme.govt.nz/sso/SSORedirect/metaAlias/assertion/realmeidp'
@@ -145,16 +149,21 @@ class RealMeService extends SS_Object implements TemplateGlobalProvider
      * same as the files that can be found in the RealMe Shared Workspace, within the 'Integration Bundle' ZIP files for
      * the different environments (MTS, ITE and Production), so you just need to extract the specific certificate file
      * that you need and make sure it's in place on the server in the REALME_CERT_DIR.
+     *
+     * Note: The certificate filename may need to be changed to match the relevant file below.
      */
     private static $idp_x509_cert_filenames = array(
         self::ENV_MTS => array(
             self::TYPE_LOGIN  => 'mts_login_saml_idp.cer',
             self::TYPE_ASSERT => 'mts_assert_saml_idp.cer'
         ),
+
+        // As of the 2021 Azure re-platforming, ITE certificates are the same - a single cert for both logon and assert
         self::ENV_ITE => array(
             self::TYPE_LOGIN  => 'ite.signing.logon.realme.govt.nz.cer',
-            self::TYPE_ASSERT => 'ite.signing.account.realme.govt.nz.cer'
+            self::TYPE_ASSERT => 'ite.signing.logon.realme.govt.nz.cer'
         ),
+
         self::ENV_PROD => array(
             self::TYPE_LOGIN  => 'signing.logon.realme.govt.nz.cer',
             self::TYPE_ASSERT => 'signing.account.realme.govt.nz.cer'
