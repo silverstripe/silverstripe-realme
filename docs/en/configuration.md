@@ -2,15 +2,29 @@
 
 ## Configuration
 
+### Environment variables and certificates
+
 The following values need to be defined in your `.env` file for **all** environments. See the [SilverStripe documentation on environment management](https://docs.silverstripe.org/en/3.1/getting_started/environment_management/) for more information.
 
-| **Environment Const**          | **Example**                     | **Notes**                                                                                                                                                                       |
-| ------------------------------ | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `REALME_CERT_DIR`              | /sites/realme-dev/secure/certs  | Directory where all certificates will reside. All certificates should be placed here. Needs to be readable (but ideally not writeable) by the web server user.                  |
-| `REALME_SIGNING_CERT_FILENAME` | mts_saml_sp.pem                 | Name of the SAML secure signing certificate for the required environment. For MTS, this is provided by RealMe, and is available on the RealMe developers site.                  |
+| **Environment Const**          | **Example**                     | **Notes**                                                                                                                                                                                    |
+| ------------------------------ | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `REALME_CERT_DIR`              | /sites/realme-dev/secure/certs  | Directory where all certificates will reside. All certificates should be placed here. Needs to be readable (but ideally not writeable) by the web server user.                               |
+| `REALME_SIGNING_CERT_FILENAME` | mts_saml_sp.pem                 | Name of the SAML secure signing certificate for the required environment (stored in `REALME_CERT_DIR`). For MTS, this is provided by RealMe, and is available on the RealMe developers site. |
 
-It is important to note that the file referred to by `REALME_SIGNING_CERT_FILENAME` is expected to be in [PEM format](https://en.wikipedia.org/wiki/Privacy-Enhanced_Mail), containing both the private key and the certificate (and optionally any intermediary certificates). If your files are not structured this way it can be easily created by e.g. `cat yoursite.crt yoursite.ca-bundle yoursite.key > yoursite.pem` provided each file has the appropirate `-----BEGIN *-----` and `-----END *-----` headers & footers.
+It is important to note that the file referred to by `REALME_SIGNING_CERT_FILENAME` is expected to be in [PEM format](https://en.wikipedia.org/wiki/Privacy-Enhanced_Mail), containing both the private key and the certificate (and optionally any intermediary certificates). If your files are not structured this way it can be easily created by e.g. `cat yoursite.crt yoursite.ca-bundle yoursite.key > yoursite.pem` provided each file has the appropriate `-----BEGIN *-----` and `-----END *-----` headers & footers.
 
+The `REALME_CERT_DIR` needs to contain the following files, depending on which environment you are integrating with:
+
+#### For MTS
+You must include `mts_saml_sp.pem` and either `mts_login_saml_idp.cer` or `mts_assert_saml_idp.cer` (depending on whether you are integration for logon or assert) from the MTS bundle available on the RealMe Developers website. Place both of these in your `REALME_CERT_DIR`.
+
+#### For ITE
+You must include your private key and signing certificate (PEM file) and then from the ITE integration bundle, take the `realme_signing.crt` file and rename it to `ite.signing.logon.realme.govt.nz.cer` (which is the Common Name on the certificate) and place this in your `REALME_CERT_DIR`.
+
+#### For Production
+You must include your private key and signing certificate (PEM file) and then from the Production integration bundle, take the `<filename unknown>` file and rename it to `<tbc>` (which is the Common Name on the certificate) and place this in your `REALME_CERT_DIR`.
+
+## YML configuration
 In addition to these environment variables, YML configuration is required to specify some values that should be consistently applied across
 environments. These are noted below.
 
