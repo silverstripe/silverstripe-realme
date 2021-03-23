@@ -111,35 +111,43 @@ class RealMeService extends SS_Object implements TemplateGlobalProvider
      */
     private static $idp_entity_ids = array(
         self::ENV_MTS => array(
-            self::TYPE_LOGIN  => 'https://mts.login.realme.govt.nz/4af8e0e0-497b-4f52-805c-00fa09b50c16/B2C_1A_DIA_RealMe_MTSLoginService',
-            self::TYPE_ASSERT => 'https://mts.login.realme.govt.nz/4af8e0e0-497b-4f52-805c-00fa09b50c16/B2C_1A_DIA_RealMe_MTSAssertionService',
+            self::TYPE_LOGIN  => 'https://mts.login.realme.govt.nz/4af8e0e0-497b-4f52-805c-00fa09b50c16' .
+                '/B2C_1A_DIA_RealMe_MTSLoginService',
+            self::TYPE_ASSERT => 'https://mts.login.realme.govt.nz/4af8e0e0-497b-4f52-805c-00fa09b50c16' .
+                '/B2C_1A_DIA_RealMe_MTSAssertionService',
         ),
-
         self::ENV_ITE => array(
-            self::TYPE_LOGIN  => 'https://ite.login.realme.govt.nz/12c36372-4b2d-4865-b1d1-9599b0d37348/B2C_1A_DIA_RealMe_LoginService',
-            self::TYPE_ASSERT => 'https://ite.login.realme.govt.nz/12c36372-4b2d-4865-b1d1-9599b0d37348/B2C_1A_DIA_RealMe_AssertionService',
+            self::TYPE_LOGIN  => 'https://ite.login.realme.govt.nz/12c36372-4b2d-4865-b1d1-9599b0d37348' .
+                '/B2C_1A_DIA_RealMe_LoginService',
+            self::TYPE_ASSERT => 'https://ite.login.realme.govt.nz/12c36372-4b2d-4865-b1d1-9599b0d37348' .
+                '/B2C_1A_DIA_RealMe_AssertionService',
         ),
-
         self::ENV_PROD => array(
-            self::TYPE_LOGIN  => 'https://www.logon.realme.govt.nz/saml2',
-            self::TYPE_ASSERT => 'https://www.account.realme.govt.nz/saml2/assertion',
+            self::TYPE_LOGIN  => 'https://login.realme.govt.nz/32179062-92f6-4eb0-89bc-df400a9e0367' .
+                '/B2C_1A_DIA_RealMe_LoginService',
+            self::TYPE_ASSERT => 'https://login.realme.govt.nz/32179062-92f6-4eb0-89bc-df400a9e0367' .
+                '/B2C_1A_DIA_RealMe_AssertionService',
         )
     );
 
     private static $idp_sso_service_urls = array(
         self::ENV_MTS => array(
-            self::TYPE_LOGIN  => 'https://mts.login.realme.govt.nz/4af8e0e0-497b-4f52-805c-00fa09b50c16/B2C_1A_DIA_RealMe_MTSLoginService/samlp/sso/login',
-            self::TYPE_ASSERT => 'https://mts.login.realme.govt.nz/4af8e0e0-497b-4f52-805c-00fa09b50c16/B2C_1A_DIA_RealMe_MTSAssertionService/samlp/sso/login'
+            self::TYPE_LOGIN  => 'https://mts.login.realme.govt.nz/4af8e0e0-497b-4f52-805c-00fa09b50c16' .
+                '/B2C_1A_DIA_RealMe_MTSLoginService/samlp/sso/login',
+            self::TYPE_ASSERT => 'https://mts.login.realme.govt.nz/4af8e0e0-497b-4f52-805c-00fa09b50c16' .
+                '/B2C_1A_DIA_RealMe_MTSAssertionService/samlp/sso/login'
         ),
-
         self::ENV_ITE => array(
-            self::TYPE_LOGIN  => 'https://ite.login.realme.govt.nz/12c36372-4b2d-4865-b1d1-9599b0d37348/B2C_1A_DIA_RealMe_LoginService/samlp/sso/login',
-            self::TYPE_ASSERT => 'https://ite.login.realme.govt.nz/12c36372-4b2d-4865-b1d1-9599b0d37348/B2C_1A_DIA_RealMe_AssertionService/samlp/sso/login'
+            self::TYPE_LOGIN  => 'https://ite.login.realme.govt.nz/12c36372-4b2d-4865-b1d1-9599b0d37348' .
+                '/B2C_1A_DIA_RealMe_LoginService/samlp/sso/login',
+            self::TYPE_ASSERT => 'https://ite.login.realme.govt.nz/12c36372-4b2d-4865-b1d1-9599b0d37348' .
+                '/B2C_1A_DIA_RealMe_AssertionService/samlp/sso/login'
         ),
-
         self::ENV_PROD => array(
-            self::TYPE_LOGIN  => 'https://www.logon.realme.govt.nz/sso/logon/metaAlias/logon/logonidp',
-            self::TYPE_ASSERT => 'https://www.assert.realme.govt.nz/sso/SSORedirect/metaAlias/assertion/realmeidp'
+            self::TYPE_LOGIN  => 'https://login.realme.govt.nz/32179062-92f6-4eb0-89bc-df400a9e0367' .
+                '/B2C_1A_DIA_RealMe_LoginService/samlp/sso/login',
+            self::TYPE_ASSERT => 'https://login.realme.govt.nz/32179062-92f6-4eb0-89bc-df400a9e0367' .
+                '/B2C_1A_DIA_RealMe_AssertionService/samlp/sso/login'
         )
     );
 
@@ -158,15 +166,16 @@ class RealMeService extends SS_Object implements TemplateGlobalProvider
             self::TYPE_ASSERT => 'mts_assert_saml_idp.cer'
         ),
 
-        // As of the 2021 Azure re-platforming, ITE certificates are the same - a single cert for both logon and assert
+        // As of the 2021 Azure re-platforming, ITE certificates are the same - a single cert for both logon & assert
         self::ENV_ITE => array(
             self::TYPE_LOGIN  => 'ite.signing.logon.realme.govt.nz.cer',
             self::TYPE_ASSERT => 'ite.signing.logon.realme.govt.nz.cer'
         ),
 
+        // As of the 2021 Azure re-platforming, prod certificates are the same - a single cert for both logon & assert
         self::ENV_PROD => array(
-            self::TYPE_LOGIN  => 'signing.logon.realme.govt.nz.cer',
-            self::TYPE_ASSERT => 'signing.account.realme.govt.nz.cer'
+            self::TYPE_LOGIN  => 'signing.realme.govt.nz.cer',
+            self::TYPE_ASSERT => 'signing.realme.govt.nz.cer'
         )
     );
 
@@ -414,8 +423,9 @@ class RealMeService extends SS_Object implements TemplateGlobalProvider
         } catch(Exception $e) {
             Member::singleton()->extend("onRealMeLoginFailure", $e);
 
-            // No auth data or failed to decrypt, enforce login again
-            $this->getAuth()->login(Director::absoluteBaseURL());
+            // No auth data or failed to decrypt, enforce login again - ensuring we redirect back to the BackURL
+            // (if one is set)
+            $this->getAuth()->login(Controller::join_links(Director::absoluteBaseURL(), Session::get('RealMeBackURL')));
             die;
         }
 
@@ -577,6 +587,11 @@ class RealMeService extends SS_Object implements TemplateGlobalProvider
         if(Session::get('RealMeBackURL')) {
             $url = Session::get('RealMeBackURL');
             Session::clear('RealMeBackURL'); // Ensure we don't redirect back to the same error twice
+        }
+
+        // Pull from RelayState if we got it from RealMe in the request
+        if (!$url && array_key_exists('RelayState', $_POST)) {
+            $url = $_POST['RelayState'];
         }
 
         return $this->validSiteURL($url);
