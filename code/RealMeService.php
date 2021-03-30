@@ -405,8 +405,9 @@ class RealMeService extends SS_Object implements TemplateGlobalProvider
         } catch(Exception $e) {
             Member::singleton()->extend("onRealMeLoginFailure", $e);
 
-            // No auth data or failed to decrypt, enforce login again
-            $this->getAuth()->login(Director::absoluteBaseURL());
+            // No auth data or failed to decrypt, enforce login again - ensuring we redirect back to the BackURL
+            // (if one is set)
+            $this->getAuth()->login(Controller::join_links(Director::absoluteBaseURL(), Session::get('RealMeBackURL')));
             die;
         }
 
@@ -568,6 +569,11 @@ class RealMeService extends SS_Object implements TemplateGlobalProvider
         if(Session::get('RealMeBackURL')) {
             $url = Session::get('RealMeBackURL');
             Session::clear('RealMeBackURL'); // Ensure we don't redirect back to the same error twice
+        }
+
+        // Pull from RelayState if we got it from RealMe in the request
+        if (!$url && array_key_exists('RelayState', $_POST)) {
+            $url = $_POST['RelayState'];
         }
 
         return $this->validSiteURL($url);
