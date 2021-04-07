@@ -80,6 +80,7 @@ class RealMeServiceTest extends SapphireTest
         $expected = 'https://mts.login.realme.govt.nz' .
             '/4af8e0e0-497b-4f52-805c-00fa09b50c16/B2C_1A_DIA_RealMe_MTSLoginService';
         $this->assertSame($expected, $idpData['entityId']);
+
         $expected = 'https://mts.login.realme.govt.nz' .
             '/4af8e0e0-497b-4f52-805c-00fa09b50c16/B2C_1A_DIA_RealMe_MTSLoginService/samlp/sso/login';
         $this->assertSame($expected, $idpData['singleSignOnService']['url']);
