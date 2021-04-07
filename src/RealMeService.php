@@ -149,8 +149,10 @@ class RealMeService implements TemplateGlobalProvider
         ),
 
         self::ENV_PROD => array(
-            self::TYPE_LOGIN  => 'https://www.logon.realme.govt.nz/saml2',
-            self::TYPE_ASSERT => 'https://www.account.realme.govt.nz/saml2/assertion',
+            self::TYPE_LOGIN  => 'https://login.realme.govt.nz/32179062-92f6-4eb0-89bc-df400a9e0367' .
+                '/B2C_1A_DIA_RealMe_LoginService',
+            self::TYPE_ASSERT => 'https://login.realme.govt.nz/32179062-92f6-4eb0-89bc-df400a9e0367' .
+                '/B2C_1A_DIA_RealMe_AssertionService',
         )
     );
 
@@ -170,8 +172,10 @@ class RealMeService implements TemplateGlobalProvider
         ),
 
         self::ENV_PROD => array(
-            self::TYPE_LOGIN  => 'https://www.logon.realme.govt.nz/sso/logon/metaAlias/logon/logonidp',
-            self::TYPE_ASSERT => 'https://www.assert.realme.govt.nz/sso/SSORedirect/metaAlias/assertion/realmeidp'
+            self::TYPE_LOGIN  => 'https://login.realme.govt.nz/32179062-92f6-4eb0-89bc-df400a9e0367' .
+                '/B2C_1A_DIA_RealMe_LoginService/samlp/sso/login',
+            self::TYPE_ASSERT => 'https://login.realme.govt.nz/32179062-92f6-4eb0-89bc-df400a9e0367' .
+                '/B2C_1A_DIA_RealMe_AssertionService/samlp/sso/login'
         )
     );
 
@@ -188,15 +192,16 @@ class RealMeService implements TemplateGlobalProvider
             self::TYPE_ASSERT => 'mts_assert_saml_idp.cer'
         ),
 
-        // As of the 2021 Azure re-platforming, ITE certificates are the same - a single cert for both logon and assert
+        // As of the 2021 Azure re-platforming, ITE certificates are the same - a single cert for both logon & assert
         self::ENV_ITE => array(
             self::TYPE_LOGIN  => 'ite.signing.logon.realme.govt.nz.cer',
             self::TYPE_ASSERT => 'ite.signing.logon.realme.govt.nz.cer'
         ),
 
+        // As of the 2021 Azure re-platforming, prod certificates are the same - a single cert for both logon & assert
         self::ENV_PROD => array(
-            self::TYPE_LOGIN  => 'signing.logon.realme.govt.nz.cer',
-            self::TYPE_ASSERT => 'signing.account.realme.govt.nz.cer'
+            self::TYPE_LOGIN  => 'signing.realme.govt.nz.cer',
+            self::TYPE_ASSERT => 'signing.realme.govt.nz.cer'
         )
     );
 
