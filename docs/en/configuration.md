@@ -152,8 +152,8 @@ environment. In this environment, RealMe provide all SSL certificates required t
 - Ensure your `realme.yml` [configuration](docs/en/configuration.md) is complete (see above).
 - Run the RealMe build task to validate your configuration and get the XML metadata to provide to MTS: `vendor/bin/sake dev/tasks/RealMeSetupTask forEnv=mts`
 - Save the XML output from the above task to an XML file, and upload this to MTS:
-    - For a 'logon' integration, submit here: [MTS logon metadata upload](https://mts.realme.govt.nz/logon-mts/metadataupdate).
-    - For an 'assert' integration, submit here: [MTS assert metadata upload](https://mts.realme.govt.nz/realme-mts/metadata/import.xhtml).
+    - For a 'logon' integration, submit here: [MTS logon metadata upload](https://mtscloud.realme.govt.nz/Login/home).
+    - For an 'assert' integration, submit here: [MTS assert metadata upload](https://mtscloud.realme.govt.nz/Assertion/home).
 - Either use the `$RealMeLoginForm` global template variable or add the `RealMeAuthenticator` and access `/Security/login`.
 - Once authenticated, you can access user data from templates using `$RealMeUser` (e.g. `$RealMeUser.SPNameID`), or in a controller by using `RealMeService::currentRealMeUser()`.
 
