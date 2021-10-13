@@ -135,9 +135,9 @@ class RealMeService implements TemplateGlobalProvider
      */
     private static $idp_entity_ids = array(
         self::ENV_MTS => array(
-            self::TYPE_LOGIN  => 'https://mts.login.realme.govt.nz/4af8e0e0-497b-4f52-805c-00fa09b50c16' .
+            self::TYPE_LOGIN  => 'https://login.mts.realme.govt.nz/4af8e0e0-497b-4f52-805c-00fa09b50c16' .
                 '/B2C_1A_DIA_RealMe_MTSLoginService',
-            self::TYPE_ASSERT => 'https://mts.login.realme.govt.nz/4af8e0e0-497b-4f52-805c-00fa09b50c16' .
+            self::TYPE_ASSERT => 'https://login.mts.realme.govt.nz/4af8e0e0-497b-4f52-805c-00fa09b50c16' .
                 '/B2C_1A_DIA_RealMe_MTSAssertionService'
         ),
 
@@ -158,9 +158,9 @@ class RealMeService implements TemplateGlobalProvider
 
     private static $idp_sso_service_urls = array(
         self::ENV_MTS => array(
-            self::TYPE_LOGIN  => 'https://mts.login.realme.govt.nz/4af8e0e0-497b-4f52-805c-00fa09b50c16' .
+            self::TYPE_LOGIN  => 'https://login.mts.realme.govt.nz/b2cdiamts01rmpubdir.onmicrosoft.com' .
                 '/B2C_1A_DIA_RealMe_MTSLoginService/samlp/sso/login',
-            self::TYPE_ASSERT => 'https://mts.login.realme.govt.nz/4af8e0e0-497b-4f52-805c-00fa09b50c16' .
+            self::TYPE_ASSERT => 'https://login.mts.realme.govt.nz/b2cdiamts01rmpubdir.onmicrosoft.com' .
                 '/B2C_1A_DIA_RealMe_MTSAssertionService/samlp/sso/login'
         ),
 
