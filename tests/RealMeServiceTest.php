@@ -77,12 +77,12 @@ class RealMeServiceTest extends SapphireTest
 
         // Identity Provider settings
         $idpData = $auth->getSettings()->getIdPData();
-        $expected = 'https://mts.login.realme.govt.nz' .
+        $expected = 'https://login.mts.realme.govt.nz' .
             '/4af8e0e0-497b-4f52-805c-00fa09b50c16/B2C_1A_DIA_RealMe_MTSLoginService';
         $this->assertSame($expected, $idpData['entityId']);
 
-        $expected = 'https://mts.login.realme.govt.nz' .
-            '/4af8e0e0-497b-4f52-805c-00fa09b50c16/B2C_1A_DIA_RealMe_MTSLoginService/samlp/sso/login';
+        $expected = 'https://login.mts.realme.govt.nz' .
+            '/b2cdiamts01rmpubdir.onmicrosoft.com/B2C_1A_DIA_RealMe_MTSLoginService/samlp/sso/login';
         $this->assertSame($expected, $idpData['singleSignOnService']['url']);
 
         // Security settings
