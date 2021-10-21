@@ -111,15 +111,15 @@ class RealMeService extends SS_Object implements TemplateGlobalProvider
      */
     private static $idp_entity_ids = array(
         self::ENV_MTS => array(
-            self::TYPE_LOGIN  => 'https://mts.login.realme.govt.nz/4af8e0e0-497b-4f52-805c-00fa09b50c16' .
+            self::TYPE_LOGIN  => 'https://login.mts.realme.govt.nz/4af8e0e0-497b-4f52-805c-00fa09b50c16' .
                 '/B2C_1A_DIA_RealMe_MTSLoginService',
-            self::TYPE_ASSERT => 'https://mts.login.realme.govt.nz/4af8e0e0-497b-4f52-805c-00fa09b50c16' .
+            self::TYPE_ASSERT => 'https://login.mts.realme.govt.nz/4af8e0e0-497b-4f52-805c-00fa09b50c16' .
                 '/B2C_1A_DIA_RealMe_MTSAssertionService',
         ),
         self::ENV_ITE => array(
-            self::TYPE_LOGIN  => 'https://ite.login.realme.govt.nz/12c36372-4b2d-4865-b1d1-9599b0d37348' .
+            self::TYPE_LOGIN  => 'https://login.ite.realme.govt.nz/12c36372-4b2d-4865-b1d1-9599b0d37348' .
                 '/B2C_1A_DIA_RealMe_LoginService',
-            self::TYPE_ASSERT => 'https://ite.login.realme.govt.nz/12c36372-4b2d-4865-b1d1-9599b0d37348' .
+            self::TYPE_ASSERT => 'https://login.ite.realme.govt.nz/12c36372-4b2d-4865-b1d1-9599b0d37348' .
                 '/B2C_1A_DIA_RealMe_AssertionService',
         ),
         self::ENV_PROD => array(
@@ -132,15 +132,15 @@ class RealMeService extends SS_Object implements TemplateGlobalProvider
 
     private static $idp_sso_service_urls = array(
         self::ENV_MTS => array(
-            self::TYPE_LOGIN  => 'https://mts.login.realme.govt.nz/4af8e0e0-497b-4f52-805c-00fa09b50c16' .
+            self::TYPE_LOGIN  => 'https://login.mts.realme.govt.nz/b2cdiamts01rmpubdir.onmicrosoft.com' .
                 '/B2C_1A_DIA_RealMe_MTSLoginService/samlp/sso/login',
-            self::TYPE_ASSERT => 'https://mts.login.realme.govt.nz/4af8e0e0-497b-4f52-805c-00fa09b50c16' .
+            self::TYPE_ASSERT => 'https://login.mts.realme.govt.nz/b2cdiamts01rmpubdir.onmicrosoft.com' .
                 '/B2C_1A_DIA_RealMe_MTSAssertionService/samlp/sso/login'
         ),
         self::ENV_ITE => array(
-            self::TYPE_LOGIN  => 'https://ite.login.realme.govt.nz/12c36372-4b2d-4865-b1d1-9599b0d37348' .
+            self::TYPE_LOGIN  => 'https://login.ite.realme.govt.nz/b2cdiaite01rmpubdir.onmicrosoft.com' .
                 '/B2C_1A_DIA_RealMe_LoginService/samlp/sso/login',
-            self::TYPE_ASSERT => 'https://ite.login.realme.govt.nz/12c36372-4b2d-4865-b1d1-9599b0d37348' .
+            self::TYPE_ASSERT => 'https://login.ite.realme.govt.nz/b2cdiaite01rmpubdir.onmicrosoft.com' .
                 '/B2C_1A_DIA_RealMe_AssertionService/samlp/sso/login'
         ),
         self::ENV_PROD => array(
