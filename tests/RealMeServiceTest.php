@@ -129,7 +129,7 @@ class RealMeServiceTest extends SapphireTest
         );
     }
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         Environment::putEnv('REALME_CERT_DIR=' . __DIR__ . '/certs');
         Environment::putEnv('REALME_SIGNING_CERT_FILENAME=' . 'standard_cert.pem');
@@ -137,7 +137,7 @@ class RealMeServiceTest extends SapphireTest
         parent::setUpBeforeClass();
     }
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->service = Injector::inst()->create(RealMeService::class);
@@ -156,7 +156,7 @@ class RealMeServiceTest extends SapphireTest
         );
     }
 
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         parent::tearDownAfterClass();
 
