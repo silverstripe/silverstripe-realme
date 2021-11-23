@@ -48,9 +48,9 @@ class RealMeService implements TemplateGlobalProvider
     const AUTHN_LOW_STRENGTH = 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:LowStrength';
     const AUTHN_MOD_STRENTH = 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength';
     const AUTHN_MOD_MOBILE_SMS =
-        'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength::OTP:Mobile:SMS';
+    'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength::OTP:Mobile:SMS';
     const AUTHN_MOD_TOKEN_SID =
-        'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength::OTP:Token:SID';
+    'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength::OTP:Token:SID';
 
     /**
      * Realme SAML2 error status constants
@@ -480,7 +480,8 @@ class RealMeService implements TemplateGlobalProvider
             Member::singleton()->extend("onRealMeLoginFailure", $e);
 
             // No auth data or failed to decrypt, enforce login again
-            $this->getAuth()->login(Director::absoluteBaseURL());
+            $validBackURL = $this->validSiteURL($backUrl ?: $this->getBackURL($request));
+            $this->getAuth()->login($validBackURL ?: Director::absoluteBaseURL());
             die;
         }
 
@@ -636,6 +637,10 @@ class RealMeService implements TemplateGlobalProvider
         if ($session->get('RealMeBackURL')) {
             $url = $session->get('RealMeBackURL');
             $session->clear('RealMeBackURL'); // Ensure we don't redirect back to the same error twice
+        } elseif ($request->requestVar('BackURL')) {
+            $url = $request->requestVar('BackURL');
+        } elseif ($request->postVar('RelayState')) {
+            $url = $request->postVar('RelayState');
         }
 
         return $this->validSiteURL($url);
@@ -816,7 +821,7 @@ class RealMeService implements TemplateGlobalProvider
     public function getMetadataOrganisationUrl()
     {
         $url = $this->config()->metadata_organisation_url;
-        return (strlen($url) > 0) ? $url: null;
+        return (strlen($url) > 0) ? $url : null;
     }
 
     /**

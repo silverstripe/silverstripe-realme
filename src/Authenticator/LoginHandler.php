@@ -77,8 +77,12 @@ class LoginHandler extends RequestHandler
      *
      * @return array
      */
-    public function login()
+    public function login(HTTPRequest $request)
     {
+        if ($backURL = $this->service->getBackURL($request)) {
+            $request->getSession()->set('RealMeBackURL', $backURL);
+        }
+
         return [
             'Form' => $this->loginForm(),
         ];
