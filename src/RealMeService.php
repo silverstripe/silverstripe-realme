@@ -449,8 +449,16 @@ class RealMeService implements TemplateGlobalProvider
 
         if ($backUrl) {
             $session->set('RealMeBackURL', $this->validSiteURL($backUrl));
+        } else {
+            $backUrl = $this->getBackURL($request);
         }
 
+        $backURL = $this->validSiteURL($backURL);
+        
+        if (!$backUrl) {
+            $backURL = Director::absoluteBaseURL();
+        }
+        
         // If not, attempt to retrieve authentication data from OneLogin (in case this is called during SAML assertion)
         try {
             if (!$session->get("RealMeErrorBackURL") && Controller::has_curr()) {
@@ -480,7 +488,7 @@ class RealMeService implements TemplateGlobalProvider
             Member::singleton()->extend("onRealMeLoginFailure", $e);
 
             // No auth data or failed to decrypt, enforce login again
-            $this->getAuth()->login(Director::absoluteBaseURL());
+            $this->getAuth()->login($backURL);
             die;
         }
 
@@ -636,6 +644,10 @@ class RealMeService implements TemplateGlobalProvider
         if ($session->get('RealMeBackURL')) {
             $url = $session->get('RealMeBackURL');
             $session->clear('RealMeBackURL'); // Ensure we don't redirect back to the same error twice
+        } elseif ($request->requestVar('BackURL')) {
+            $url = $request->requestVar('BackURL');
+        } elseif ($request->postVar('RelayState')) {
+            $url = $request->postVar('RelayState');
         }
 
         return $this->validSiteURL($url);
