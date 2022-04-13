@@ -62,15 +62,15 @@ class Authenticator implements AuthenticatorInterface
             return false;
         };
 
-        $path = rtrim($certDir, '/');
-        if (!file_exists($path) || !is_readable($path)) {
+        $path = rtrim($certDir ?? '', '/');
+        if (!file_exists($path ?? '') || !is_readable($path ?? '')) {
             $logger->error('RealMe certificate directory (REALME_CERT_DIR) missing or not readable');
             return false;
         }
 
         // Check certificates (cert dir must exist at this point).
-        $path = rtrim($certDir, '/') . "/" . $certFilename;
-        if (!file_exists($path) || !is_readable($path)) {
+        $path = rtrim($certDir ?? '', '/') . "/" . $certFilename;
+        if (!file_exists($path ?? '') || !is_readable($path ?? '')) {
             $logger->error(sprintf('RealMe %s missing: %s', $certFilename, $path));
             return false;
         }

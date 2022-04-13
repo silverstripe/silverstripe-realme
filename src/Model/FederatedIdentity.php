@@ -239,7 +239,7 @@ class FederatedIdentity extends ViewableData
             if ($item->hasAttributes()) {
                 $value = $item->attributes->getNamedItem($namedAttr);
 
-                if (strlen($value->nodeValue) > 0) {
+                if (strlen($value->nodeValue ?? '') > 0) {
                     $value = $value->nodeValue;
                 }
             }
@@ -270,7 +270,7 @@ class FederatedIdentity extends ViewableData
     {
         $identity = new self($nameId);
 
-        $identityMap = json_decode($identityHashMap, true);
+        $identityMap = json_decode($identityHashMap ?? '', true);
 
         // Name elements
         $identity->FirstName = $identityMap['name']['firstName'];

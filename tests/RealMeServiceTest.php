@@ -31,10 +31,10 @@ class RealMeServiceTest extends SapphireTest
         $contents = file_get_contents(__DIR__ . '/certs/standard_cert.pem');
 
         // Strip carriage returns
-        $contents = str_replace("\r", '', $contents);
+        $contents = str_replace("\r", '', $contents ?? '');
 
         $path = self::$pathForTempCertificate;
-        file_put_contents($path, $contents);
+        file_put_contents($path ?? '', $contents);
 
         /** @var RealMeService $service */
         $service = Injector::inst()->get(RealMeService::class);
@@ -42,7 +42,7 @@ class RealMeServiceTest extends SapphireTest
         $this->assertEquals('Redacted private key goes here', $service->getCertificateContents($path, 'key'));
         $this->assertEquals('Redacted certificate goes here', $service->getCertificateContents($path, 'certificate'));
 
-        unlink($path);
+        unlink($path ?? '');
 
         /**
          * Test certificate with RSA private key
@@ -51,17 +51,17 @@ class RealMeServiceTest extends SapphireTest
         $contents = file_get_contents(__DIR__ . '/certs/rsa_cert.pem');
 
         // Strip carriage returns
-        $contents = str_replace("\r", '', $contents);
+        $contents = str_replace("\r", '', $contents ?? '');
 
         $path = self::$pathForTempCertificate;
-        file_put_contents($path, $contents);
+        file_put_contents($path ?? '', $contents);
 
         /** @var RealMeService $service */
         $service = Injector::inst()->get(RealMeService::class);
         $this->assertEquals('Redacted private key goes here', $service->getCertificateContents($path, 'key'));
         $this->assertEquals('Redacted certificate goes here', $service->getCertificateContents($path, 'certificate'));
 
-        unlink($path);
+        unlink($path ?? '');
     }
 
     public function testGetAuth()
