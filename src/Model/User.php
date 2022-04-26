@@ -92,7 +92,7 @@ class User extends ArrayData
     public function getFederatedIdentity()
     {
         // Check if identity is present
-        if (!array_key_exists('FederatedIdentity', $this->array)) {
+        if (!array_key_exists('FederatedIdentity', $this->array ?? [])) {
             return null;
         }
 

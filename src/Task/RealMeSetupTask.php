@@ -122,14 +122,14 @@ class RealMeSetupTask extends BuildTask
         $this->validateMetadata();
 
         // Output validation errors, if any are found
-        if (sizeof($this->errors) > 0) {
+        if (sizeof($this->errors ?? []) > 0) {
             $errorList = PHP_EOL . ' - ' . join(PHP_EOL . ' - ', $this->errors);
 
             throw new Exception(_t(
                 self::class . '.ERR_VALIDATION',
                 'There were {numissues} issue(s) found during validation that must be fixed prior to setup: {issues}',
                 array(
-                    'numissues' => sizeof($this->errors),
+                    'numissues' => sizeof($this->errors ?? []),
                     'issues' => $errorList
                 )
             ));
@@ -193,10 +193,14 @@ class RealMeSetupTask extends BuildTask
      */
     private function replaceTemplateContents($templatePath, $replacements = null)
     {
-        $configText = file_get_contents($templatePath);
+        $configText = file_get_contents($templatePath ?? '');
 
         if (true === is_array($replacements)) {
-            $configText = str_replace(array_keys($replacements), array_values($replacements), $configText);
+            $configText = str_replace(
+                array_keys($replacements ?? []),
+                array_values($replacements ?? []),
+                $configText ?? ''
+            );
         }
 
         return $configText;
@@ -237,7 +241,7 @@ class RealMeSetupTask extends BuildTask
      */
     private function isReadable($filename)
     {
-        return is_readable($filename);
+        return is_readable($filename ?? '');
     }
 
     /**
@@ -279,7 +283,7 @@ class RealMeSetupTask extends BuildTask
         }
 
         // check it's not localhost and HTTPS. and make sure we have a host / scheme
-        $urlParts = parse_url($entityId);
+        $urlParts = parse_url($entityId ?? '');
         if ($urlParts['host'] === 'localhost' || $urlParts['scheme'] === 'http') {
             $this->errors[] = _t(
                 self::class . '.ERR_CONFIG_ENTITYID',
@@ -294,14 +298,14 @@ class RealMeSetupTask extends BuildTask
             return;
         }
 
-        $path = ltrim($urlParts['path']);
-        $urlParts = preg_split("/\\//", $path);
+        $path = ltrim($urlParts['path'] ?? '');
+        $urlParts = preg_split("/\\//", $path ?? '');
 
 
         // A valid Entity ID is in the form of "https://www.domain.govt.nz/<privacy-realm>/<service-name>"
         // Validate Service Name
         $serviceName = array_pop($urlParts);
-        if (mb_strlen($serviceName) > 20 || 0 === mb_strlen($serviceName)) {
+        if (mb_strlen($serviceName ?? '') > 20 || 0 === mb_strlen($serviceName ?? '')) {
             $this->errors[] = _t(
                 self::class . '.ERR_CONFIG_ENTITYID_SERVICE_NAME',
                 'The service name \'{serviceName}\' must be a maximum of 20 characters and not blank for entityID ' .
@@ -315,7 +319,7 @@ class RealMeSetupTask extends BuildTask
 
         // Validate Privacy Realm
         $privacyRealm = array_pop($urlParts);
-        if (null === $privacyRealm || 0 === mb_strlen($privacyRealm)) {
+        if (null === $privacyRealm || 0 === mb_strlen($privacyRealm ?? '')) {
             $this->errors[] = _t(
                 self::class . '.ERR_CONFIG_ENTITYID_PRIVACY_REALM',
                 'The privacy realm \'{privacyRealm}\' must not be blank for entityID \'{entityId}\'',
@@ -345,7 +349,7 @@ class RealMeSetupTask extends BuildTask
                 );
             }
 
-            if (!in_array($context, $this->service->getAllowedAuthNContextList())) {
+            if (!in_array($context, $this->service->getAllowedAuthNContextList() ?? [])) {
                 $this->errors[] = _t(
                     self::class . '.ERR_CONFIG_INVALID_AUTHNCONTEXT',
                     'The AuthnContext specified for environment \'{env}\' is invalid, please check your configuration',
@@ -363,7 +367,7 @@ class RealMeSetupTask extends BuildTask
     private function validateRealMeEnvironments($forEnv)
     {
         $allowedEnvs = $this->service->getAllowedRealMeEnvironments();
-        if (0 === mb_strlen($forEnv)) {
+        if (0 === mb_strlen($forEnv ?? '')) {
             $this->errors[] = _t(
                 self::class . '.ERR_ENV_NOT_SPECIFIED',
                 'The RealMe environment was not specified on the cli It must be one of: {allowedEnvs} ' .
@@ -375,7 +379,7 @@ class RealMeSetupTask extends BuildTask
             return;
         }
 
-        if (false === in_array($forEnv, $allowedEnvs)) {
+        if (false === in_array($forEnv, $allowedEnvs ?? [])) {
             $this->errors[] = _t(
                 self::class . '.ERR_ENV_NOT_ALLOWED',
                 'The RealMe environment specified on the cli (\'{env}\') is not allowed. ' .

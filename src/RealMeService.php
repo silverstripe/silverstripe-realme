@@ -371,7 +371,7 @@ class RealMeService implements TemplateGlobalProvider
         }
 
         // Unserialise stored data
-        $user = unserialize($sessionData);
+        $user = unserialize($sessionData ?? '');
 
         if ($user == false || !$user instanceof User) {
             return null;
@@ -688,13 +688,13 @@ class RealMeService implements TemplateGlobalProvider
     {
 
         // Trim prepended seprator to avoid absolute path
-        $path = ltrim(ltrim($subdir, '/'), '\\');
+        $path = ltrim(ltrim($subdir ?? '', '/'), '\\');
 
         if ($certDir = Environment::getEnv('REALME_CERT_DIR')) {
             $path = $certDir . '/' . $path; // Duplicate slashes will be handled by realpath()
         }
 
-        return realpath($path);
+        return realpath($path ?? '');
     }
 
     /**
@@ -752,10 +752,10 @@ class RealMeService implements TemplateGlobalProvider
         $text = null;
 
         if (!is_null($certPath)) {
-            $certificateContents = file_get_contents($certPath);
+            $certificateContents = file_get_contents($certPath ?? '');
 
             // If the file does not contain any header information and the content type is certificate, just return it
-            if ($contentType == 'certificate' && !preg_match('/-----BEGIN/', $certificateContents)) {
+            if ($contentType == 'certificate' && !preg_match('/-----BEGIN/', $certificateContents ?? '')) {
                 $text = $certificateContents;
             } else {
                 // Otherwise, inspect the file and match based on the full contents
@@ -771,13 +771,13 @@ class RealMeService implements TemplateGlobalProvider
                 // This is a PEM key, and we need to extract just the certificate, stripping out the private key etc.
                 // So we search for everything between '-----BEGIN CERTIFICATE-----' and '-----END CERTIFICATE-----'
                 preg_match(
-                    $pattern,
-                    $certificateContents,
+                    $pattern ?? '',
+                    $certificateContents ?? '',
                     $matches
                 );
 
                 if (isset($matches) && is_array($matches) && isset($matches[1])) {
-                    $text = trim($matches[1]);
+                    $text = trim($matches[1] ?? '');
                 }
             }
         }
@@ -791,7 +791,7 @@ class RealMeService implements TemplateGlobalProvider
      */
     public function getAssertionConsumerServiceUrlForEnvironment($env)
     {
-        if (in_array($env, $this->getAllowedRealMeEnvironments()) === false) {
+        if (in_array($env, $this->getAllowedRealMeEnvironments() ?? []) === false) {
             return null;
         }
 
@@ -810,7 +810,7 @@ class RealMeService implements TemplateGlobalProvider
     public function getMetadataOrganisationName()
     {
         $orgName = $this->config()->metadata_organisation_name;
-        return (strlen($orgName) > 0) ? $orgName : null;
+        return (strlen($orgName ?? '') > 0) ? $orgName : null;
     }
 
     /**
@@ -819,7 +819,7 @@ class RealMeService implements TemplateGlobalProvider
     public function getMetadataOrganisationDisplayName()
     {
         $displayName = $this->config()->metadata_organisation_display_name;
-        return (strlen($displayName) > 0) ? $displayName : null;
+        return (strlen($displayName ?? '') > 0) ? $displayName : null;
     }
 
     /**
@@ -828,7 +828,7 @@ class RealMeService implements TemplateGlobalProvider
     public function getMetadataOrganisationUrl()
     {
         $url = $this->config()->metadata_organisation_url;
-        return (strlen($url) > 0) ? $url: null;
+        return (strlen($url ?? '') > 0) ? $url: null;
     }
 
     /**
@@ -842,9 +842,9 @@ class RealMeService implements TemplateGlobalProvider
         $surname = $this->config()->metadata_contact_support_surname;
 
         return array(
-            'company' => (strlen($company) > 0) ? $company : null,
-            'firstNames' => (strlen($firstNames) > 0) ? $firstNames : null,
-            'surname' => (strlen($surname) > 0) ? $surname : null
+            'company' => (strlen($company ?? '') > 0) ? $company : null,
+            'firstNames' => (strlen($firstNames ?? '') > 0) ? $firstNames : null,
+            'surname' => (strlen($surname ?? '') > 0) ? $surname : null
         );
     }
 
@@ -1002,7 +1002,7 @@ class RealMeService implements TemplateGlobalProvider
     {
         $value = null;
 
-        if (in_array($env, $this->getAllowedRealMeEnvironments())) {
+        if (in_array($env, $this->getAllowedRealMeEnvironments() ?? [])) {
             $values = $this->config()->$cfgName;
 
             if (is_array($values) && isset($values[$env])) {
@@ -1043,14 +1043,14 @@ class RealMeService implements TemplateGlobalProvider
         $certPath = null;
 
         if (in_array($certName, array('SIGNING', 'MUTUAL'))) {
-            $constName = sprintf('REALME_%s_CERT_FILENAME', strtoupper($certName));
+            $constName = sprintf('REALME_%s_CERT_FILENAME', strtoupper($certName ?? ''));
             if ($filename = Environment::getEnv($constName)) {
                 $certPath = $this->getCertDir($filename);
             }
         }
 
         // Ensure the file exists, if it doesn't then set it to null
-        if (!is_null($certPath) && !file_exists($certPath)) {
+        if (!is_null($certPath) && !file_exists($certPath ?? '')) {
             $certPath = null;
         }
 
@@ -1127,8 +1127,8 @@ class RealMeService implements TemplateGlobalProvider
         }
 
         // Switch from filename-safe alphabet base64 encoding to standard base64 encoding
-        $identity = strtr($identity[0], '-_', '+/');
-        $identity = base64_decode($identity, true);
+        $identity = strtr($identity[0] ?? '', '-_', '+/');
+        $identity = base64_decode($identity ?? '', true);
 
         if (is_bool($identity) && !$identity) {
             // Strict base64_decode fails, either the identity didn't exist or was mangled during transmission
@@ -1254,7 +1254,7 @@ class RealMeService implements TemplateGlobalProvider
         }
 
         // Allow message overrides if they exist
-        if (array_key_exists($errorCode, $messageOverrides) && !is_null($messageOverrides[$errorCode])) {
+        if (array_key_exists($errorCode, $messageOverrides ?? []) && !is_null($messageOverrides[$errorCode])) {
             $message = $messageOverrides[$errorCode];
         }
 
