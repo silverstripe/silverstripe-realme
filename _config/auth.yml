@@ -7,4 +7,4 @@ SilverStripe\Core\Injector\Injector:
   SilverStripe\Security\Security:
     properties:
       Authenticators:
-        RealMe: %$SilverStripe\RealMe\Authenticator
+        RealMe: '%$SilverStripe\RealMe\Authenticator'
