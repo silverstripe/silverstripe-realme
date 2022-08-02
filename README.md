@@ -1,15 +1,11 @@
-silverstripe-realme
-============================
+# Silverstripe Realme
 
 [![CI](https://github.com/silverstripe/silverstripe-realme/actions/workflows/ci.yml/badge.svg)](https://github.com/silverstripe/silverstripe-realme/actions/workflows/ci.yml)
-[![SilverStripe supported module](https://img.shields.io/badge/silverstripe-supported-0071C4.svg)](https://www.silverstripe.org/software/addons/silverstripe-commercially-supported-module-list/)
-[![Code Quality](http://img.shields.io/scrutinizer/g/silverstripe/silverstripe-realme.svg?style=flat-square)](https://scrutinizer-ci.com/g/silverstripe/silverstripe-realme)
-[![License](http://img.shields.io/packagist/l/silverstripe/realme.svg?style=flat-square)](LICENSE.md)
-[![Version](http://img.shields.io/packagist/v/silverstripe/realme.svg?style=flat-square)](https://packagist.org/packages/silverstripe/realme)
+[![Silverstripe supported module](https://img.shields.io/badge/silverstripe-supported-0071C4.svg)](https://www.silverstripe.org/software/addons/silverstripe-commercially-supported-module-list/)
 
-Adds support to SilverStripe for authentication and identity assertion via [RealMe](https://www.realme.govt.nz/).
+Adds support to Silverstripe for authentication and identity assertion via [RealMe](https://www.realme.govt.nz/).
 
-This module provides the foundation to support a quick integration for a SilverStripe application with RealMe as an
+This module provides the foundation to support a quick integration for a Silverstripe application with RealMe as an
 identity provider. This module requires extensive setup prior to being utilised effectively.
 
 If integration with RealMe is wanted, it is best to get in touch with the RealMe team as early as possible. This can be
@@ -64,7 +60,7 @@ used.
 ## Providing RealMe login buttons
 
 By default, the module provides an `Authenticator` class in SilverStripe, adding a new login form. If you want to provide your own separate login form just for RealMe, then the built-in templates can help
-with this. They have been designed to integrate as cleanly as possible with SilverStripe templates, but it is up to you
+with this. They have been designed to integrate as cleanly as possible with Silverstripe templates, but it is up to you
 whether you use them, or roll your own.
 
 See the [templates documentation](docs/en/templates.md) for more information on using or modifying these.
