@@ -121,7 +121,7 @@ class RealMeSetupTaskTest extends SapphireTest
 
         // Test valid entityIds just in case they're different in this configuration.
         $config = Config::inst();
-        $config->update(RealMeService::class, 'sp_entity_ids', self::$validEntityIDs);
+        $config->merge(RealMeService::class, 'sp_entity_ids', self::$validEntityIDs);
 
         // validate our list of valid entity IDs;
         $validateEntityId = new ReflectionMethod($realMeSetupTask, 'validateEntityID');
@@ -134,7 +134,7 @@ class RealMeSetupTaskTest extends SapphireTest
         // TEST entityId missing.
         $entityIdList = self::$validEntityIDs;
         $entityIdList[RealMeService::ENV_MTS] = 'destroy-humans-with-incorrect-entity-ids';
-        $config->update(RealMeService::class, 'sp_entity_ids', $entityIdList);
+        $config->merge(RealMeService::class, 'sp_entity_ids', $entityIdList);
         $validateEntityId->invoke($realMeSetupTask, 'mts');
         $this->assertCount(1, $errors->getValue($realMeSetupTask), 'validate entity id should fail for an invalid url');
 
@@ -145,7 +145,7 @@ class RealMeSetupTaskTest extends SapphireTest
         // TEST entityId localhost.
         $entityIdList = self::$validEntityIDs;
         $entityIdList[RealMeService::ENV_MTS] = 'https://localhost/';
-        $config->update(RealMeService::class, 'sp_entity_ids', $entityIdList);
+        $config->merge(RealMeService::class, 'sp_entity_ids', $entityIdList);
         $validateEntityId->invoke($realMeSetupTask, 'mts');
         $this->assertCount(1, $errors->getValue($realMeSetupTask), 'validate entity id should fail for localhost');
 
@@ -155,7 +155,7 @@ class RealMeSetupTaskTest extends SapphireTest
         // TEST entityId not http
         $entityIdList = self::$validEntityIDs;
         $entityIdList[RealMeService::ENV_MTS] = 'http://dev.realme-integration.govt.nz/p-realm/s-name';
-        $config->update(RealMeService::class, 'sp_entity_ids', $entityIdList);
+        $config->merge(RealMeService::class, 'sp_entity_ids', $entityIdList);
         $validateEntityId->invoke($realMeSetupTask, 'mts');
         $this->assertCount(1, $errors->getValue($realMeSetupTask), 'validate entity id should fail for http');
 
@@ -165,7 +165,7 @@ class RealMeSetupTaskTest extends SapphireTest
         // TEST privacy realm /service name  missing
         $entityIdList = self::$validEntityIDs;
         $entityIdList[RealMeService::ENV_MTS] = 'https://dev.realme-integration.govt.nz/';
-        $config->update(RealMeService::class, 'sp_entity_ids', $entityIdList);
+        $config->merge(RealMeService::class, 'sp_entity_ids', $entityIdList);
         $validateEntityId->invoke($realMeSetupTask, 'mts');
         $this->assertCount(
             2,
@@ -181,7 +181,7 @@ class RealMeSetupTaskTest extends SapphireTest
         $entityIdList = self::$validEntityIDs;
         $entityIdList[RealMeService::ENV_MTS] =
             'https://dev.realme-integration.govt.nz/s-name/privacy-realm-is-too-big';
-        $config->update(RealMeService::class, 'sp_entity_ids', $entityIdList);
+        $config->merge(RealMeService::class, 'sp_entity_ids', $entityIdList);
         $validateEntityId->invoke($realMeSetupTask, 'mts');
         $this->assertCount(
             1,
@@ -195,7 +195,7 @@ class RealMeSetupTaskTest extends SapphireTest
         // "https://www.domain.govt.nz/<privacy-realm>/<service-name>"
         $entityIdList = self::$validEntityIDs;
         $entityIdList[RealMeService::ENV_MTS] = 'https://dev.realme-integration.govt.nz/s-name';
-        $config->update(RealMeService::class, 'sp_entity_ids', $entityIdList);
+        $config->merge(RealMeService::class, 'sp_entity_ids', $entityIdList);
         $validateEntityId->invoke($realMeSetupTask, 'mts');
         $this->assertCount(
             1,
@@ -229,7 +229,7 @@ class RealMeSetupTaskTest extends SapphireTest
 
         // Test valid authnContexts just in case they're different in this configuration.
         $config = Config::inst();
-        $config->update(RealMeService::class, 'authn_contexts', self::$authnEnvContexts);
+        $config->merge(RealMeService::class, 'authn_contexts', self::$authnEnvContexts);
 
         // validate our list of valid entity IDs;
         $validateAuthNContext = new ReflectionMethod($realMeSetupTask, 'validateAuthNContext');
@@ -239,7 +239,7 @@ class RealMeSetupTaskTest extends SapphireTest
 
         $invalidAuthNContextList = self::$authnEnvContexts;
         $invalidAuthNContextList[RealMeService::ENV_MTS] = 'im-an-invalid-context';
-        $config->update(RealMeService::class, 'authn_contexts', $invalidAuthNContextList);
+        $config->merge(RealMeService::class, 'authn_contexts', $invalidAuthNContextList);
 
         $validateAuthNContext->invoke($realMeSetupTask);
         $this->assertCount(
@@ -271,21 +271,21 @@ class RealMeSetupTaskTest extends SapphireTest
 
         $config = Config::inst();
 
-        $config->update(RealMeSetupTask::class, 'template_config_dir', '');
+        $config->set(RealMeSetupTask::class, 'template_config_dir', '');
         $this->assertEquals(
             $fullPath . '/templates/saml-conf',
             $getConfigurationTemplateDirMethod->invoke($realMeSetupTask),
             'Using no configuration for template_config_dir should use the default template directory.'
         );
 
-        $config->update(RealMeSetupTask::class, 'template_config_dir', 'xyzzy');
+        $config->set(RealMeSetupTask::class, 'template_config_dir', 'xyzzy');
         $this->assertEquals(
             $fullPath . '/templates/saml-conf',
             $getConfigurationTemplateDirMethod->invoke($realMeSetupTask),
             'Configuring a directory that does not exist should use the default template directory.'
         );
 
-        $config->update(RealMeSetupTask::class, 'template_config_dir', $relativePath . '/tests');
+        $config->set(RealMeSetupTask::class, 'template_config_dir', $relativePath . '/tests');
         $this->assertEquals(
             $fullPath . '/tests', // doesn't contain templates, but does exist
             $getConfigurationTemplateDirMethod->invoke($realMeSetupTask),
