@@ -1,0 +1,52 @@
+.realme_theme_default {
+  color: #000 !important;
+  border-color: #62b0d1;
+  background-color: #eaf4f8;
+}
+.realme_theme_default .realme_title, .realme_theme_default .realme_info {
+  color: #000;
+}
+.realme_theme_default .realme_hr, .realme_theme_default .realme_pipe {
+  border-color: #c0dced;
+}
+
+.realme_theme_light {
+  color: #000 !important;
+  border-color: #eaf4f8;
+  background-color: #fff;
+}
+.realme_theme_light .realme_title, .realme_theme_light .realme_info {
+  color: #000;
+}
+.realme_theme_light .realme_hr, .realme_theme_light .realme_pipe {
+  border-color: #cce5f1;
+}
+
+.realme_theme_dark {
+  color: #fff;
+  background-color: #3e4d5d;
+  border-color: #3e4d5d;
+}
+.realme_theme_dark .realme_title, .realme_theme_dark .realme_info {
+  color: #fff;
+}
+.realme_theme_dark .realme_hr, .realme_theme_dark .realme_pipe {
+  border-color: #587a90;
+}
+.realme_theme_dark .realme_login, .realme_theme_dark .realme_create_account, .realme_theme_dark .whats_realme, .realme_theme_dark .realme_link,
+.realme_theme_dark .realme_login:hover, .realme_theme_dark .realme_create_account:hover, .realme_theme_dark .whats_realme:hover, .realme_theme_dark .realme_link:hover,
+.realme_theme_dark .realme_login:active, .realme_theme_dark .realme_create_account:active, .realme_theme_dark .whats_realme:active, .realme_theme_dark .realme_link:active {
+  color: #fff;
+}
+.realme_theme_dark .realme_icon_link {
+  background-image: url('../images/icon-new-window-white.png');
+}
+.realme_theme_dark .realme_button {
+  border-color: #4683c4;
+}
+.realme_theme_dark .realme_button:hover, .realme_theme_dark .realme_button:active {
+  border-color: #3871ae;
+}
+.realme_theme_dark.realme_secondary_login {
+  background-image: url('../images/logo-simple-login-dark.png');
+}

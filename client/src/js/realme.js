@@ -1,3 +1,4 @@
+/* global jQuery */
 /**
  * RealMe Sign-in widget
  *
@@ -6,14 +7,14 @@
  * @param  {[type]} jQuery      Cache a local jQuery object.
  * @return {Object} RM          A public API to the RealMe widget.
  */
-var RealMe = RealMe || (function(document, window, jQuery) {
-
+// eslint-disable-next-line no-use-before-define
+const RealMe = RealMe || (function (document, window, jQuery) {
     /**
      * Windows Phone with the mango update doesn't realise it has touchevents.
      * @type {Boolean}
      */
-    var isIE9Mobile = navigator.userAgent.match(/(IEMobile\/9.0)/);
-    var isIE6 = /\bMSIE 6/.test(navigator.userAgent) && !window.opera;
+    const isIE9Mobile = navigator.userAgent.match(/(IEMobile\/9.0)/);
+    const isIE6 = /\bMSIE 6/.test(navigator.userAgent) && !window.opera;
 
     if (isIE6) {
         return false;
@@ -23,13 +24,13 @@ var RealMe = RealMe || (function(document, window, jQuery) {
      * Internal namespace for RealMe
      * @type {Object}
      */
-    var RM = {
+    const RM = {
 
         /**
          * Cache all our DOM elements
          * @return {void}
          */
-        cacheElements: function() {
+        cacheElements() {
             this.$container = jQuery('.realme_widget');
             this.$trigger = jQuery('.whats_realme', this.$container);
             this.$modal = jQuery('.realme_popup', this.$container);
@@ -40,7 +41,7 @@ var RealMe = RealMe || (function(document, window, jQuery) {
          * Simple feature detection to determine if device is touch or not
          * @return {void}
          */
-        init: function() {
+        init() {
             /**
              * Get all the elements when we init.
              */
@@ -58,8 +59,8 @@ var RealMe = RealMe || (function(document, window, jQuery) {
          * use JS to prevent the href on the <a> from being followed in case user clicks instead of just hovers
          * @return {void}
          */
-        bind_no_touch: function() {
-            this.$trigger.on('click', function(e){
+        bind_no_touch() {
+            this.$trigger.on('click', (e) => {
                 e.preventDefault();
             });
         },
@@ -69,16 +70,16 @@ var RealMe = RealMe || (function(document, window, jQuery) {
          * @param  {jQuery element} $elem
          * @return {void}
          */
-        show_popup: function() {
-            this.$modal.addClass("active");
+        show_popup() {
+            this.$modal.addClass('active');
         },
 
         /**
          * @param  {jQuery element} $elem
          * @return {void}
          */
-        hide_popup: function() {
-            this.$modal.removeClass("active");
+        hide_popup() {
+            this.$modal.removeClass('active');
         },
 
         /**
@@ -87,11 +88,11 @@ var RealMe = RealMe || (function(document, window, jQuery) {
          * @param  {jQuery element} $modal
          * @return {void}
          */
-        popup_window: function() {
-            var me = this;
+        popup_window() {
+            const me = this;
 
-            this.$trigger.click(function(e){
-                if (this.$modal.hasClass("active")) {
+            this.$trigger.click(function (e) {
+                if (this.$modal.hasClass('active')) {
                     me.hide_popup();
                 } else {
                     me.show_popup();
@@ -99,9 +100,7 @@ var RealMe = RealMe || (function(document, window, jQuery) {
                 e.stopPropagation();
             });
 
-            this.$trigger.click(function(){
-                return false;
-            });
+            this.$trigger.click(() => false);
         }
     };
 
@@ -109,10 +108,9 @@ var RealMe = RealMe || (function(document, window, jQuery) {
      * Initialise RealMe widget
      * @return {[type]}
      */
-    jQuery(document).ready(function() {
+    jQuery(document).ready(() => {
         RM.init();
     });
 
     return RM;
-
-})(document, window, jQuery);
+}(document, window, jQuery));

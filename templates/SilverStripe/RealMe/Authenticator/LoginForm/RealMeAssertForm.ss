@@ -45,7 +45,7 @@ or directly in your css, e.g. .realme_popup {width: 450px}
     <div class="realme_login_lockup">
         <form $FormAttributes>
             <% if $Actions %>
-                <img src="$resourceURL('silverstripe/realme:client/images/RealMe-logo@2x.png')" alt="RealMe" width="42" height="42">
+                <img src="$resourceURL('silverstripe/realme:client/dist/images/RealMe-logo@2x.png')" alt="RealMe" width="42" height="42">
                 <div class="realme_btn_margin">
                     <% loop $Actions %>
                         $Field
