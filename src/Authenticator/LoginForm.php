@@ -77,11 +77,11 @@ class LoginForm extends BaseLoginForm
         }
 
         if ($this->config()->include_javascript) {
-            Requirements::javascript('silverstripe/realme:client/javascript/realme.js');
+            Requirements::javascript('silverstripe/realme:client/dist/js/realme.js');
         }
 
         if ($this->config()->include_css) {
-            Requirements::css('silverstripe/realme:client/css/realme.css');
+            Requirements::css('silverstripe/realme:client/dist/styles/realme.css');
         }
 
         parent::__construct($controller, $name, $this->getFormFields(), $this->getFormActions());

@@ -1,0 +1,104 @@
+.realme_widget, .realme_button, .realme_popup_position, .realme_login, .realme_create_account, .whats_realme, .realme_link, .realme_popup, .realme_find_out_more {
+  position: relative;
+}
+
+.realme_login_lockup img, .realme_arrow_top_left .arrow, .realme_arrow_top_right .arrow, .realme_popup_wrapper, .realme_arrow_side_left .arrow, .realme_arrow_side_right .arrow, .realme_icon_find_out_more, .realme_icon_link, .realme_icon_padlock {
+  position: absolute;
+}
+
+.realme_login_lockup form img {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+
+/* Clearfix */
+.realme_widget, .realme_secondary_login, .realme_login_lockup, .realme_popup {
+  /**
+   * For IE 6/7 only
+   * Include this rule to trigger hasLayout and contain floats.
+   */
+  *zoom: 1;
+}
+.realme_widget:before, .realme_secondary_login:before, .realme_login_lockup:before, .realme_popup:before, .realme_widget:after, .realme_secondary_login:after, .realme_login_lockup:after, .realme_popup:after {
+  content: " ";
+  display: table;
+}
+.realme_widget:after, .realme_secondary_login:after, .realme_login_lockup:after, .realme_popup:after {
+  clear: both;
+}
+
+.realme_title, .realme_mini_title, .realme_button {
+  font-weight: bold;
+}
+
+.realme_secondary_login, .realme_secondary_login .realme_popup_position, .realme_login, .realme_create_account, .realme_link, .realme_icon_new_window, .realme_text_icon_new_window {
+  display: inline-block;
+  vertical-align: bottom;
+}
+
+.realme_button, .realme_button_padding, .realme_icon_find_out_more, .realme_icon_link, .realme_icon_padlock {
+  display: block;
+}
+
+.realme_icon_find_out_more, .realme_icon_link, .realme_icon_padlock, .realme_icon_new_window, .realme_text_icon_new_window {
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-position: 0 0;
+}
+
+/* hasLayout hack for IE7 */
+.realme_secondary_login, .realme_secondary_login .realme_popup_position, .realme_login, .realme_create_account, .realme_link, .realme_find_out_more, .realme_icon_new_window, .realme_text_icon_new_window {
+  *display: inline;
+  *zoom: 1;
+}
+
+.realme_primary_login, .realme_alternative_login, .realme_assert {
+  border-width: 1px;
+  border-style: solid;
+}
+
+.realme_icon_padlock, .realme_icon_new_window {
+  _overflow: hidden;
+  /*ie6*/
+}
+
+.realme_primary_login, .realme_alternative_login, .realme_assert {
+  _width: 320px;
+  /*ie6*/
+}
+
+/*
+	The base RealMe widget
+	-----------------------------------------------------
+*/
+.realme_widget {
+  padding: 0.76923em 1.07692em;
+  border-color: transparent;
+  /* The border-color is modified by each theme */
+  font-family: sans-serif;
+  color: inherit;
+  font-size: 13px;
+  /* Set font-size explicitly to avoid cascade from the page. */
+  line-height: 1.53846;
+  /* Reset the line-height to something senisble inside the widget */
+}
+.realme_widget p {
+  margin-top: 0.5em;
+  margin-bottom: 1em;
+  font-family: sans-serif;
+}
+.realme_widget a {
+  text-decoration: none;
+  font-family: sans-serif;
+}
+
+.realme_widget .realme_login, .realme_widget .realme_create_account, .realme_widget .whats_realme, .realme_widget .realme_link {
+  color: #2c5897;
+}
+.realme_widget .realme_login:hover, .realme_widget .realme_create_account:hover, .realme_widget .whats_realme:hover, .realme_widget .realme_link:hover, .realme_widget .realme_login:active, .realme_widget .realme_create_account:active, .realme_widget .whats_realme:active, .realme_widget .realme_link:active {
+  color: #204170;
+  text-decoration: underline;
+  border: 0;
+}
