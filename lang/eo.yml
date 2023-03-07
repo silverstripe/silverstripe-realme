@@ -36,3 +36,7 @@ eo:
     ERR_NOT_CLI: 'Eblas ruli la taskon ĉe la komanda linio, ne per la TTT-legilo.'
     OUPUT_PREFIX: 'Metadatuma XML-dosiero estas listigita sube por la  ''{env}'' RealMe-medio. Necesas sendi tion al la agentejo por ke ili transdonu ĝin al la stabo de RealMe.'
     VALIDATION_SUCCESS: 'Validigo sukcesis, agordado daŭras...'
+  SilverStripe\RealMe\Authenticator\LoginHandler:
+    LOGINFAILURE: 'Bedaŭrinde ni ne povas nun ensalutigi vin per RealMe. Bonvolu reprovi baldaŭ.'
+  SilverStripe\RealMe\Authenticator\MiniLoginForm:
+    LOGINBUTTON: LoginAction

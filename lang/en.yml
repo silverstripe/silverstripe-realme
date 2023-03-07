@@ -1,4 +1,6 @@
 en:
+  MiniLoginForm:
+    php.SilverStripe\RealMe\Authenticator\LoginFormLOGINBUTTON: LoginAction
   SilverStripe\RealMe\Authenticator\LoginForm:
     ASSERTLOGINBUTTON: 'Share your details with {orgname}'
     AUTHENTICATOR_NAME: 'RealMe Account'
@@ -19,6 +21,7 @@ en:
     ERROR_TIMEOUT: 'Your RealMe session has timed out – please try again.'
     ERROR_UNKNOWNPRINCIPAL: 'You are unable to use RealMe to verify your identity if you do not have a RealMe account. Visit the RealMe home page for more information and to create an account.'
     ERROR_UNSUPPORTEDBINDING: 'RealMe reported a serious application error with the message ''Unsupported Binding''. Please try again later. If the problem persists, please contact the RealMe Help Desk. From New Zealand: 0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply).'
+    LOGINFAILURE: 'Unfortunately we''re not able to log you in through RealMe right now. Please try again shortly.'
   SilverStripe\RealMe\Task\RealMeSetupTask:
     BUILD_FINISH: 'RealMe setup complete. Please copy the XML into a file for upload to the {env} environment or DIA to complete the integration'
     ERR_CERT_DIR_MISSING: 'No certificate dir is specified. Define the REALME_CERT_DIR environment variable in your .env file'
