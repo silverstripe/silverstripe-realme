@@ -2,7 +2,14 @@
     "name": "silverstripe/realme",
     "description": "Adds support to SilverStripe for authentication via RealMe (https://www.realme.govt.nz/)",
     "type": "silverstripe-vendormodule",
-    "keywords": ["silverstripe", "authentication", "saml", "RealMe", "Real Me", "iGovt"],
+    "keywords": [
+        "silverstripe",
+        "authentication",
+        "saml",
+        "RealMe",
+        "Real Me",
+        "iGovt"
+    ],
     "license": "BSD-3-Clause",
     "minimum-stability": "dev",
     "authors": [
@@ -17,7 +24,7 @@
     ],
     "require": {
         "php": "^7.4 || ^8.0",
-        "silverstripe/framework": "^4.10",
+        "silverstripe/framework": "4.13.x-dev",
         "onelogin/php-saml": "^3"
     },
     "require-dev": {
