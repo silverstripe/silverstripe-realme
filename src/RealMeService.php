@@ -453,7 +453,7 @@ class RealMeService implements TemplateGlobalProvider
             $backUrl = $this->getBackURL($request);
         }
 
-        $backURL = $this->validSiteURL($backURL);
+        $backURL = $this->validSiteURL($backUrl);
         
         if (!$backUrl) {
             $backURL = Director::absoluteBaseURL();
