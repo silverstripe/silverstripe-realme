@@ -15,6 +15,7 @@ eo:
     ERROR_TIMEOUT: 'Via RealMe-seanco eksvalidiĝis - bonvolu reprovi.'
     ERROR_UNKNOWNPRINCIPAL: 'Vi ne povas uzi je RealMe por validigi vian identecon se vi ne havas RealMe-konton. Vizitu la hejmpaĝon de RealMe por plua informo kaj por krei konton.'
     ERROR_UNSUPPORTEDBINDING: 'RealMe sciigis pri grava aplikaĵa eraro kun la mesaĝo ''Bindaĵo ne subtenata''''. Bonvolu reprovi estonte. Se la problemo restos, bonvolu kontakti la helpejon de RealMe. El Nov-Zelando: 0800 664 774 (sen pagvoko), el eksterlando, +64 9 357 4468 (aplikiĝos alilandaj kostoj de pagvoko).'
+    LOGINFAILURE: 'Bedaŭrinde ni ne povas nun ensalutigi vin per RealMe. Bonvolu reprovi baldaŭ.'
   SilverStripe\RealMe\Task\RealMeSetupTask:
     BUILD_FINISH: 'RealMe-agordado estas kompleta. Bonvolu kopii la XML-dosieron en dosieron por alŝuti ĝin al la {env}-medion aŭ DIA por kompletigi la integrigon'
     ERR_CERT_DIR_MISSING: 'Atestila dosierujo ne estas agordita. Agordu la median variablon REALME_CERT_DIR en via .env-dosiero'
@@ -40,3 +41,6 @@ eo:
     LOGINFAILURE: 'Bedaŭrinde ni ne povas nun ensalutigi vin per RealMe. Bonvolu reprovi baldaŭ.'
   SilverStripe\RealMe\Authenticator\MiniLoginForm:
     LOGINBUTTON: LoginAction
+  MiniLoginForm:
+    php:
+      SilverStripe\RealMe\Authenticator\LoginFormLOGINBUTTON: LoginAction
