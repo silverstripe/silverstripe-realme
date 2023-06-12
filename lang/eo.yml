@@ -41,6 +41,3 @@ eo:
     LOGINFAILURE: 'Bedaŭrinde ni ne povas nun ensalutigi vin per RealMe. Bonvolu reprovi baldaŭ.'
   SilverStripe\RealMe\Authenticator\MiniLoginForm:
     LOGINBUTTON: LoginAction
-  MiniLoginForm:
-    php:
-      SilverStripe\RealMe\Authenticator\LoginFormLOGINBUTTON: LoginAction
