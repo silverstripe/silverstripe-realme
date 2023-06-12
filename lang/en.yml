@@ -1,6 +1,4 @@
 en:
-  MiniLoginForm:
-    php.SilverStripe\RealMe\Authenticator\LoginFormLOGINBUTTON: LoginAction
   SilverStripe\RealMe\Authenticator\LoginForm:
     ASSERTLOGINBUTTON: 'Share your details with {orgname}'
     AUTHENTICATOR_NAME: 'RealMe Account'
