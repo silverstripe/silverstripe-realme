@@ -4,40 +4,42 @@ en:
     AUTHENTICATOR_NAME: 'RealMe Account'
     LOGINBUTTON: Login
   SilverStripe\RealMe\Authenticator\LoginHandler:
-    LOGINFAILURE: 'Unfortunately we''re not able to log you in through RealMe right now. Please try again shortly.'
+    LOGINFAILURE: "Unfortunately we're not able to log you in through RealMe right now. Please try again shortly."
   SilverStripe\RealMe\Authenticator\MiniLoginForm:
     LOGINBUTTON: LoginAction
+  SilverStripe\RealMe\Extension\MemberExtension:
+    db_RealmeSPNameID: 'RealmeSP name ID'
   SilverStripe\RealMe\RealMeService:
     ERROR_AUTHNFAILED: 'You have chosen to leave RealMe.'
     ERROR_GENERAL: 'RealMe reported a serious application error. Please try again later. If the problem persists, please contact the RealMe Help Desk. From New Zealand: 0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply).'
     ERROR_INTERNAL: 'RealMe was unable to process your request due to a RealMe internal error. Please try again. If the problem persists, please contact the RealMe Help Desk. From New Zealand dial 0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply).'
-    ERROR_NOAUTHNCONTEXT: 'RealMe reported a serious application error with the message ''No AuthN Context''. Please try again later. If the problem persists, please contact the RealMe Help Desk. From New Zealand: 0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply).'
+    ERROR_NOAUTHNCONTEXT: "RealMe reported a serious application error with the message 'No AuthN Context'. Please try again later. If the problem persists, please contact the RealMe Help Desk. From New Zealand: 0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply)."
     ERROR_NOAVAILABLEIDP: 'RealMe reported that the TXT service or the token service is not available. You may try again later. If the problem persists, please contact the RealMe Help Desk. From New Zealand dial 0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply).'
-    ERROR_NOPASSIVE: 'RealMe reported a serious application error with the message ''No Passive''. Please try again later. If the problem persists, please contact the RealMe Help Desk. From New Zealand: 0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply).'
-    ERROR_REQUESTDENIED: 'RealMe reported a serious application error with the message ''Request Denied''. Please try again later. If the problem persists, please contact the RealMe Help Desk. From New Zealand: 0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply).'
-    ERROR_REQUESTUNSUPPORTED: 'RealMe reported a serious application error with the message ''Request Unsupported''. Please try again later. If the problem persists, please contact the RealMe Help Desk. From New Zealand: 0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply).'
+    ERROR_NOPASSIVE: "RealMe reported a serious application error with the message 'No Passive'. Please try again later. If the problem persists, please contact the RealMe Help Desk. From New Zealand: 0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply)."
+    ERROR_REQUESTDENIED: "RealMe reported a serious application error with the message 'Request Denied'. Please try again later. If the problem persists, please contact the RealMe Help Desk. From New Zealand: 0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply)."
+    ERROR_REQUESTUNSUPPORTED: "RealMe reported a serious application error with the message 'Request Unsupported'. Please try again later. If the problem persists, please contact the RealMe Help Desk. From New Zealand: 0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply)."
     ERROR_TIMEOUT: 'Your RealMe session has timed out – please try again.'
     ERROR_UNKNOWNPRINCIPAL: 'You are unable to use RealMe to verify your identity if you do not have a RealMe account. Visit the RealMe home page for more information and to create an account.'
-    ERROR_UNSUPPORTEDBINDING: 'RealMe reported a serious application error with the message ''Unsupported Binding''. Please try again later. If the problem persists, please contact the RealMe Help Desk. From New Zealand: 0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply).'
-    LOGINFAILURE: 'Unfortunately we''re not able to log you in through RealMe right now. Please try again shortly.'
+    ERROR_UNSUPPORTEDBINDING: "RealMe reported a serious application error with the message 'Unsupported Binding'. Please try again later. If the problem persists, please contact the RealMe Help Desk. From New Zealand: 0800 664 774 (toll free), from overseas dial +64 9 357 4468 (overseas call charges apply)."
+    LOGINFAILURE: "Unfortunately we're not able to log you in through RealMe right now. Please try again shortly."
   SilverStripe\RealMe\Task\RealMeSetupTask:
     BUILD_FINISH: 'RealMe setup complete. Please copy the XML into a file for upload to the {env} environment or DIA to complete the integration'
     ERR_CERT_DIR_MISSING: 'No certificate dir is specified. Define the REALME_CERT_DIR environment variable in your .env file'
-    ERR_CERT_DIR_NOT_READABLE: 'Certificate dir specified (''{dir}'') must be created and be readable. Ensure permissions are set correctly and the directory is absolute'
-    ERR_CERT_NO_SIGNING_CERT: 'No SAML signing PEM certificate defined, or the file can''t be read. Define the {const} environment variable in your .env file, and ensure the file exists in the certificate directory'
+    ERR_CERT_DIR_NOT_READABLE: "Certificate dir specified ('{dir}') must be created and be readable. Ensure permissions are set correctly and the directory is absolute"
+    ERR_CERT_NO_SIGNING_CERT: "No SAML signing PEM certificate defined, or the file can't be read. Define the {const} environment variable in your .env file, and ensure the file exists in the certificate directory"
     ERR_CERT_SIGNING_CERT_CONTENT: 'The file specified for the signing certificate ({file}) does not contain a valid certificate (beginning with -----BEGIN CERTIFICATE-----). Check this file to ensure it contains the certificate and private key'
-    ERR_CONFIG_ENTITYID: 'The Entity ID (''{entityId}'') must be https, not be ''localhost'', and must contain a valid service name and privacy realm e.g. https://my-realme-integration.govt.nz/p-realm/s-name'
-    ERR_CONFIG_ENTITYID_PRIVACY_REALM: 'The privacy realm ''{privacyRealm}'' must not be blank for entityID ''{entityId}'''
-    ERR_CONFIG_ENTITYID_SERVICE_NAME: 'The service name ''{serviceName}'' must be a maximum of 20 characters and not blank for entityID ''{entityId}'''
-    ERR_CONFIG_INVALID_AUTHNCONTEXT: 'The AuthnContext specified for environment ''{env}'' is invalid, please check your configuration'
-    ERR_CONFIG_NO_AUTHNCONTEXT: 'No AuthnContext specified for environment ''{env}''. Specify this in your YML configuration, see the module documentation for more details'
-    ERR_CONFIG_NO_ENTITYID: 'No entityID specified for environment ''{env}''. Specify this in your YML configuration, see the module documentation for more details'
-    ERR_CONFIG_NO_ORGANISATION_DISPLAY_NAME: 'No organisation display name is specified in YML configuration. Ensure the ''metadata_organisation_display_name'' value is defined in your YML configuration'
-    ERR_CONFIG_NO_ORGANISATION_NAME: 'No organisation name is specified in YML configuration. Ensure the ''metadata_organisation_name'' value is defined in your YML configuration'
-    ERR_CONFIG_NO_ORGANISATION_URL: 'No organisation URL is specified in YML configuration. Ensure the ''metadata_organisation_url'' value is defined in your YML configuration'
+    ERR_CONFIG_ENTITYID: "The Entity ID ('{entityId}') must be https, not be 'localhost', and must contain a valid service name and privacy realm e.g. https://my-realme-integration.govt.nz/p-realm/s-name"
+    ERR_CONFIG_ENTITYID_PRIVACY_REALM: "The privacy realm '{privacyRealm}' must not be blank for entityID '{entityId}'"
+    ERR_CONFIG_ENTITYID_SERVICE_NAME: "The service name '{serviceName}' must be a maximum of 20 characters and not blank for entityID '{entityId}'"
+    ERR_CONFIG_INVALID_AUTHNCONTEXT: "The AuthnContext specified for environment '{env}' is invalid, please check your configuration"
+    ERR_CONFIG_NO_AUTHNCONTEXT: "No AuthnContext specified for environment '{env}'. Specify this in your YML configuration, see the module documentation for more details"
+    ERR_CONFIG_NO_ENTITYID: "No entityID specified for environment '{env}'. Specify this in your YML configuration, see the module documentation for more details"
+    ERR_CONFIG_NO_ORGANISATION_DISPLAY_NAME: "No organisation display name is specified in YML configuration. Ensure the 'metadata_organisation_display_name' value is defined in your YML configuration"
+    ERR_CONFIG_NO_ORGANISATION_NAME: "No organisation name is specified in YML configuration. Ensure the 'metadata_organisation_name' value is defined in your YML configuration"
+    ERR_CONFIG_NO_ORGANISATION_URL: "No organisation URL is specified in YML configuration. Ensure the 'metadata_organisation_url' value is defined in your YML configuration"
     ERR_CONFIG_NO_SUPPORT_CONTACT: 'Support contact detail is missing from YML configuration. Ensure the following values are defined in the YML configuration: metadata_contact_support_company, metadata_contact_support_firstnames, metadata_contact_support_surname'
-    ERR_ENV_NOT_ALLOWED: 'The RealMe environment specified on the cli (''{env}'') is not allowed. It must be one of: {allowedEnvs}'
+    ERR_ENV_NOT_ALLOWED: "The RealMe environment specified on the cli ('{env}') is not allowed. It must be one of: {allowedEnvs}"
     ERR_ENV_NOT_SPECIFIED: 'The RealMe environment was not specified on the cli It must be one of: {allowedEnvs} e.g. vendor/bin/sake dev/tasks/RealMeSetupTask forEnv=mts'
     ERR_NOT_CLI: 'This task can only be run from the command-line, not in your browser.'
-    OUPUT_PREFIX: 'Metadata XML is listed below for the ''{env}'' RealMe environment, this should be sent to the agency so they can pass it on to RealMe Operations staff'
+    OUPUT_PREFIX: "Metadata XML is listed below for the '{env}' RealMe environment, this should be sent to the agency so they can pass it on to RealMe Operations staff"
     VALIDATION_SUCCESS: 'Validation succeeded, continuing with setup...'
