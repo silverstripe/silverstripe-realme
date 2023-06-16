@@ -41,3 +41,5 @@ en:
     ERR_NOT_CLI: 'This task can only be run from the command-line, not in your browser.'
     OUPUT_PREFIX: 'Metadata XML is listed below for the ''{env}'' RealMe environment, this should be sent to the agency so they can pass it on to RealMe Operations staff'
     VALIDATION_SUCCESS: 'Validation succeeded, continuing with setup...'
+  SilverStripe\RealMe\Extension\MemberExtension:
+    db_RealmeSPNameID: 'RealmeSP name ID'
