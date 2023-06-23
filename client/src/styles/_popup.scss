@@ -1,0 +1,219 @@
+.realme_arrow_top_left, .realme_arrow_top_right, .realme_arrow_side_left, .realme_arrow_side_right {
+  padding-top: 1.2em;
+}
+
+.realme_arrow_top_left .arrow, .realme_arrow_top_right .arrow {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-color: transparent;
+  border-width: 11px;
+  display: block;
+  border-bottom-color: #d0d0d0;
+  left: -1px;
+  top: -22px;
+}
+.ie6 .realme_arrow_top_left .arrow, .realme_arrow_top_left .ie6 .arrow, .ie6 .realme_arrow_top_right .arrow, .realme_arrow_top_right .ie6 .arrow {
+  border-right-color: pink;
+  border-left-color: pink;
+  border-top-color: pink;
+  border-top-width: 0;
+}
+.ie6 .realme_arrow_top_left .arrow, .realme_arrow_top_left .ie6 .arrow, .ie6 .realme_arrow_top_right .arrow, .realme_arrow_top_right .ie6 .arrow {
+  filter: chroma(color=pink);
+  font-size: 0;
+  line-height: 0;
+}
+.realme_arrow_top_left .arrow .front, .realme_arrow_top_right .arrow .front {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-color: transparent;
+  border-width: 10px;
+  display: block;
+  border-bottom-color: white;
+  position: absolute;
+  left: -10px;
+  bottom: -11px;
+}
+.ie6 .realme_arrow_top_left .arrow .front, .realme_arrow_top_left .ie6 .arrow .front, .ie6 .realme_arrow_top_right .arrow .front, .realme_arrow_top_right .ie6 .arrow .front {
+  border-right-color: pink;
+  border-left-color: pink;
+  border-top-color: pink;
+  border-top-width: 0;
+}
+.ie6 .realme_arrow_top_left .arrow .front, .realme_arrow_top_left .ie6 .arrow .front, .ie6 .realme_arrow_top_right .arrow .front, .realme_arrow_top_right .ie6 .arrow .front {
+  filter: chroma(color=pink);
+  font-size: 0;
+  line-height: 0;
+}
+.ie6 .realme_arrow_top_left .arrow .front, .realme_arrow_top_left .ie6 .arrow .front, .ie6 .realme_arrow_top_right .arrow .front, .realme_arrow_top_right .ie6 .arrow .front {
+  top: 1px;
+}
+.ie6 label.radio .realme_arrow_top_left .arrow .front, .realme_arrow_top_left .ie6 label.radio .arrow .front, .ie6 label.radio .realme_arrow_top_right .arrow .front, .realme_arrow_top_right .ie6 label.radio .arrow .front {
+  display: none;
+}
+.ie6 label.radio .realme_arrow_top_left .arrow, .realme_arrow_top_left .ie6 label.radio .arrow, .ie6 label.radio .realme_arrow_top_right .arrow, .realme_arrow_top_right .ie6 label.radio .arrow {
+  display: none;
+}
+
+.realme_popup_wrapper {
+  -webkit-transition: opacity 0.3s;
+  -moz-transition: opacity 0.3s;
+  -o-transition: opacity 0.3s;
+  transition: opacity 0.3s;
+  opacity: 0;
+  visibility: hidden;
+  z-index: 2;
+  _display: none;
+  /*ie6*/
+}
+
+.realme_arrow_top_left {
+  top: 1.6em;
+  left: -1.7em;
+}
+.realme_arrow_top_left .arrow {
+  left: 1.35em;
+  right: auto;
+}
+
+.realme_arrow_top_right {
+  top: 1.6em;
+  right: -1.7em;
+}
+.realme_arrow_top_right .arrow {
+  left: auto;
+  right: 1.35em;
+}
+
+.realme_arrow_side_left {
+  top: -26em;
+  left: calc(100% + 25px);
+}
+.realme_arrow_side_left .arrow {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-color: transparent;
+  border-width: 11px;
+  display: block;
+  border-right-color: #d0d0d0;
+  left: -1px;
+  top: -22px;
+  top: 1.25em;
+  left: -22px;
+}
+.ie6 .realme_arrow_side_left .arrow {
+  filter: chroma(color=pink);
+  font-size: 0;
+  line-height: 0;
+}
+.realme_arrow_side_left .arrow .front {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-color: transparent;
+  border-width: 10px;
+  display: block;
+  border-right-color: white;
+  position: absolute;
+  left: -9px;
+  top: -10px;
+}
+.ie6 .realme_arrow_side_left .arrow .front {
+  filter: chroma(color=pink);
+  font-size: 0;
+  line-height: 0;
+}
+.ie6 label.radio .realme_arrow_side_left .arrow {
+  display: none;
+}
+
+.realme_arrow_side_right {
+  top: -1em;
+  right: 100%;
+}
+.realme_arrow_side_right .arrow {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-color: transparent;
+  border-width: 11px;
+  display: block;
+  border-left-color: #d0d0d0;
+  left: -1px;
+  top: -22px;
+  top: 1.25em;
+  left: auto;
+  right: -22px;
+}
+.ie6 .realme_arrow_side_right .arrow {
+  filter: chroma(color=pink);
+  font-size: 0;
+  line-height: 0;
+}
+.realme_arrow_side_right .arrow .front {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-color: transparent;
+  border-width: 10px;
+  display: block;
+  border-left-color: white;
+  position: absolute;
+  right: -9px;
+  top: -10px;
+}
+.ie6 .realme_arrow_side_right .arrow .front {
+  filter: chroma(color=pink);
+  font-size: 0;
+  line-height: 0;
+}
+.ie6 label.radio .realme_arrow_side_right .arrow {
+  display: none;
+}
+
+.realme_popup {
+  padding: 0.5em 1.5em 0.5em;
+  background-color: #fff;
+  border: solid 1px #ddd;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  -o-border-radius: 3px;
+  border-radius: 3px;
+}
+.realme_popup p, .realme_popup ul, .realme_popup strong, .realme_popup b {
+  color: #333;
+}
+.realme_popup p, .realme_popup ul, .realme_popup a {
+  line-height: 1.35em;
+}
+.realme_popup ul {
+  padding-left: 1em;
+  margin-bottom: 1em;
+}
+.realme_popup a,
+.realme_popup a:hover,
+.realme_popup a:active {
+  color: $brand-color-main-accessible;
+}
+
+.realme_popup_title,
+.realme_popup h2 {
+  font-size: 1.07692em;
+  color: #e1001e;
+  margin-bottom: 0.5em;
+}
+
+.no_touch .whats_realme:hover + .realme_popup_wrapper,
+.no_touch .realme_popup_wrapper:hover {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.realme_find_out_more {
+  display: inline-block;
+  padding-right: 1em;
+}

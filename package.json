@@ -1,0 +1,24 @@
+{
+  "name": "silverstripe-realme",
+  "license": "BSD-3-Clause",
+  "author": "SilverStripe Ltd",
+  "engines": {
+    "node": ">=10.x"
+  },
+  "scripts": {
+    "build": "yarn && yarn lint && NODE_ENV=production webpack -p --bail --progress",
+    "dev": "NODE_ENV=development webpack --progress",
+    "watch": "NODE_ENV=development webpack --watch --progress",
+    "lint": "sass-lint client/src/styles"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@silverstripe/eslint-config": "^0.1.0",
+    "@silverstripe/webpack-config": "^1.7.0",
+    "sass-loader": "^6.0.5",
+    "webpack": "^3.12.0"
+  },
+  "resolutions": {
+    "colors": "1.4.0"
+  }
+}
