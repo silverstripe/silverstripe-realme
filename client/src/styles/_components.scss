@@ -1,0 +1,18 @@
+/* Used to separate elements vertically. Can be themed*/
+.realme_hr {
+  margin: 0;
+  border: 0;
+  padding: 0.1em 0 0.38462em;
+  border-bottom: 1px solid #ddd;
+  height: 1px;
+}
+
+.realme_login_lockup {
+  margin-bottom: 1em;
+  _position: relative;
+  /*ie6*/
+}
+
+.realme_login_lockup form {
+  width: 100%;
+}

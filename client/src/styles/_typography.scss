@@ -1,0 +1,78 @@
+.realme_title {
+  margin-top: 0;
+  margin-bottom: 0;
+  font-size: 2.3125rem;
+  font-family: inter, sans-serif;
+  font-weight: 300;
+  line-height: 1.46;
+  color: $brand-color-main;
+}
+
+.realme_title_brand {
+    font-weight: 800;
+}
+
+.realme_mini_title {
+  font-size: 1.076923077em;
+  /* 14px */
+}
+
+.realme_primary_login {
+  max-width: 28em;
+  min-width: 16.30769em;
+  padding: 1.38462em;
+}
+.realme_primary_login p {
+  font-size: 14px;
+}
+.realme_primary_login .realme_create_account {
+  float: right;
+}
+
+.realme_alternative_login {
+  max-width: 18em;
+  min-width: 10.30769em;
+}
+.realme_alternative_login .realme_title {
+  font-size: 1.076923077em;
+  margin-bottom: 0.5em;
+}
+
+.realme_assert .whats_realme, .realme_assert .realme_create_account, .realme_primary_login .whats_realme, .realme_primary_login .realme_create_account, .realme_alternative_login .whats_realme, .realme_alternative_login .realme_create_account {
+  margin-top: 0.5em;
+}
+
+.realme_assert {
+  max-width: 28em;
+}
+
+.realme_secondary_login {
+  padding-right: 2.76923em;
+  background-image: url('../images/RealMe-Face-Symbol_Web-RGB.svg');
+  background-repeat: no-repeat;
+  background-position: right center;
+}
+.realme_secondary_login .realme_login, .realme_secondary_login .realme_link, .realme_secondary_login .realme_create_account {
+  padding-right: 1.75em;
+  padding-top: 0;
+}
+.realme_secondary_login .realme_pipe {
+  border-right: solid 1px;
+  padding-left: 0.5em;
+}
+.realme_secondary_login .realme_pipe:first-child {
+  padding-left: 0;
+}
+.realme_secondary_login .whats_realme {
+  font-weight: bold;
+  padding-right: 0.3em;
+  padding-left: 0.3em;
+  *padding-left: 0.5em;
+  padding-top: 0;
+}
+.realme_secondary_login .realme_link {
+  margin-right: 0.75em;
+}
+.realme_secondary_login .realme_icon_link {
+  right: .615384615em;
+}

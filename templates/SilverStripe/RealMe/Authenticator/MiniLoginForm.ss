@@ -1,7 +1,7 @@
 <div class='realme_widget realme_secondary_login realme_theme_light'>
     <a href='$RealMeMiniLoginLink' class='realme_login realme_pipe'>Login <span class='realme_icon_link'></span></a>
     <div class='realme_popup_position'>
-        <a id='popup_trigger' href='http://www.realme.govt.nz' target='_blank' class='link whats_realme'>?</a>
+        <a id='popup_trigger' href='http://www.realme.govt.nz' target='_blank' class='link realme_link whats_realme'>?</a>
 
         <div class='realme_popup_wrapper $MiniLoginFormPopupPosition'>
             <div class='realme_popup' style='width:420px;'>

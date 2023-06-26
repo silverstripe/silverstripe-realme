@@ -1,0 +1,37 @@
+.realme_button {
+  cursor: pointer;
+  line-height: 1;
+  margin-top: 1px;
+  color: $brand-color-main-contrast;
+  background-color: $brand-color-main-accessible;
+  border-radius: $btn-border-radius;
+  border: none;
+  -webkit-appearance: none;
+  -webkit-border-image: none;
+  font-size: 1.107692308rem;
+  line-height: 1.2em;
+
+  /**
+   * Added for SilverStripe module:
+   * SilverStripe uses <button> rather than <a>, which has different default browser styling, so we need to add custom
+   * styling to ensure the button is still full-width and text is left-aligned
+   */
+  width: 100%;
+  text-align: left;
+  padding: 0;
+}
+
+.realme_button_padding {
+  display: flex;
+  align-items: center;
+  padding: 1em 1.25em;
+}
+
+.realme_button_login-icon {
+    display: inline-block;
+    background-image: url('../images/RealMe-Face-Symbol_White.svg');
+    background-repeat: no-repeat;
+    margin-right: 0.5em;
+    height: 2em;
+    width: 2em;
+}

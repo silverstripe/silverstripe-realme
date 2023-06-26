@@ -1,0 +1,35 @@
+.realme_icon_find_out_more {
+  top: 0.35em;
+  right: 0;
+  width: 9px;
+  height: 9px;
+  background-image: url('../images/icon-new-window-blue.png');
+}
+
+.realme_icon_link {
+  right: 0;
+  bottom: 0;
+  width: 9px;
+  height: 100%;
+  background-image: url('../images/icon-new-window-blue.png');
+  background-position: right center;
+  _margin-bottom: 2px;
+  /*ie6*/
+}
+
+.realme_icon_new_window {
+  background-image: url('../images/icon-new-window-white.png');
+  width: 9px;
+  height: 9px;
+  vertical-align: baseline;
+  position: relative;
+  *top: -0.2em;
+}
+
+.realme_text_icon_new_window {
+  background-image: url('../images/icon-new-window-white.png');
+  padding-right: 1.2em;
+  background-position: right center;
+  *zoom: 1;
+  vertical-align: baseline;
+}
