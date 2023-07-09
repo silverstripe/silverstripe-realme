@@ -1,10 +1,15 @@
-.realme_widget .realme_title {
+.realme_title {
   margin-top: 0;
   margin-bottom: 0;
-  font-size: 1.230769231em;
-  font-family: sans-serif;
-  font-weight: bold;
-  /* 16px */
+  font-size: 2.3125rem;
+  font-family: inter, sans-serif;
+  font-weight: 300;
+  line-height: 1.46;
+  color: $brand-color-main;
+}
+
+.realme_title_brand {
+    font-weight: 800;
 }
 
 .realme_mini_title {
@@ -43,7 +48,7 @@
 
 .realme_secondary_login {
   padding-right: 2.76923em;
-  background-image: url('../images/logo-simple-login.png');
+  background-image: url('../images/RealMe-Face-Symbol_Web-RGB.svg');
   background-repeat: no-repeat;
   background-position: right center;
 }

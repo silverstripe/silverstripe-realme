@@ -194,11 +194,10 @@
   padding-left: 1em;
   margin-bottom: 1em;
 }
-.realme_popup a {
-  color: #2c5897;
-}
-.realme_popup a:hover, .realme_popup a:active {
-  color: #204170;
+.realme_popup a,
+.realme_popup a:hover,
+.realme_popup a:active {
+  color: $brand-color-main-accessible;
 }
 
 .realme_popup_title,

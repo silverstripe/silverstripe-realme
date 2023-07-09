@@ -1,26 +1,15 @@
 .realme_button {
+  cursor: pointer;
   line-height: 1;
   margin-top: 1px;
-  cursor: pointer;
-  color: white;
-  border-width: 1px;
-  border-style: solid;
-  background-color: #3871ae;
-  background-repeat: repeat-x;
-  /* Things that fancy browsers get */
-  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #3a78bb), color-stop(100%, #3871ae));
-  background-image: -webkit-linear-gradient(#3a78bb, #3871ae);
-  background-image: -moz-linear-gradient(#3a78bb, #3871ae);
-  background-image: -o-linear-gradient(#3a78bb, #3871ae);
-  background-image: linear-gradient(#3a78bb, #3871ae);
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  -ms-border-radius: 3px;
-  -o-border-radius: 3px;
-  border-radius: 3px;
-  border-color: #1d5794;
+  color: $brand-color-main-contrast;
+  background-color: $brand-color-main-accessible;
+  border-radius: $btn-border-radius;
+  border: none;
   -webkit-appearance: none;
   -webkit-border-image: none;
+  font-size: 1.107692308rem;
+  line-height: 1.2em;
 
   /**
    * Added for SilverStripe module:
@@ -31,14 +20,18 @@
   text-align: left;
   padding: 0;
 }
-.realme_button:hover, .realme_button:focus {
-  background-color: #2f5f93;
-  background-image: none;
-  color: #fff;
-  border-color: #103154;
-}
 
 .realme_button_padding {
-  color: #fff;
-  padding: 0.92308em 2.53846em 0.92308em 1.23077em;
+  display: flex;
+  align-items: center;
+  padding: 1em 1.25em;
+}
+
+.realme_button_login-icon {
+    display: inline-block;
+    background-image: url('../images/RealMe-Face-Symbol_White.svg');
+    background-repeat: no-repeat;
+    margin-right: 0.5em;
+    height: 2em;
+    width: 2em;
 }

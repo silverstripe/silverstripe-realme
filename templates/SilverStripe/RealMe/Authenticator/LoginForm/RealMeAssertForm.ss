@@ -39,13 +39,12 @@ or directly in your css, e.g. .realme_popup {width: 450px}
 <% end_if %>
 
 <div class="realme_widget realme_assert realme_theme_{$RealMeWidgetTheme} no_touch" style="z-index: 1;">
-    <h2 class="realme_title">Prove your identity with RealMe</h2>
+    <h2 class="realme_title">Prove your identity with <span class="realme_title_brand">RealMe</span></h2>
     <p class="realme_info">If you have verified your identity with RealMe you can securely prove who you are, right now.</p>
 
     <div class="realme_login_lockup">
         <form $FormAttributes>
             <% if $Actions %>
-                <img src="$resourceURL('silverstripe/realme:client/dist/images/RealMe-logo@2x.png')" alt="RealMe" width="42" height="42">
                 <div class="realme_btn_margin">
                     <% loop $Actions %>
                         $Field
@@ -59,7 +58,7 @@ or directly in your css, e.g. .realme_popup {width: 450px}
     </div>
 
     <div class="realme_popup_position">
-        <a class="js_toggle_popup link whats_realme" href="https://www.realme.govt.nz" target="_blank" rel="noopener noreferrer">What’s RealMe?</a>
+        <a class="js_toggle_popup link realme_link whats_realme" href="https://www.realme.govt.nz" target="_blank" rel="noopener noreferrer">What’s RealMe?</a>
 
         <div class="realme_popup_wrapper realme_arrow_side_left">
             <!-- realme_popup -->

@@ -39,18 +39,17 @@ or directly in your css, e.g. .realme_popup {width: 450px}
 <% end_if %>
 
 <div class="realme_widget realme_primary_login realme_theme_{$RealMeWidgetTheme}">
-    <h2 class="realme_title">Login with RealMe®</h2>
+    <h2 class="realme_title">Login with <span class="realme_title_brand">RealMe</span></h2>
 
     <p class="realme_info">
-        To access the $ServiceName1, you need a RealMe login. If you’ve used a RealMe login somewhere else, you can use
-        it here too. If you don’t already have a username and password, just select Login and choose to create one.
+        To access the $ServiceName1, you need a RealMe login. If you've used a RealMe login somewhere else, you can use
+        it here too. If you don't already have a username and password, just select Login and choose to create one.
     </p>
 
     <div class="realme_login_lockup">
         <form $FormAttributes>
             <% if $Actions %>
-                <img src="$resourceURL('silverstripe/realme:client/dist/images/RealMe-logo@2x.png')" alt="RealMe" width="42" height="42">
-                <div class="realme_btn_margin">
+                <div>
                 <% loop $Actions %>
                     $Field
                 <% end_loop %>
@@ -62,7 +61,7 @@ or directly in your css, e.g. .realme_popup {width: 450px}
         </form>
     </div>
     <div class="realme_popup_position">
-        <a class="js_toggle_popup whats_realme" href="https://www.realme.govt.nz" target="_blank" rel="noopener noreferrer">What’s RealMe?</a>
+        <a class="js_toggle_popup realme_link whats_realme" href="https://www.realme.govt.nz" target="_blank" rel="noopener noreferrer">What's RealMe?</a>
         <div class="realme_popup_wrapper realme_arrow_top_left">
             <!-- realme_popup -->
             <div class="realme_popup">
