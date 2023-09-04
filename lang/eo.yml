@@ -3,6 +3,12 @@ eo:
     ASSERTLOGINBUTTON: 'Dividi viajn detalojn kun {orgname}'
     AUTHENTICATOR_NAME: RealMe-konto
     LOGINBUTTON: Ensaluti
+  SilverStripe\RealMe\Authenticator\LoginHandler:
+    LOGINFAILURE: 'Bedaŭrinde ni ne povas nun ensalutigi vin per RealMe. Bonvolu reprovi baldaŭ.'
+  SilverStripe\RealMe\Authenticator\MiniLoginForm:
+    LOGINBUTTON: LoginAction
+  SilverStripe\RealMe\Extension\MemberExtension:
+    db_RealmeSPNameID: 'RealmeSP nomo ID'
   SilverStripe\RealMe\RealMeService:
     ERROR_AUTHNFAILED: 'Vi elektis lasi je RealMe.'
     ERROR_GENERAL: 'RealMe sciigis pri grava aplikaĵa eraro. Bonvolu reprovi estonte. Se la problemo restos, bonvolu kontakti la helpejon de RealMe. El Nov-Zelando: 0800 664 774 (sen pagvoko), el eksterlando, +64 9 357 4468 (aplikiĝos alilandaj kostoj de pagvoko).'
@@ -37,7 +43,3 @@ eo:
     ERR_NOT_CLI: 'Eblas ruli la taskon ĉe la komanda linio, ne per la TTT-legilo.'
     OUPUT_PREFIX: 'Metadatuma XML-dosiero estas listigita sube por la  ''{env}'' RealMe-medio. Necesas sendi tion al la agentejo por ke ili transdonu ĝin al la stabo de RealMe.'
     VALIDATION_SUCCESS: 'Validigo sukcesis, agordado daŭras...'
-  SilverStripe\RealMe\Authenticator\LoginHandler:
-    LOGINFAILURE: 'Bedaŭrinde ni ne povas nun ensalutigi vin per RealMe. Bonvolu reprovi baldaŭ.'
-  SilverStripe\RealMe\Authenticator\MiniLoginForm:
-    LOGINBUTTON: LoginAction
