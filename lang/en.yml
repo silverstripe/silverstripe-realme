@@ -3,6 +3,7 @@ en:
     ASSERTLOGINBUTTON: 'Share your details with {orgname}'
     AUTHENTICATOR_NAME: 'RealMe Account'
     LOGINBUTTON: Login
+    LOGINBUTTON2: Log in
   SilverStripe\RealMe\Authenticator\LoginHandler:
     LOGINFAILURE: "Unfortunately we're not able to log you in through RealMe right now. Please try again shortly."
   SilverStripe\RealMe\Authenticator\MiniLoginForm:
