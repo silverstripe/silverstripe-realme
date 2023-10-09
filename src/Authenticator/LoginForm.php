@@ -202,13 +202,13 @@ class LoginForm extends BaseLoginForm
         } else {
             // Login button
             $loginButtonContent = ArrayData::create(array(
-                'Label' => _t(self::class . '.LOGINBUTTON', 'Login'),
+                'Label' => _t(self::class . '.LOGINBUTTON2', 'Log in'),
                 'ShowNewWindowIcon' => true
             ))->renderWith(self::class . '/RealMeLoginButton');
         }
 
         return FieldList::create(array(
-            FormAction::create('doLogin', _t(self::class . '.LOGINBUTTON', 'Login'))
+            FormAction::create('doLogin', _t(self::class . '.LOGINBUTTON2', 'Log in'))
                 ->setUseButtonTag(true)
                 ->setButtonContent($loginButtonContent)
                 ->setAttribute('class', 'realme_button')

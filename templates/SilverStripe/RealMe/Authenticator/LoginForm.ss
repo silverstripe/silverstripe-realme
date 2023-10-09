@@ -39,11 +39,11 @@ or directly in your css, e.g. .realme_popup {width: 450px}
 <% end_if %>
 
 <div class="realme_widget realme_primary_login realme_theme_{$RealMeWidgetTheme}">
-    <h2 class="realme_title">Login with <span class="realme_title_brand">RealMe</span></h2>
+    <h2 class="realme_title">Log in with <span class="realme_title_brand">RealMe</span></h2>
 
     <p class="realme_info">
         To access the $ServiceName1, you need a RealMe login. If you've used a RealMe login somewhere else, you can use
-        it here too. If you don't already have a username and password, just select Login and choose to create one.
+        it here too. If you don't already have a username and password, just select "Log in" and choose to create one.
     </p>
 
     <div class="realme_login_lockup">
