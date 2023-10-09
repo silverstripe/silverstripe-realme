@@ -40,14 +40,14 @@ or directly in your css, e.g. .realme_popup {width: 450px}
 
 "--%>
 <div class="realme_widget realme_secondary_login realme_theme_dark no_touch" style="z-index: 1;">
-    <a href="{$BaseHref}Security/login#RealMeLoginForm_LoginForm" class="realme_login realme_pipe">Login <span class="realme_icon_link"></span></a>
+    <a href="{$BaseHref}Security/login#RealMeLoginForm_LoginForm" class="realme_login realme_pipe">Log in <span class="realme_icon_link"></span></a>
     <a href="https://www.account.realme.govt.nz/account/" class="realme_create_account realme_pipe">Create <span class="realme_icon_link"></span></a>
     <div class="realme_popup_position">
         <a id="popup_trigger" href="http://www.realme.govt.nz" target="_blank" class="realme_link whats_realme">?</a>
         <div class="realme_popup_wrapper realme_arrow_top_left">
             <!-- realme_popup -->
             <div class="realme_popup">
-                <h2 class="realme_popup_title">To login to this service you now need a RealMe account.</h2>
+                <h2 class="realme_popup_title">To log in to this service you now need a RealMe account.</h2>
                 <p><b>RealMe</b> is a service from the New Zealand government and New Zealand Post that includes a single login, letting you use one username and password to access a wide range of services online.</p>
                 <p>But there is much more to <b>RealMe</b> than just the convenience of a single login.</p>
                 <h2 class="realme_popup_title">Get Verified</h2>
