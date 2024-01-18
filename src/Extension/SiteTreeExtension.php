@@ -2,12 +2,16 @@
 
 namespace SilverStripe\RealMe\Extension;
 
+use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\RealMe\RealMeService;
 use SilverStripe\Security\InheritedPermissions;
 use SilverStripe\Security\Member;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\DataExtension;
 
+/**
+ * @extends DataExtension<SiteTree>
+ */
 class SiteTreeExtension extends DataExtension
 {
     private static $dependencies = array(
@@ -37,7 +41,7 @@ class SiteTreeExtension extends DataExtension
         if ($member && $member->ID) {
             return null;
         }
-        
+
         $data = $this->service->getUserData();
         if (empty($data)) {
             // Defer if there's no logged in RealMe user

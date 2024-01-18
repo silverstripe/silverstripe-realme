@@ -50,7 +50,6 @@ class Authenticator implements AuthenticatorInterface
             return true;
         }
 
-        /** @var LoggerInterface $logger */
         $logger = Injector::inst()->get(LoggerInterface::class);
 
         $certDir = Environment::getEnv('REALME_CERT_DIR');

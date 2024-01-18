@@ -3,9 +3,10 @@
 namespace SilverStripe\RealMe\Extension;
 
 use SilverStripe\ORM\DataExtension;
+use SilverStripe\Security\Member;
 
 /**
- * Class MemberExtension
+ * @extends DataExtension<Member>
  */
 class MemberExtension extends DataExtension
 {

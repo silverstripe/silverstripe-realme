@@ -185,7 +185,6 @@ class LoginForm extends BaseLoginForm
      */
     protected function getFormActions()
     {
-        /** @var RealMeService $service */
         $service = Injector::inst()->get(RealMeService::class);
 
         $integrationType = $service->config()->integration_type;
