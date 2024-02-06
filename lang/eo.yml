@@ -3,6 +3,7 @@ eo:
     ASSERTLOGINBUTTON: 'Dividi viajn detalojn kun {orgname}'
     AUTHENTICATOR_NAME: RealMe-konto
     LOGINBUTTON: Ensaluti
+    LOGINBUTTON2: Ensaluti
   SilverStripe\RealMe\Authenticator\LoginHandler:
     LOGINFAILURE: 'Bedaŭrinde ni ne povas nun ensalutigi vin per RealMe. Bonvolu reprovi baldaŭ.'
   SilverStripe\RealMe\Authenticator\MiniLoginForm:
