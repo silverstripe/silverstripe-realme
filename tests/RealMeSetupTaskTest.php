@@ -121,7 +121,7 @@ class RealMeSetupTaskTest extends SapphireTest
 
         // Test valid entityIds just in case they're different in this configuration.
         $config = Config::inst();
-        $config->merge(RealMeService::class, 'sp_entity_ids', self::$validEntityIDs);
+        $config->merge(RealMeService::class, 'sp_entity_ids', RealMeSetupTaskTest::$validEntityIDs);
 
         // validate our list of valid entity IDs;
         $validateEntityId = new ReflectionMethod($realMeSetupTask, 'validateEntityID');
@@ -132,7 +132,7 @@ class RealMeSetupTaskTest extends SapphireTest
         $this->assertCount(0, $errors->getValue($realMeSetupTask));
 
         // TEST entityId missing.
-        $entityIdList = self::$validEntityIDs;
+        $entityIdList = RealMeSetupTaskTest::$validEntityIDs;
         $entityIdList[RealMeService::ENV_MTS] = 'destroy-humans-with-incorrect-entity-ids';
         $config->merge(RealMeService::class, 'sp_entity_ids', $entityIdList);
         $validateEntityId->invoke($realMeSetupTask, 'mts');
@@ -143,7 +143,7 @@ class RealMeSetupTaskTest extends SapphireTest
         $this->assertCount(0, $errors->getValue($realMeSetupTask));
 
         // TEST entityId localhost.
-        $entityIdList = self::$validEntityIDs;
+        $entityIdList = RealMeSetupTaskTest::$validEntityIDs;
         $entityIdList[RealMeService::ENV_MTS] = 'https://localhost/';
         $config->merge(RealMeService::class, 'sp_entity_ids', $entityIdList);
         $validateEntityId->invoke($realMeSetupTask, 'mts');
@@ -153,7 +153,7 @@ class RealMeSetupTaskTest extends SapphireTest
         $this->assertCount(0, $errors->getValue($realMeSetupTask));
 
         // TEST entityId not http
-        $entityIdList = self::$validEntityIDs;
+        $entityIdList = RealMeSetupTaskTest::$validEntityIDs;
         $entityIdList[RealMeService::ENV_MTS] = 'http://dev.realme-integration.govt.nz/p-realm/s-name';
         $config->merge(RealMeService::class, 'sp_entity_ids', $entityIdList);
         $validateEntityId->invoke($realMeSetupTask, 'mts');
@@ -163,7 +163,7 @@ class RealMeSetupTaskTest extends SapphireTest
         $this->assertCount(0, $errors->getValue($realMeSetupTask));
 
         // TEST privacy realm /service name  missing
-        $entityIdList = self::$validEntityIDs;
+        $entityIdList = RealMeSetupTaskTest::$validEntityIDs;
         $entityIdList[RealMeService::ENV_MTS] = 'https://dev.realme-integration.govt.nz/';
         $config->merge(RealMeService::class, 'sp_entity_ids', $entityIdList);
         $validateEntityId->invoke($realMeSetupTask, 'mts');
@@ -178,7 +178,7 @@ class RealMeSetupTaskTest extends SapphireTest
 
         // TEST privacy realm
         // "https://www.domain.govt.nz/<privacy-realm>/<service-name>"
-        $entityIdList = self::$validEntityIDs;
+        $entityIdList = RealMeSetupTaskTest::$validEntityIDs;
         $entityIdList[RealMeService::ENV_MTS] =
             'https://dev.realme-integration.govt.nz/s-name/privacy-realm-is-too-big';
         $config->merge(RealMeService::class, 'sp_entity_ids', $entityIdList);
@@ -193,7 +193,7 @@ class RealMeSetupTaskTest extends SapphireTest
         $this->assertCount(0, $errors->getValue($realMeSetupTask));
 
         // "https://www.domain.govt.nz/<privacy-realm>/<service-name>"
-        $entityIdList = self::$validEntityIDs;
+        $entityIdList = RealMeSetupTaskTest::$validEntityIDs;
         $entityIdList[RealMeService::ENV_MTS] = 'https://dev.realme-integration.govt.nz/s-name';
         $config->merge(RealMeService::class, 'sp_entity_ids', $entityIdList);
         $validateEntityId->invoke($realMeSetupTask, 'mts');
@@ -229,7 +229,7 @@ class RealMeSetupTaskTest extends SapphireTest
 
         // Test valid authnContexts just in case they're different in this configuration.
         $config = Config::inst();
-        $config->merge(RealMeService::class, 'authn_contexts', self::$authnEnvContexts);
+        $config->merge(RealMeService::class, 'authn_contexts', RealMeSetupTaskTest::$authnEnvContexts);
 
         // validate our list of valid entity IDs;
         $validateAuthNContext = new ReflectionMethod($realMeSetupTask, 'validateAuthNContext');
@@ -237,7 +237,7 @@ class RealMeSetupTaskTest extends SapphireTest
         $validateAuthNContext->invoke($realMeSetupTask);
         $this->assertCount(0, $errors->getValue($realMeSetupTask));
 
-        $invalidAuthNContextList = self::$authnEnvContexts;
+        $invalidAuthNContextList = RealMeSetupTaskTest::$authnEnvContexts;
         $invalidAuthNContextList[RealMeService::ENV_MTS] = 'im-an-invalid-context';
         $config->merge(RealMeService::class, 'authn_contexts', $invalidAuthNContextList);
 

@@ -145,7 +145,7 @@ class FederatedIdentity extends ViewableData
      */
     public static function createFromXML(DOMDocument $identityDocument, $nameId)
     {
-        $identity = new self($nameId);
+        $identity = new FederatedIdentity($nameId);
 
         $xpath = new DOMXPath($identityDocument);
         $xpath->registerNamespace('p', 'urn:oasis:names:tc:ciq:xpil:3');
@@ -155,50 +155,54 @@ class FederatedIdentity extends ViewableData
         $xpath->registerNamespace('addr', 'urn:oasis:names:tc:ciq:xal:3');
 
         // Name elements
-        $identity->FirstName = self::getNodeValue(
+        $identity->FirstName = FederatedIdentity::getNodeValue(
             $xpath,
             "/p:Party/p:PartyName/n:PersonName/n:NameElement[@n:ElementType='FirstName']"
         );
-        $identity->MiddleName = self::getNodeValue(
+        $identity->MiddleName = FederatedIdentity::getNodeValue(
             $xpath,
             "/p:Party/p:PartyName/n:PersonName/n:NameElement[@n:ElementType='MiddleName']"
         );
-        $identity->LastName = self::getNodeValue(
+        $identity->LastName = FederatedIdentity::getNodeValue(
             $xpath,
             "/p:Party/p:PartyName/n:PersonName/n:NameElement[@n:ElementType='LastName']"
         );
 
         // Gender
-        $identity->Gender = self::getNamedItemNodeValue($xpath, '/p:Party/p:PersonInfo[@p:Gender]', 'Gender');
+        $identity->Gender = FederatedIdentity::getNamedItemNodeValue(
+            $xpath,
+            '/p:Party/p:PersonInfo[@p:Gender]',
+            'Gender'
+        );
 
         // Birth info
         $identity->BirthInfoQuality = $xpath->query("/p:Party/p:BirthInfo[@dataQuality:DataQualityType]");
 
         // Birth date
-        $identity->BirthYear = self::getNodeValue(
+        $identity->BirthYear = FederatedIdentity::getNodeValue(
             $xpath,
             "/p:Party/p:BirthInfo/p:BirthInfoElement[@p:Type='BirthYear']"
         );
-        $identity->BirthMonth = self::getNodeValue(
+        $identity->BirthMonth = FederatedIdentity::getNodeValue(
             $xpath,
             "/p:Party/p:BirthInfo/p:BirthInfoElement[@p:Type='BirthMonth']"
         );
-        $identity->BirthDay = self::getNodeValue(
+        $identity->BirthDay = FederatedIdentity::getNodeValue(
             $xpath,
             "/p:Party/p:BirthInfo/p:BirthInfoElement[@p:Type='BirthDay']"
         );
 
         // Birth place
-        $identity->BirthPlaceQuality = self::getNamedItemNodeValue(
+        $identity->BirthPlaceQuality = FederatedIdentity::getNamedItemNodeValue(
             $xpath,
             '/p:Party/p:BirthInfo/p:BirthPlaceDetails[@dataQuality:DataQualityType]',
             'DataQualityType'
         );
-        $identity->BirthPlaceCountry = self::getNodeValue(
+        $identity->BirthPlaceCountry = FederatedIdentity::getNodeValue(
             $xpath,
             "/p:Party/p:BirthInfo/p:BirthPlaceDetails/addr:Country/addr:NameElement[@addr:NameType='Name']"
         );
-        $identity->BirthPlaceLocality = self::getNodeValue(
+        $identity->BirthPlaceLocality = FederatedIdentity::getNodeValue(
             $xpath,
             "/p:Party/p:BirthInfo/p:BirthPlaceDetails/addr:Locality/addr:NameElement[@addr:NameType='Name']"
         );
@@ -268,7 +272,7 @@ class FederatedIdentity extends ViewableData
      */
     public static function createFromJSON($identityHashMap, $nameId)
     {
-        $identity = new self($nameId);
+        $identity = new FederatedIdentity($nameId);
 
         $identityMap = json_decode($identityHashMap ?? '', true);
 
