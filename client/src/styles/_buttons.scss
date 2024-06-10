@@ -1,14 +1,13 @@
 .realme_button {
   cursor: pointer;
-  line-height: 1;
   margin-top: 1px;
   color: $brand-color-main-contrast;
   background-color: $brand-color-main-accessible;
   border-radius: $btn-border-radius;
-  border: none;
+  border: 0;
   -webkit-appearance: none;
   -webkit-border-image: none;
-  font-size: 1.107692308rem;
+  font-size: 1.10769rem;
   line-height: 1.2em;
 
   /**
