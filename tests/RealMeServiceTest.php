@@ -22,7 +22,7 @@ class RealMeServiceTest extends SapphireTest
 
     public function testGetCertificateContents()
     {
-        self::$pathForTempCertificate = TempFolder::getTempFolder(BASE_PATH) . '/tmpcert.pem';
+        RealMeServiceTest::$pathForTempCertificate = TempFolder::getTempFolder(BASE_PATH) . '/tmpcert.pem';
 
         /**
          * Test standard certificate
@@ -33,7 +33,7 @@ class RealMeServiceTest extends SapphireTest
         // Strip carriage returns
         $contents = str_replace("\r", '', $contents ?? '');
 
-        $path = self::$pathForTempCertificate;
+        $path = RealMeServiceTest::$pathForTempCertificate;
         file_put_contents($path ?? '', $contents);
 
         /** @var RealMeService $service */
@@ -53,7 +53,7 @@ class RealMeServiceTest extends SapphireTest
         // Strip carriage returns
         $contents = str_replace("\r", '', $contents ?? '');
 
-        $path = self::$pathForTempCertificate;
+        $path = RealMeServiceTest::$pathForTempCertificate;
         file_put_contents($path ?? '', $contents);
 
         /** @var RealMeService $service */
@@ -160,9 +160,10 @@ class RealMeServiceTest extends SapphireTest
     {
         parent::tearDownAfterClass();
 
-        // Ensure self::$pathForTempCertificate is unlink'd (otherwise it won't get unlinked if the test fails)
-        if (file_exists(self::$pathForTempCertificate)) {
-            unlink(self::$pathForTempCertificate);
+        // Ensure RealMeServiceTest::$pathForTempCertificate is unlink'd
+        // (otherwise it won't get unlinked if the test fails)
+        if (file_exists(RealMeServiceTest::$pathForTempCertificate)) {
+            unlink(RealMeServiceTest::$pathForTempCertificate);
         }
     }
 }
