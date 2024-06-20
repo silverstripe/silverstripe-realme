@@ -9,7 +9,7 @@ class MiniLoginForm extends LoginForm
 {
     /**
      * @var string The position at which the 'What's RealMe?' popup appears on hover. Can be either 'left' or 'right'.
-     * @see self::setMiniLoginFormPopupPosition()
+     * @see MiniLoginForm::setMiniLoginFormPopupPosition()
      */
     private $popupPosition = 'left';
 
@@ -18,14 +18,14 @@ class MiniLoginForm extends LoginForm
         parent::__construct($controller, $name);
         $this->setFormMethod('GET', true);
 
-        $buttonName = sprintf('action_%s', self::$action_button_name);
+        $buttonName = sprintf('action_%s', MiniLoginForm::$action_button_name);
         $this->Actions()->fieldByName($buttonName)->addExtraClass('mini');
     }
 
     public function getRealMeMiniLoginLink()
     {
         $fields = $this->Fields();
-        $buttonName = sprintf('action_%s', self::$action_button_name);
+        $buttonName = sprintf('action_%s', MiniLoginForm::$action_button_name);
         $action = $this->Actions()->fieldByName($buttonName);
 
         $authMethod = $fields->dataFieldByName('AuthenticationMethod')->Value();

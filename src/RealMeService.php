@@ -77,7 +77,7 @@ class RealMeService implements TemplateGlobalProvider
     private static $sync_with_local_member_database = false;
 
     /**
-     * @var User|null User data returned by RealMe. Provided by {@link self::ensureLogin()}.
+     * @var User|null User data returned by RealMe. Provided by {@link RealMeService::ensureLogin()}.
      *
      * Data within this ArrayData is as follows:
      * - NameID:       ArrayData   Includes the UserFlt and associated formatting information
@@ -104,7 +104,11 @@ class RealMeService implements TemplateGlobalProvider
     /**
      * @var array The RealMe environments that can be configured for use with this module.
      */
-    private static $allowed_realme_environments = array(self::ENV_MTS, self::ENV_ITE, self::ENV_PROD);
+    private static $allowed_realme_environments = array(
+        RealMeService::ENV_MTS,
+        RealMeService::ENV_ITE,
+        RealMeService::ENV_PROD
+    );
 
     /**
      * @config
@@ -114,7 +118,7 @@ class RealMeService implements TemplateGlobalProvider
      */
     private static $integration_type = 'login';
 
-    private static $allowed_realme_integration_types = array(self::TYPE_LOGIN, self::TYPE_ASSERT);
+    private static $allowed_realme_integration_types = array(RealMeService::TYPE_LOGIN, RealMeService::TYPE_ASSERT);
 
     /**
      * @config
@@ -123,9 +127,9 @@ class RealMeService implements TemplateGlobalProvider
      * the form of a URL, e.g. https://www.agency.govt.nz/privacy-realm-name/application-name
      */
     private static $sp_entity_ids = array(
-        self::ENV_MTS => null,
-        self::ENV_ITE => null,
-        self::ENV_PROD => null
+        RealMeService::ENV_MTS => null,
+        RealMeService::ENV_ITE => null,
+        RealMeService::ENV_PROD => null
     );
 
     /**
@@ -134,47 +138,47 @@ class RealMeService implements TemplateGlobalProvider
      * intermediary IdP instead of connecting to RealMe directly.
      */
     private static $idp_entity_ids = array(
-        self::ENV_MTS => array(
-            self::TYPE_LOGIN  => 'https://login.mts.realme.govt.nz/4af8e0e0-497b-4f52-805c-00fa09b50c16' .
+        RealMeService::ENV_MTS => array(
+            RealMeService::TYPE_LOGIN  => 'https://login.mts.realme.govt.nz/4af8e0e0-497b-4f52-805c-00fa09b50c16' .
                 '/B2C_1A_DIA_RealMe_MTSLoginService',
-            self::TYPE_ASSERT => 'https://login.mts.realme.govt.nz/4af8e0e0-497b-4f52-805c-00fa09b50c16' .
+            RealMeService::TYPE_ASSERT => 'https://login.mts.realme.govt.nz/4af8e0e0-497b-4f52-805c-00fa09b50c16' .
                 '/B2C_1A_DIA_RealMe_MTSAssertionService'
         ),
 
-        self::ENV_ITE => array(
-            self::TYPE_LOGIN  => 'https://login.ite.realme.govt.nz/12c36372-4b2d-4865-b1d1-9599b0d37348' .
+        RealMeService::ENV_ITE => array(
+            RealMeService::TYPE_LOGIN  => 'https://login.ite.realme.govt.nz/12c36372-4b2d-4865-b1d1-9599b0d37348' .
                 '/B2C_1A_DIA_RealMe_LoginService',
-            self::TYPE_ASSERT => 'https://login.ite.realme.govt.nz/12c36372-4b2d-4865-b1d1-9599b0d37348' .
+            RealMeService::TYPE_ASSERT => 'https://login.ite.realme.govt.nz/12c36372-4b2d-4865-b1d1-9599b0d37348' .
                 '/B2C_1A_DIA_RealMe_AssertionService'
         ),
 
-        self::ENV_PROD => array(
-            self::TYPE_LOGIN  => 'https://login.realme.govt.nz/32179062-92f6-4eb0-89bc-df400a9e0367' .
+        RealMeService::ENV_PROD => array(
+            RealMeService::TYPE_LOGIN  => 'https://login.realme.govt.nz/32179062-92f6-4eb0-89bc-df400a9e0367' .
                 '/B2C_1A_DIA_RealMe_LoginService',
-            self::TYPE_ASSERT => 'https://login.realme.govt.nz/32179062-92f6-4eb0-89bc-df400a9e0367' .
+            RealMeService::TYPE_ASSERT => 'https://login.realme.govt.nz/32179062-92f6-4eb0-89bc-df400a9e0367' .
                 '/B2C_1A_DIA_RealMe_AssertionService',
         )
     );
 
     private static $idp_sso_service_urls = array(
-        self::ENV_MTS => array(
-            self::TYPE_LOGIN  => 'https://login.mts.realme.govt.nz/b2cdiamts01rmpubdir.onmicrosoft.com' .
+        RealMeService::ENV_MTS => array(
+            RealMeService::TYPE_LOGIN  => 'https://login.mts.realme.govt.nz/b2cdiamts01rmpubdir.onmicrosoft.com' .
                 '/B2C_1A_DIA_RealMe_MTSLoginService/samlp/sso/login',
-            self::TYPE_ASSERT => 'https://login.mts.realme.govt.nz/b2cdiamts01rmpubdir.onmicrosoft.com' .
+            RealMeService::TYPE_ASSERT => 'https://login.mts.realme.govt.nz/b2cdiamts01rmpubdir.onmicrosoft.com' .
                 '/B2C_1A_DIA_RealMe_MTSAssertionService/samlp/sso/login'
         ),
 
-        self::ENV_ITE => array(
-            self::TYPE_LOGIN  => 'https://login.ite.realme.govt.nz/b2cdiaite01rmpubdir.onmicrosoft.com' .
+        RealMeService::ENV_ITE => array(
+            RealMeService::TYPE_LOGIN  => 'https://login.ite.realme.govt.nz/b2cdiaite01rmpubdir.onmicrosoft.com' .
                 '/B2C_1A_DIA_RealMe_LoginService/samlp/sso/login',
-            self::TYPE_ASSERT => 'https://login.ite.realme.govt.nz/b2cdiaite01rmpubdir.onmicrosoft.com' .
+            RealMeService::TYPE_ASSERT => 'https://login.ite.realme.govt.nz/b2cdiaite01rmpubdir.onmicrosoft.com' .
                 '/B2C_1A_DIA_RealMe_AssertionService/samlp/sso/login'
         ),
 
-        self::ENV_PROD => array(
-            self::TYPE_LOGIN  => 'https://login.realme.govt.nz/32179062-92f6-4eb0-89bc-df400a9e0367' .
+        RealMeService::ENV_PROD => array(
+            RealMeService::TYPE_LOGIN  => 'https://login.realme.govt.nz/32179062-92f6-4eb0-89bc-df400a9e0367' .
                 '/B2C_1A_DIA_RealMe_LoginService/samlp/sso/login',
-            self::TYPE_ASSERT => 'https://login.realme.govt.nz/32179062-92f6-4eb0-89bc-df400a9e0367' .
+            RealMeService::TYPE_ASSERT => 'https://login.realme.govt.nz/32179062-92f6-4eb0-89bc-df400a9e0367' .
                 '/B2C_1A_DIA_RealMe_AssertionService/samlp/sso/login'
         )
     );
@@ -187,21 +191,21 @@ class RealMeService implements TemplateGlobalProvider
      * is documentation in the README to ensure the filenames are configured correctly for the various environments.
      */
     private static $idp_x509_cert_filenames = array(
-        self::ENV_MTS => array(
-            self::TYPE_LOGIN  => 'mts_login_saml_idp.cer',
-            self::TYPE_ASSERT => 'mts_assert_saml_idp.cer'
+        RealMeService::ENV_MTS => array(
+            RealMeService::TYPE_LOGIN  => 'mts_login_saml_idp.cer',
+            RealMeService::TYPE_ASSERT => 'mts_assert_saml_idp.cer'
         ),
 
         // As of the 2021 Azure re-platforming, ITE certificates are the same - a single cert for both logon & assert
-        self::ENV_ITE => array(
-            self::TYPE_LOGIN  => 'ite.signing.logon.realme.govt.nz.cer',
-            self::TYPE_ASSERT => 'ite.signing.logon.realme.govt.nz.cer'
+        RealMeService::ENV_ITE => array(
+            RealMeService::TYPE_LOGIN  => 'ite.signing.logon.realme.govt.nz.cer',
+            RealMeService::TYPE_ASSERT => 'ite.signing.logon.realme.govt.nz.cer'
         ),
 
         // As of the 2021 Azure re-platforming, prod certificates are the same - a single cert for both logon & assert
-        self::ENV_PROD => array(
-            self::TYPE_LOGIN  => 'signing.realme.govt.nz.cer',
-            self::TYPE_ASSERT => 'signing.realme.govt.nz.cer'
+        RealMeService::ENV_PROD => array(
+            RealMeService::TYPE_LOGIN  => 'signing.realme.govt.nz.cer',
+            RealMeService::TYPE_ASSERT => 'signing.realme.govt.nz.cer'
         )
     );
 
@@ -226,9 +230,9 @@ class RealMeService implements TemplateGlobalProvider
      * - urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength::OTP:Token:SID
      */
     private static $authn_contexts = array(
-        self::ENV_MTS => null,
-        self::ENV_ITE => null,
-        self::ENV_PROD => null
+        RealMeService::ENV_MTS => null,
+        RealMeService::ENV_ITE => null,
+        RealMeService::ENV_PROD => null
     );
 
     /**
@@ -238,10 +242,10 @@ class RealMeService implements TemplateGlobalProvider
      * A list of the valid authn context values supported for realme.
      */
     private static $allowed_authn_context_list = array(
-        self::AUTHN_LOW_STRENGTH,
-        self::AUTHN_MOD_STRENTH,
-        self::AUTHN_MOD_MOBILE_SMS,
-        self::AUTHN_MOD_TOKEN_SID
+        RealMeService::AUTHN_LOW_STRENGTH,
+        RealMeService::AUTHN_MOD_STRENTH,
+        RealMeService::AUTHN_MOD_MOBILE_SMS,
+        RealMeService::AUTHN_MOD_TOKEN_SID
     );
 
     /**
@@ -249,9 +253,9 @@ class RealMeService implements TemplateGlobalProvider
      * @var array Domain names for metadata files. Used in @link RealMeSetupTask when outputting metadata XML
      */
     private static $metadata_assertion_service_domains = array(
-        self::ENV_MTS => null,
-        self::ENV_ITE => null,
-        self::ENV_PROD => null
+        RealMeService::ENV_MTS => null,
+        RealMeService::ENV_ITE => null,
+        RealMeService::ENV_PROD => null
     );
 
     /**
@@ -260,16 +264,16 @@ class RealMeService implements TemplateGlobalProvider
      * translations (found in realme/lang/en.yml for example).
      */
     private static $realme_error_message_overrides = array(
-        self::ERR_AUTHN_FAILED => null,
-        self::ERR_TIMEOUT => null,
-        self::ERR_INTERNAL_ERROR => null,
-        self::ERR_NO_AVAILABLE_IDP => null,
-        self::ERR_REQUEST_UNSUPPORTED => null,
-        self::ERR_NO_PASSIVE => null,
-        self::ERR_REQUEST_DENIED => null,
-        self::ERR_UNSUPPORTED_BINDING => null,
-        self::ERR_UNKNOWN_PRINCIPAL => null,
-        self::ERR_NO_AUTHN_CONTEXT => null
+        RealMeService::ERR_AUTHN_FAILED => null,
+        RealMeService::ERR_TIMEOUT => null,
+        RealMeService::ERR_INTERNAL_ERROR => null,
+        RealMeService::ERR_NO_AVAILABLE_IDP => null,
+        RealMeService::ERR_REQUEST_UNSUPPORTED => null,
+        RealMeService::ERR_NO_PASSIVE => null,
+        RealMeService::ERR_REQUEST_DENIED => null,
+        RealMeService::ERR_UNSUPPORTED_BINDING => null,
+        RealMeService::ERR_UNKNOWN_PRINCIPAL => null,
+        RealMeService::ERR_NO_AUTHN_CONTEXT => null
     );
 
     /**
@@ -357,7 +361,7 @@ class RealMeService implements TemplateGlobalProvider
             return static::$user_data;
         }
 
-        $request = self::getRequest();
+        $request = RealMeService::getRequest();
 
         if (!$request) {
             return null;
@@ -393,7 +397,7 @@ class RealMeService implements TemplateGlobalProvider
      */
     public static function current_realme_user()
     {
-        $user = self::user_data();
+        $user = RealMeService::user_data();
         if ($user && !$user->isValid()) {
             return null;
         }
@@ -408,7 +412,7 @@ class RealMeService implements TemplateGlobalProvider
      */
     public static function currentRealMeUser()
     {
-        return self::current_realme_user();
+        return RealMeService::current_realme_user();
     }
 
     /**
@@ -586,7 +590,7 @@ class RealMeService implements TemplateGlobalProvider
             $federatedIdentity = $this->retrieveFederatedIdentity($auth);
 
             // We will have either a FLT or FIT, depending on integration type
-            if ($this->config()->integration_type == self::TYPE_ASSERT) {
+            if ($this->config()->integration_type == RealMeService::TYPE_ASSERT) {
                 $userTag = $this->retrieveFederatedIdentityTag($auth);
             } else {
                 $userTag = $this->retrieveFederatedLogonTag($auth);
@@ -699,8 +703,8 @@ class RealMeService implements TemplateGlobalProvider
 
     /**
      * Returns the appropriate AuthN Context, given the environment passed in. The AuthNContext may be different per
-     * environment, and should be one of the strings as defined in the static {@link self::$authn_contexts} at the top
-     * of this class.
+     * environment, and should be one of the strings as defined in the static
+     * {@link RealMeService::$authn_contexts} at the top of this class.
      *
      * @param string $env The environment to return the AuthNContext for. Must be one of the RealMe environment names
      * @return string|null Returns the AuthNContext for the given $env, or null if no context exists
@@ -907,7 +911,7 @@ class RealMeService implements TemplateGlobalProvider
         }
 
         if (!$request) {
-            $request = self::getRequest();
+            $request = RealMeService::getRequest();
             if (!$request) {
                 throw new RealMeException('A request must be provided for session access');
             }
@@ -980,11 +984,11 @@ class RealMeService implements TemplateGlobalProvider
     public function getNameIdFormat()
     {
         switch ($this->config()->integration_type) {
-            case self::TYPE_ASSERT:
+            case RealMeService::TYPE_ASSERT:
                 return 'urn:oasis:names:tc:SAML:2.0:nameid-format:transient';
                 break;
 
-            case self::TYPE_LOGIN:
+            case RealMeService::TYPE_LOGIN:
             default:
                 return 'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent';
                 break;
@@ -1036,7 +1040,7 @@ class RealMeService implements TemplateGlobalProvider
     /**
      * @param string $certName The certificate name, either 'SIGNING' or 'MUTUAL'
      * @return string|null Either the full path to the certificate file, or null if it doesn't exist
-     * @see self::getSigningCertPath()
+     * @see RealMeService::getSigningCertPath()
      */
     private function getCertPath($certName)
     {
@@ -1163,62 +1167,65 @@ class RealMeService implements TemplateGlobalProvider
         $messageOverrides = $this->config()->realme_error_message_overrides;
 
         switch ($errorCode) {
-            case self::ERR_AUTHN_FAILED:
-                $message = _t(self::class . '.ERROR_AUTHNFAILED', 'You have chosen to leave RealMe.');
+            case RealMeService::ERR_AUTHN_FAILED:
+                $message = _t(RealMeService::class . '.ERROR_AUTHNFAILED', 'You have chosen to leave RealMe.');
                 break;
 
-            case self::ERR_TIMEOUT:
-                $message = _t(self::class . '.ERROR_TIMEOUT', 'Your RealMe session has timed out – please try again.');
-                break;
-
-            case self::ERR_INTERNAL_ERROR:
+            case RealMeService::ERR_TIMEOUT:
                 $message = _t(
-                    self::class . '.ERROR_INTERNAL',
+                    RealMeService::class . '.ERROR_TIMEOUT',
+                    'Your RealMe session has timed out – please try again.'
+                );
+                break;
+
+            case RealMeService::ERR_INTERNAL_ERROR:
+                $message = _t(
+                    RealMeService::class . '.ERROR_INTERNAL',
                     'RealMe was unable to process your request due to a RealMe internal error. Please try again. ' .
                         'If the problem persists, please contact the RealMe Help Desk. From New Zealand dial ' .
                         '0800 664 774 (toll free), from overseas dial +64 4 462 0674 (overseas call charges apply).'
                 );
                 break;
 
-            case self::ERR_NO_AVAILABLE_IDP:
+            case RealMeService::ERR_NO_AVAILABLE_IDP:
                 $message = _t(
-                    self::class . '.ERROR_NOAVAILABLEIDP',
+                    RealMeService::class . '.ERROR_NOAVAILABLEIDP',
                     'RealMe reported that the TXT service or the token service is not available. You may try again ' .
                         'later. If the problem persists, please contact the RealMe Help Desk. From New Zealand dial ' .
                         '0800 664 774 (toll free), from overseas dial +64 4 462 0674 (overseas call charges apply).'
                 );
                 break;
 
-            case self::ERR_REQUEST_UNSUPPORTED:
+            case RealMeService::ERR_REQUEST_UNSUPPORTED:
                 $message = _t(
-                    self::class . '.ERROR_REQUESTUNSUPPORTED',
+                    RealMeService::class . '.ERROR_REQUESTUNSUPPORTED',
                     'RealMe reported a serious application error with the message \'Request Unsupported\'. Please try' .
                         ' again later. If the problem persists, please contact the RealMe Help Desk. From New Zealand' .
                         ': 0800 664 774 (toll free), from overseas dial +64 4 462 0674 (overseas call charges apply).'
                 );
                 break;
 
-            case self::ERR_NO_PASSIVE:
+            case RealMeService::ERR_NO_PASSIVE:
                 $message = _t(
-                    self::class . '.ERROR_NOPASSIVE',
+                    RealMeService::class . '.ERROR_NOPASSIVE',
                     'RealMe reported a serious application error with the message \'No Passive\'. Please try again ' .
                         'later. If the problem persists, please contact the RealMe Help Desk. From New Zealand: 0800 ' .
                         '664 774 (toll free), from overseas dial +64 4 462 0674 (overseas call charges apply).'
                 );
                 break;
 
-            case self::ERR_REQUEST_DENIED:
+            case RealMeService::ERR_REQUEST_DENIED:
                 $message = _t(
-                    self::class . '.ERROR_REQUESTDENIED',
+                    RealMeService::class . '.ERROR_REQUESTDENIED',
                     'RealMe reported a serious application error with the message \'Request Denied\'. Please try ' .
                         'again later. If the problem persists, please contact the RealMe Help Desk. From New Zealand:' .
                         ' 0800 664 774 (toll free), from overseas dial +64 4 462 0674 (overseas call charges apply).'
                 );
                 break;
 
-            case self::ERR_UNSUPPORTED_BINDING:
+            case RealMeService::ERR_UNSUPPORTED_BINDING:
                 $message = _t(
-                    self::class . '.ERROR_UNSUPPORTEDBINDING',
+                    RealMeService::class . '.ERROR_UNSUPPORTEDBINDING',
                     'RealMe reported a serious application error with the message \'Unsupported Binding\'. Please ' .
                         'try again later. If the problem persists, please contact the RealMe Help Desk. From New ' .
                         'Zealand: 0800 664 774 (toll free), from overseas dial +64 4 462 0674 (overseas call charges ' .
@@ -1226,17 +1233,17 @@ class RealMeService implements TemplateGlobalProvider
                 );
                 break;
 
-            case self::ERR_UNKNOWN_PRINCIPAL:
+            case RealMeService::ERR_UNKNOWN_PRINCIPAL:
                 $message = _t(
-                    self::class . '.ERROR_UNKNOWNPRINCIPAL',
+                    RealMeService::class . '.ERROR_UNKNOWNPRINCIPAL',
                     'You are unable to use RealMe to verify your identity if you do not have a RealMe account. ' .
                         'Visit the RealMe home page for more information and to create an account.'
                 );
                 break;
 
-            case self::ERR_NO_AUTHN_CONTEXT:
+            case RealMeService::ERR_NO_AUTHN_CONTEXT:
                 $message = _t(
-                    self::class . '.ERROR_NOAUTHNCONTEXT',
+                    RealMeService::class . '.ERROR_NOAUTHNCONTEXT',
                     'RealMe reported a serious application error with the message \'No AuthN Context\'. Please try ' .
                         'again later. If the problem persists, please contact the RealMe Help Desk. From New Zealand:' .
                         ' 0800 664 774 (toll free), from overseas dial +64 4 462 0674 (overseas call charges apply).'
@@ -1245,7 +1252,7 @@ class RealMeService implements TemplateGlobalProvider
 
             default:
                 $message = _t(
-                    self::class . '.ERROR_GENERAL',
+                    RealMeService::class . '.ERROR_GENERAL',
                     'RealMe reported a serious application error. Please try again later. If the problem persists, ' .
                         'please contact the RealMe Help Desk. From New Zealand: 0800 664 774 (toll free), from ' .
                         'overseas dial +64 4 462 0674 (overseas call charges apply).'
