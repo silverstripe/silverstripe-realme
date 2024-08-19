@@ -23,7 +23,7 @@
         }
     ],
     "require": {
-        "php": "^8.1",
+        "php": "^8.3",
         "silverstripe/framework": "^6",
         "onelogin/php-saml": "^4"
     },
