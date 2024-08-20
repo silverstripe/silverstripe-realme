@@ -2,13 +2,13 @@
 
 namespace SilverStripe\RealMe\Extension;
 
-use SilverStripe\ORM\DataExtension;
+use SilverStripe\Core\Extension;
 use SilverStripe\Security\Member;
 
 /**
- * @extends DataExtension<Member>
+ * @extends Extension<Member>
  */
-class MemberExtension extends DataExtension
+class MemberExtension extends Extension
 {
     private static $db = array(
         "RealmeSPNameID" => "Varchar(35)",
