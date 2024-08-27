@@ -34,7 +34,7 @@ class SiteTreeExtension extends DataExtension
      *
      * @return bool|null True if the current user can view this page (or null to defer)
      */
-    public function canView($member)
+    protected function canView($member)
     {
         // Defer if there's a member - this only catches allowing those who aren't members but might be authenticated
         // with RealMe
