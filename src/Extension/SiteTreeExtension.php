@@ -7,12 +7,12 @@ use SilverStripe\RealMe\RealMeService;
 use SilverStripe\Security\InheritedPermissions;
 use SilverStripe\Security\Member;
 use SilverStripe\ORM\DataObject;
-use SilverStripe\ORM\DataExtension;
+use SilverStripe\Core\Extension;
 
 /**
- * @extends DataExtension<SiteTree>
+ * @extends Extension<SiteTree>
  */
-class SiteTreeExtension extends DataExtension
+class SiteTreeExtension extends Extension
 {
     private static $dependencies = array(
         'service' => '%$' . RealMeService::class
