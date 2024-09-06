@@ -4,14 +4,15 @@ namespace SilverStripe\RealMe\Task;
 
 use Exception;
 
-use SilverStripe\Control\HTTPRequest;
-use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Core\Manifest\ModuleLoader;
 use SilverStripe\RealMe\RealMeService;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\Controller;
 use SilverStripe\Dev\BuildTask;
-use SilverStripe\Dev\Deprecation;
+use SilverStripe\PolyExecution\PolyOutput;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 
 /**
  * Class RealMeSetupTask
@@ -26,15 +27,16 @@ use SilverStripe\Dev\Deprecation;
  */
 class RealMeSetupTask extends BuildTask
 {
-    private static $segment = 'RealMeSetupTask';
+    protected static string $commandName = 'RealMeSetupTask';
 
     private static $dependencies = [
         'Service' => '%$' . RealMeService::class,
     ];
 
-    protected $title = "RealMe Setup Task";
+    protected string $title = "RealMe Setup Task";
 
-    protected $description = 'Validates a realme configuration & creates the resources needed to integrate with realme';
+    protected static string $description = 'Validates a realme configuration & creates the resources '
+        . 'needed to integrate with realme';
 
     /**
      * @var RealMeService
@@ -48,13 +50,14 @@ class RealMeSetupTask extends BuildTask
      */
     private $errors = array();
 
+    private PolyOutput $output;
+
     /**
      * Run this setup task. See class phpdoc for the full description of what this does
-     *
-     * @param HTTPRequest $request
      */
-    public function run($request)
+    protected function execute(InputInterface $input, PolyOutput $output): int
     {
+        $this->output = $output;
         try {
             // Ensure we are running on the command-line, and not running in a browser
             if (false === Director::is_cli()) {
@@ -65,24 +68,37 @@ class RealMeSetupTask extends BuildTask
             }
 
             // Validate all required values exist
-            $forEnv = $request->getVar('forEnv');
+            $forEnv = $input->getOption('forEnv');
 
             // Throws an exception if there was a problem with the config.
             $this->validateInputs($forEnv);
 
             $this->outputMetadataXmlContent($forEnv);
 
-            Deprecation::withSuppressedNotice(function () use ($forEnv) {
-                $this->message(PHP_EOL . _t(
-                    RealMeSetupTask::class . '.BUILD_FINISH',
-                    'RealMe setup complete. Please copy the XML into a file for upload to the {env} environment or ' .
-                    'DIA to complete the integration',
-                    array('env' => $forEnv)
-                ));
-            });
+            $this->output->writeln(['', _t(
+                RealMeSetupTask::class . '.BUILD_FINISH',
+                'RealMe setup complete. Please copy the XML into a file for upload to the {env} environment or DIA ' .
+                'to complete the integration',
+                array('env' => $forEnv)
+            )]);
         } catch (Exception $e) {
-            Deprecation::withSuppressedNotice(fn() => $this->message($e->getMessage() . PHP_EOL));
+            $this->output->writeln('<error>' . $e->getMessage() . '</>');
+            return Command::FAILURE;
         }
+        return Command::SUCCESS;
+    }
+
+    public function getOptions(): array
+    {
+        return [
+            new InputOption(
+                'forEnv',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'The RealMe environment to set up',
+                suggestedValues: $this->service->getAllowedRealMeEnvironments()
+            ),
+        ];
     }
 
     /**
@@ -138,13 +154,10 @@ class RealMeSetupTask extends BuildTask
             ));
         }
 
-
-        Deprecation::withSuppressedNotice(function () {
-            $this->message(_t(
-                RealMeSetupTask::class . '.VALIDATION_SUCCESS',
-                'Validation succeeded, continuing with setup...'
-            ));
-        });
+        $this->output->writeln(_t(
+            RealMeSetupTask::class . '.VALIDATION_SUCCESS',
+            'Validation succeeded, continuing with setup...'
+        ));
     }
 
     /**
@@ -155,14 +168,12 @@ class RealMeSetupTask extends BuildTask
     private function outputMetadataXmlContent($forEnv)
     {
         // Output metadata XML so that it can be sent to RealMe via the agency
-        Deprecation::withSuppressedNotice(function () use ($forEnv) {
-            $this->message(_t(
-                RealMeSetupTask::class . '.OUPUT_PREFIX',
-                'Metadata XML is listed below for the \'{env}\' RealMe environment, this should be sent to the ' .
-                    'agency so they can pass it on to RealMe Operations staff',
-                ['env' => $forEnv]
-            ) . PHP_EOL . PHP_EOL);
-        });
+        $this->output->writeln(_t(
+            RealMeSetupTask::class . '.OUPUT_PREFIX',
+            'Metadata XML is listed below for the \'{env}\' RealMe environment, this should be sent to the agency so ' .
+                'they can pass it on to RealMe Operations staff',
+            ['env' => $forEnv]
+        ) . PHP_EOL . PHP_EOL);
 
         $configDir = $this->getConfigurationTemplateDir();
         $templateFile = Controller::join_links($configDir, 'metadata.xml');
@@ -189,7 +200,7 @@ class RealMeSetupTask extends BuildTask
             )
         );
 
-        Deprecation::withSuppressedNotice(fn() => $this->message($message));
+        $this->output->writeln($message);
     }
 
     /**
@@ -229,18 +240,6 @@ class RealMeSetupTask extends BuildTask
         $path = ModuleLoader::inst()->getManifest()->getModule('realme')->getPath();
 
         return $path . '/templates/saml-conf';
-    }
-
-    /**
-     * Output a message to the console
-     * @param string $message
-     * @return void
-     * @deprecated 5.5.0 Will be replaced with new $output parameter in the run() method
-     */
-    private function message($message)
-    {
-        Deprecation::notice('5.5.0', 'Will be replaced with new $output parameter in the run() method');
-        echo $message . PHP_EOL;
     }
 
     /**
@@ -381,7 +380,7 @@ class RealMeSetupTask extends BuildTask
             $this->errors[] = _t(
                 RealMeSetupTask::class . '.ERR_ENV_NOT_SPECIFIED',
                 'The RealMe environment was not specified on the cli It must be one of: {allowedEnvs} ' .
-                    'e.g. vendor/bin/sake dev/tasks/RealMeSetupTask forEnv=mts',
+                    'e.g. vendor/bin/sake tasks:RealMeSetupTask --forEnv=mts',
                 array(
                     'allowedEnvs' => join(', ', $allowedEnvs)
                 )
