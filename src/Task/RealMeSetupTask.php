@@ -11,6 +11,7 @@ use SilverStripe\RealMe\RealMeService;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\Controller;
 use SilverStripe\Dev\BuildTask;
+use SilverStripe\Dev\Deprecation;
 
 /**
  * Class RealMeSetupTask
@@ -71,14 +72,16 @@ class RealMeSetupTask extends BuildTask
 
             $this->outputMetadataXmlContent($forEnv);
 
-            $this->message(PHP_EOL . _t(
-                RealMeSetupTask::class . '.BUILD_FINISH',
-                'RealMe setup complete. Please copy the XML into a file for upload to the {env} environment or DIA ' .
-                'to complete the integration',
-                array('env' => $forEnv)
-            ));
+            Deprecation::withNoReplacement(function () use ($forEnv) {
+                $this->message(PHP_EOL . _t(
+                    RealMeSetupTask::class . '.BUILD_FINISH',
+                    'RealMe setup complete. Please copy the XML into a file for upload to the {env} environment or ' .
+                    'DIA to complete the integration',
+                    array('env' => $forEnv)
+                ));
+            });
         } catch (Exception $e) {
-            $this->message($e->getMessage() . PHP_EOL);
+            Deprecation::withNoReplacement(fn() => $this->message($e->getMessage() . PHP_EOL));
         }
     }
 
@@ -135,10 +138,13 @@ class RealMeSetupTask extends BuildTask
             ));
         }
 
-        $this->message(_t(
-            RealMeSetupTask::class . '.VALIDATION_SUCCESS',
-            'Validation succeeded, continuing with setup...'
-        ));
+
+        Deprecation::withNoReplacement(function () {
+            $this->message(_t(
+                RealMeSetupTask::class . '.VALIDATION_SUCCESS',
+                'Validation succeeded, continuing with setup...'
+            ));
+        });
     }
 
     /**
@@ -149,12 +155,14 @@ class RealMeSetupTask extends BuildTask
     private function outputMetadataXmlContent($forEnv)
     {
         // Output metadata XML so that it can be sent to RealMe via the agency
-        $this->message(_t(
-            RealMeSetupTask::class . '.OUPUT_PREFIX',
-            'Metadata XML is listed below for the \'{env}\' RealMe environment, this should be sent to the agency so ' .
-                'they can pass it on to RealMe Operations staff',
-            ['env' => $forEnv]
-        ) . PHP_EOL . PHP_EOL);
+        Deprecation::withNoReplacement(function () use ($forEnv) {
+            $this->message(_t(
+                RealMeSetupTask::class . '.OUPUT_PREFIX',
+                'Metadata XML is listed below for the \'{env}\' RealMe environment, this should be sent to the ' .
+                    'agency so they can pass it on to RealMe Operations staff',
+                ['env' => $forEnv]
+            ) . PHP_EOL . PHP_EOL);
+        });
 
         $configDir = $this->getConfigurationTemplateDir();
         $templateFile = Controller::join_links($configDir, 'metadata.xml');
@@ -181,7 +189,7 @@ class RealMeSetupTask extends BuildTask
             )
         );
 
-        $this->message($message);
+        Deprecation::withNoReplacement(fn() => $this->message($message));
     }
 
     /**
@@ -227,9 +235,11 @@ class RealMeSetupTask extends BuildTask
      * Output a message to the console
      * @param string $message
      * @return void
+     * @deprecated 5.5.0 Will be replaced with new $output parameter in the run() method
      */
     private function message($message)
     {
+        Deprecation::notice('5.5.0', 'Will be replaced with new $output parameter in the run() method');
         echo $message . PHP_EOL;
     }
 
