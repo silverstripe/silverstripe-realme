@@ -11,7 +11,7 @@ use SilverStripe\RealMe\Authenticator;
 use SilverStripe\RealMe\RealMeService;
 use SilverStripe\Security\LoginForm as BaseLoginForm;
 use SilverStripe\SiteConfig\SiteConfig;
-use SilverStripe\View\ArrayData;
+use SilverStripe\Model\ArrayData;
 use SilverStripe\View\Requirements;
 
 class LoginForm extends BaseLoginForm

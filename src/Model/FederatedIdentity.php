@@ -6,7 +6,7 @@ use DOMDocument;
 use DOMXPath;
 
 use SilverStripe\ORM\FieldType\DBField;
-use SilverStripe\View\ViewableData;
+use SilverStripe\Model\ModelData;
 use SilverStripe\ORM\FieldType\DBDatetime;
 
 /**
@@ -28,7 +28,7 @@ use SilverStripe\ORM\FieldType\DBDatetime;
  *
  * - See this object's constructor for the XML / DOMDocument object expected to be passed during instantiation.
  */
-class FederatedIdentity extends ViewableData
+class FederatedIdentity extends ModelData
 {
     const SOURCE_XML = 'urn:nzl:govt:ict:stds:authn:safeb64:attribute:igovt:IVS:Assertion:Identity';
     const SOURCE_JSON = 'urn:nzl:govt:ict:stds:authn:safeb64:attribute:igovt:IVS:Assertion:JSON:Identity';
