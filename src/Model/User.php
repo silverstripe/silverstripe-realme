@@ -6,7 +6,7 @@ use SilverStripe\Core\Config\Config;
 use SilverStripe\RealMe\Extension\MemberExtension;
 use SilverStripe\RealMe\RealMeService;
 use SilverStripe\Security\Member;
-use SilverStripe\View\ArrayData;
+use SilverStripe\Model\ArrayData;
 
 /**
  * Class RealMeUser
@@ -55,7 +55,7 @@ class User extends ArrayData
 
     /**
      * @return Member
-     * @throws \SilverStripe\ORM\ValidationException
+     * @throws \SilverStripe\Core\Validation\ValidationException
      */
     public function getMember()
     {

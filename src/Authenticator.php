@@ -9,7 +9,7 @@ use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Environment;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Core\Injector\Injector;
-use SilverStripe\ORM\ValidationResult;
+use SilverStripe\Core\Validation\ValidationResult;
 use SilverStripe\RealMe\Authenticator\LoginHandler as RealMeLoginHandler;
 use SilverStripe\Security\Authenticator as AuthenticatorInterface;
 use SilverStripe\Security\Member;
