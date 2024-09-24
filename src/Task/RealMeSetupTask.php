@@ -8,11 +8,14 @@ use SilverStripe\Core\Manifest\ModuleLoader;
 use SilverStripe\RealMe\RealMeService;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\Controller;
+use SilverStripe\Core\Validation\ConstraintValidator;
 use SilverStripe\Dev\BuildTask;
 use SilverStripe\PolyExecution\PolyOutput;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Url;
 
 /**
  * Class RealMeSetupTask
@@ -275,45 +278,33 @@ class RealMeSetupTask extends BuildTask
             );
         }
 
-        // make sure the entityID is a valid URL
-        $entityId = filter_var($entityId, FILTER_VALIDATE_URL);
-        if ($entityId === false) {
-            $this->errors[] = _t(
-                RealMeSetupTask::class . '.ERR_CONFIG_ENTITYID',
-                'The Entity ID (\'{entityId}\') must be https, not be \'localhost\', and must contain a valid ' .
-                    'service name and privacy realm e.g. https://my-realme-integration.govt.nz/p-realm/s-name',
-                array(
-                    'entityId' => $entityId
-                )
-            );
-
+        $validationMessage = _t(
+            RealMeSetupTask::class . '.ERR_CONFIG_ENTITYID',
+            'The Entity ID (\'{entityId}\') must be https, not be \'localhost\', and must contain a valid ' .
+                'service name and privacy realm e.g. https://my-realme-integration.govt.nz/p-realm/s-name',
+            ['entityId' => $entityId]
+        );
+        // make sure the entityID is a valid URL with HTTPS protocol
+        if (!ConstraintValidator::validate($entityId, [new Url(protocols: ['https']), new NotBlank()])->isValid()) {
+            $this->errors[] = $validationMessage;
             // invalid entity id, no point continuing.
             return;
         }
 
-        // check it's not localhost and HTTPS. and make sure we have a host / scheme
+        // check it's not localhost
         $urlParts = parse_url($entityId ?? '');
-        if ($urlParts['host'] === 'localhost' || $urlParts['scheme'] === 'http') {
-            $this->errors[] = _t(
-                RealMeSetupTask::class . '.ERR_CONFIG_ENTITYID',
-                'The Entity ID (\'{entityId}\') must be https, not be \'localhost\', and must contain a valid ' .
-                    'service name and privacy realm e.g. https://my-realme-integration.govt.nz/p-realm/s-name',
-                array(
-                    'entityId' => $entityId
-                )
-            );
-
+        if ($urlParts['host'] === 'localhost') {
+            $this->errors[] = $validationMessage;
             // if there's this much wrong, we want them to fix it first.
             return;
         }
 
         $path = ltrim($urlParts['path'] ?? '');
-        $urlParts = preg_split("/\\//", $path ?? '');
-
+        $pathParts = preg_split("/\\//", $path ?? '');
 
         // A valid Entity ID is in the form of "https://www.domain.govt.nz/<privacy-realm>/<service-name>"
         // Validate Service Name
-        $serviceName = array_pop($urlParts);
+        $serviceName = array_pop($pathParts);
         if (mb_strlen($serviceName ?? '') > 20 || 0 === mb_strlen($serviceName ?? '')) {
             $this->errors[] = _t(
                 RealMeSetupTask::class . '.ERR_CONFIG_ENTITYID_SERVICE_NAME',
@@ -327,7 +318,7 @@ class RealMeSetupTask extends BuildTask
         }
 
         // Validate Privacy Realm
-        $privacyRealm = array_pop($urlParts);
+        $privacyRealm = array_pop($pathParts);
         if (null === $privacyRealm || 0 === mb_strlen($privacyRealm ?? '')) {
             $this->errors[] = _t(
                 RealMeSetupTask::class . '.ERR_CONFIG_ENTITYID_PRIVACY_REALM',
