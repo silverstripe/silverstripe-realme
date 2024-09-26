@@ -150,7 +150,7 @@ environment. In this environment, RealMe provide all SSL certificates required t
     - Add a new line as line 1 of the file with the following: `-----BEGIN CERTIFICATE-----`
     - Add a new line as the last line of the file with the following: `-----END CERTIFICATE-----`
 - Ensure your `realme.yml` [configuration](docs/en/configuration.md) is complete (see above).
-- Run the RealMe build task to validate your configuration and get the XML metadata to provide to MTS: `vendor/bin/sake dev/tasks/RealMeSetupTask forEnv=mts`
+- Run the RealMe build task to validate your configuration and get the XML metadata to provide to MTS: `vendor/bin/sake tasks:RealMeSetupTask --forEnv=mts`
 - Save the XML output from the above task to an XML file, and upload this to MTS:
     - For a 'logon' integration, submit here: [MTS logon metadata upload](https://mtscloud.realme.govt.nz/Login/home).
     - For an 'assert' integration, submit here: [MTS assert metadata upload](https://mtscloud.realme.govt.nz/Assertion/home).
@@ -232,7 +232,7 @@ To setup syncing, you **must** be using the `login` type of authentication and h
 on `Member` (or a subclass of it) and then tell the module to sync with the database via the following configuration in
 realme.yml. You can also include `login_member_after_authentication` which will automatically login a user (as a
 Silverstripe `Member` object) after successful RealMe authentication.
- 
+
 ```yaml
 SilverStripe\Security\Member:
   extensions:
@@ -243,7 +243,7 @@ SilverStripe\RealMe\RealMeService:
   login_member_after_authentication: true
 ```
 
-Run a `dev/build` to ensure the configuration changes are accounted for.
+Run `sake db:build --flush` to ensure the configuration changes are accounted for.
 
 When a RealMe login completes with success, a new member will be synced based on the RealMe FLT. If no member matching the
 FLT is found, a new member will be created. _Note this is not supported for `assert`, as the FIT is transient (changes each
