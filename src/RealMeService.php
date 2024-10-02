@@ -18,12 +18,15 @@ use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Environment;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Core\Validation\ConstraintValidator;
 use SilverStripe\RealMe\Exception as RealMeException;
 use SilverStripe\RealMe\Model\FederatedIdentity;
 use SilverStripe\RealMe\Model\User;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
 use SilverStripe\View\TemplateGlobalProvider;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Url;
 
 class RealMeService implements TemplateGlobalProvider
 {
@@ -458,11 +461,11 @@ class RealMeService implements TemplateGlobalProvider
         }
 
         $backUrl = $this->validSiteURL($backUrl);
-        
+
         if (!$backUrl) {
             $backUrl = Director::absoluteBaseURL();
         }
-        
+
         // If not, attempt to retrieve authentication data from OneLogin (in case this is called during SAML assertion)
         try {
             if (!$session->get("RealMeErrorBackURL") && Controller::has_curr()) {
@@ -800,7 +803,7 @@ class RealMeService implements TemplateGlobalProvider
         }
 
         $domain = $this->getMetadataAssertionServiceDomainForEnvironment($env);
-        if (filter_var($domain, FILTER_VALIDATE_URL) === false) {
+        if (!ConstraintValidator::validate($domain, [new Url(), new NotBlank()])->isValid()) {
             return null;
         }
 
