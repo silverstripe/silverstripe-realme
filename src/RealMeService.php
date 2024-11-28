@@ -907,7 +907,7 @@ class RealMeService implements TemplateGlobalProvider
      *
      * @return Auth
      */
-    public function getAuth(HTTPRequest $request = null)
+    public function getAuth(?HTTPRequest $request = null)
     {
         if (isset($this->auth)) {
             return $this->auth;
