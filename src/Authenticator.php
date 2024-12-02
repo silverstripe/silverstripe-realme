@@ -155,7 +155,7 @@ class Authenticator implements AuthenticatorInterface
      * @param ValidationResult $result A validationresult which is either valid or contains the error message(s)
      * @return Member The matched member, or null if the authentication fails
      */
-    public function authenticate(array $data, HTTPRequest $request, ValidationResult &$result = null)
+    public function authenticate(array $data, HTTPRequest $request, ?ValidationResult &$result = null)
     {
         try {
             $this->service->enforceLogin($request);
@@ -189,7 +189,7 @@ class Authenticator implements AuthenticatorInterface
      * @param ValidationResult $result
      * @return ValidationResult
      */
-    public function checkPassword(Member $member, $password, ValidationResult &$result = null)
+    public function checkPassword(Member $member, $password, ?ValidationResult &$result = null)
     {
         // No-op
     }
