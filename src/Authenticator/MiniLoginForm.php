@@ -28,8 +28,8 @@ class MiniLoginForm extends LoginForm
         $buttonName = sprintf('action_%s', MiniLoginForm::$action_button_name);
         $action = $this->Actions()->fieldByName($buttonName);
 
-        $authMethod = $fields->dataFieldByName('AuthenticationMethod')->Value();
-        $token = $fields->dataFieldByName('SecurityID')->Value();
+        $authMethod = $fields->dataFieldByName('AuthenticationMethod')->getValue();
+        $token = $fields->dataFieldByName('SecurityID')->getValue();
         $actionName = $action->getName();
         $actionValue = _t(LoginForm::class . '.LOGINBUTTON', 'LoginAction');
 
