@@ -235,11 +235,14 @@ class RealMeSetupTask extends BuildTask
      * Output a message to the console
      * @param string $message
      * @return void
-     * @deprecated 5.5.0 Will be replaced with new $output parameter in the run() method
+     * @deprecated 5.5.0 Will be replaced with new $output parameter in the run() method in a future major release
      */
     private function message($message)
     {
-        Deprecation::notice('5.5.0', 'Will be replaced with new $output parameter in the run() method');
+        Deprecation::notice(
+            '5.5.0',
+            'Will be replaced with new $output parameter in the run() method in a future major release'
+        );
         echo $message . PHP_EOL;
     }
 
