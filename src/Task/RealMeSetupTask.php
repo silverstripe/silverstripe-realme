@@ -369,7 +369,7 @@ class RealMeSetupTask extends BuildTask
         $allowedEnvs = $this->service->getAllowedRealMeEnvironments();
         if (0 === mb_strlen($forEnv ?? '')) {
             $this->errors[] = _t(
-                RealMeSetupTask::class . '.ERR_ENV_NOT_SPECIFIED',
+                RealMeSetupTask::class . '.ERR_ENV_NOT_SPECIFIED2',
                 'The RealMe environment was not specified on the cli It must be one of: {allowedEnvs} ' .
                     'e.g. vendor/bin/sake tasks:RealMeSetupTask --forEnv=mts',
                 array(
