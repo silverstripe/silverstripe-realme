@@ -31,7 +31,7 @@ class MiniLoginForm extends LoginForm
         $authMethod = $fields->dataFieldByName('AuthenticationMethod')->getValue();
         $token = $fields->dataFieldByName('SecurityID')->getValue();
         $actionName = $action->getName();
-        $actionValue = _t(LoginForm::class . '.LOGINBUTTON', 'LoginAction');
+        $actionValue = _t(LoginForm::class . '.LOGINBUTTON', 'Log in');
 
         $queryString = sprintf(
             '?AuthenticationMethod=%s&SecurityID=%s&%s=%s',
