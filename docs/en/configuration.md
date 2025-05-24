@@ -4,7 +4,7 @@
 
 ### Environment variables and certificates
 
-The following values need to be defined in your `.env` file for **all** environments. See the [SilverStripe documentation on environment management](https://docs.silverstripe.org/en/3.1/getting_started/environment_management/) for more information.
+The following values need to be defined in your `.env` file for **all** environments. See the [SilverStripe documentation on environment management](https://docs.silverstripe.org/en/getting_started/environment_management/) for more information.
 
 | **Environment Const**          | **Example**                     | **Notes**                                                                                                                                                                                    |
 | ------------------------------ | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
