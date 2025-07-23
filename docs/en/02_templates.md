@@ -1,6 +1,10 @@
-# RealMe module for SilverStripe
+---
+title: Templates
+summary: Explains how to use the built-in templates for integrating RealMe login functionality into your website, including standard and 'mini' login forms
+icon: file-code
+---
 
-## Using the built-in templates
+# Templates
 
 In order to help developers integrate this module with an existing website, the module
 provides templates that can be used.
@@ -8,17 +12,15 @@ provides templates that can be used.
 When the module is installed, a new authenticator is registered which allows the login form
 to show a template for RealMe login.
 
-RealMe have some strict rules for how you present the RealMe login functionality, please see
+RealMe has some strict rules for how you present the RealMe login functionality, please see
 the instructions [on the RealMe Developers site](https://developers.realme.govt.nz/how-to-integrate/application-design-and-branding-guide/realme-page-elements/)
 for complete details.
 
 Along with the standard large-form login forms, there is also a 'mini' login form, suitable
 for use in the header and footer of websites. This can be included by adding a method to your
-normal Page_Controller that returns a `new SilverStripe\RealMe\Authenticator\MiniLoginForm($this, __FUNCTION__);`. This
+normal `PageController` that returns a `new SilverStripe\RealMe\Authenticator\MiniLoginForm($this, __FUNCTION__);`. This
 form uses `GET` rather than `POST`, so is an extension of the normal login form. This bypasses
 the requirement to go to `Security/login`, so is only useful when it is the only method of
 login to a website.
 
-Further documentation on using these templates can be found in the template files themselves:
-[RealMeLoginForm.ss](../../templates/SilverStripe/RealMe/Authenticator/RealMeLoginForm.ss) and
-[RealMeLoginForm_secondary.ss](../../templates/SilverStripe/RealMe/Authenticator/RealMeLoginForm_secondary.ss).
+Further documentation on using these templates can be found in the template files themselves, which can be found in the `/templates` folder in the [GitHub repository](https://github.com/silverstripe/silverstripe-realme).
