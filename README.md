@@ -24,8 +24,7 @@ composer require silverstripe/realme
 RealMe provide two testing environments and a production environment for you to integrate with. Access to these
 environments is strictly controlled, and more information on these can be found on the [RealMe Developers site](https://developers.realme.govt.nz/how-to-integrate/).
 
-See [configuration.md](docs/en/configuration.md) for environment and YML configuration required before the module can be
-used.
+See [configuration documentation](https://docs.silverstripe.org/en/optional_features/realme/configuration) for environment and YML configuration required before the module can be used.
 
 ## Providing RealMe login buttons
 
@@ -33,7 +32,7 @@ By default, the module provides an `Authenticator` class in SilverStripe, adding
 with this. They have been designed to integrate as cleanly as possible with Silverstripe templates, but it is up to you
 whether you use them, or roll your own.
 
-See the [templates documentation](docs/en/templates.md) for more information on using or modifying these.
+See the [templates documentation](https://docs.silverstripe.org/en/optional_features/realme/templates) for more information on using or modifying these.
 
 ## Testing for authentication
 
