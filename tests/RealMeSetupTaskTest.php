@@ -55,10 +55,7 @@ class RealMeSetupTaskTest extends SapphireTest
         $realMeSetupTask = new RealMeSetupTask();
 
         $errors = new ReflectionProperty($realMeSetupTask, 'errors');
-        $errors->setAccessible(true);
-
         $service = new ReflectionProperty($realMeSetupTask, 'service');
-        $service->setAccessible(true);
         $service->setValue($realMeSetupTask, $realMeService);
 
         // Make sure there's no errors to begin.
@@ -67,7 +64,6 @@ class RealMeSetupTaskTest extends SapphireTest
         // Test: Make an error
         $invalidEnv = "wrong-environment";
         $validateEnvironments = new ReflectionMethod($realMeSetupTask, 'validateRealMeEnvironments');
-        $validateEnvironments->setAccessible(true);
         $validateEnvironments->invoke($realMeSetupTask, $invalidEnv);
         $this->assertCount(1, $errors->getValue($realMeSetupTask), "An invalid environment should raise an error");
 
@@ -78,7 +74,6 @@ class RealMeSetupTaskTest extends SapphireTest
         // Test: No environment passed
         $noEnvironment = null;
         $validateEnvironments = new ReflectionMethod($realMeSetupTask, 'validateRealMeEnvironments');
-        $validateEnvironments->setAccessible(true);
         $validateEnvironments->invoke($realMeSetupTask, $noEnvironment);
         $this->assertCount(1, $errors->getValue($realMeSetupTask), "Missing environment should raise an error");
 
@@ -88,7 +83,6 @@ class RealMeSetupTaskTest extends SapphireTest
 
         // Test: allowed environments pass without error.
         $reflectionMethod = new ReflectionMethod($realMeService, 'getAllowedRealMeEnvironments');
-        $reflectionMethod->setAccessible(true);
         foreach ($reflectionMethod->invoke($realMeService) as $validEnvironment) {
             $validateEnvironments->invoke($realMeSetupTask, $validEnvironment);
         }
@@ -110,10 +104,7 @@ class RealMeSetupTaskTest extends SapphireTest
         $realMeSetupTask = new RealMeSetupTask();
 
         $errors = new ReflectionProperty($realMeSetupTask, 'errors');
-        $errors->setAccessible(true);
-
         $service = new ReflectionProperty($realMeSetupTask, 'service');
-        $service->setAccessible(true);
         $service->setValue($realMeSetupTask, $realMeService);
 
         // Make sure there's no errors to begin.
@@ -125,7 +116,6 @@ class RealMeSetupTaskTest extends SapphireTest
 
         // validate our list of valid entity IDs;
         $validateEntityId = new ReflectionMethod($realMeSetupTask, 'validateEntityID');
-        $validateEntityId->setAccessible(true);
         $validateEntityId->invoke($realMeSetupTask, 'mts');
 
         // valid entityID's shouldn't have any issues
@@ -218,10 +208,7 @@ class RealMeSetupTaskTest extends SapphireTest
         $realMeSetupTask = new RealMeSetupTask();
 
         $errors = new ReflectionProperty($realMeSetupTask, 'errors');
-        $errors->setAccessible(true);
-
         $service = new ReflectionProperty($realMeSetupTask, 'service');
-        $service->setAccessible(true);
         $service->setValue($realMeSetupTask, $realMeService);
 
         // Make sure there's no errors to begin.
@@ -233,7 +220,6 @@ class RealMeSetupTaskTest extends SapphireTest
 
         // validate our list of valid entity IDs;
         $validateAuthNContext = new ReflectionMethod($realMeSetupTask, 'validateAuthNContext');
-        $validateAuthNContext->setAccessible(true);
         $validateAuthNContext->invoke($realMeSetupTask);
         $this->assertCount(0, $errors->getValue($realMeSetupTask));
 
@@ -267,8 +253,6 @@ class RealMeSetupTaskTest extends SapphireTest
 
         $getConfigurationTemplateDirMethod =
             new ReflectionMethod(RealMeSetupTask::class, 'getConfigurationTemplateDir');
-        $getConfigurationTemplateDirMethod->setAccessible(true);
-
         $config = Config::inst();
 
         $config->set(RealMeSetupTask::class, 'template_config_dir', '');
