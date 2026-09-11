@@ -4,9 +4,9 @@ namespace SilverStripe\RealMe\Task;
 
 use Exception;
 
+use SilverStripe\Core\Environment;
 use SilverStripe\Core\Manifest\ModuleLoader;
 use SilverStripe\RealMe\RealMeService;
-use SilverStripe\Control\Director;
 use SilverStripe\Control\Controller;
 use SilverStripe\Core\Validation\ConstraintValidator;
 use SilverStripe\Dev\BuildTask;
@@ -63,7 +63,7 @@ class RealMeSetupTask extends BuildTask
         $this->output = $output;
         try {
             // Ensure we are running on the command-line, and not running in a browser
-            if (false === Director::is_cli()) {
+            if (false === Environment::isCli()) {
                 throw new Exception(_t(
                     RealMeSetupTask::class . '.ERR_NOT_CLI',
                     'This task can only be run from the command-line, not in your browser.'
